@@ -16,11 +16,11 @@ class DFG(MultiDiGraph):
     def to_dot(self, name: str = "test.dot"):
         nx_agraph.to_agraph(self).write(f"./{name}")
 
-    # def get_latency(self, node: str) -> int:
-    #     return int(self.nodes[node].get("latency", 0))
+    def get_latency(self, node: str) -> int:
+        return int(self.nodes[node].get("latency", 0))
 
-    # def get_delay(self, node: str) -> int:
-    #     return float(self.nodes[node].get("delay", "0").split(' ')[0])
+    def get_delay(self, node: str) -> int:
+        return float(self.nodes[node].get("delay", "0").split(' ')[0])
 
     def gen_dict(self, node: str) -> dict:
         return {

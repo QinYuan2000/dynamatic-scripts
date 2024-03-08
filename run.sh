@@ -4,9 +4,9 @@ set-src             ./dynamatic/integration-test/fir/fir.c
 
 compile
 
-write-hdl
+# write-hdl
 
-simulate
+# simulate
 
 exit
 
