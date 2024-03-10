@@ -6,7 +6,7 @@ import numpy as np
 import gurobipy as gp
 
 
-date = 'Mar10'                              # Date for output files in 'gurobi_out'
+date = 'Marn10'                              # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
@@ -97,6 +97,28 @@ if __name__ == "__main__":
         dfg_edges.append( (u + '_plin', u + '_plout') )
         dfg_edges_varpl.append( (u + '_plin', u + '_plout') )
 
+
+    # Extract multiple edges between the same unit pair and count their occurence
+    single_edges = []
+    multi_edges = {}
+    for e in dfg_edges_nopl:
+        if e in single_edges:
+            if e in multi_edges:
+                multi_edges[e] += 1
+
+            else:
+                multi_edges[e] = 1
+
+        else:
+            single_edges.append(e)
+    dfg_edges_nopl = single_edges
+    if multi_edges:
+        # single_edges = []
+        # for e in dfg_edges:
+        #     if e not in single_edges:
+        #         single_edges.append(e)
+        # dfg_edges = single_edges
+        dfg_edges = set(dfg_edges)
 
 # This is to change dfg structure but currently not compatible with other functions
     # for unit in pl_units:
@@ -327,6 +349,9 @@ if __name__ == "__main__":
 
     for e in dfg_edges_nopl:            # Not pipelined buffer size
         Objective.addTerms(-Lambda, Var_Nc[e])
+
+    for e in multi_edges:               # Multiple edges between the same unit pair
+        Objective.addTerms(-Lambda * multi_edges[e], Var_Nc[e])
 
     for u in varpl_units:               # Pipelined buffer size. TODO: Complicated if II added.
         Objective.addTerms(-Lambda, Lu[u])
