@@ -6,6 +6,9 @@ import numpy as np
 import gurobipy as gp
 
 
+date = 'Mar10'                              # Date for output files in 'gurobi_out'
+
+
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     benchmark = "fir"                       # Choose circuit benchmark.
@@ -22,6 +25,7 @@ if __name__ == "__main__":
         )
     )
     
+
     # Remove mem_controllers node and edges from dfg graph 
     to_remove = []
     for n in dfg.nodes():
@@ -33,15 +37,14 @@ if __name__ == "__main__":
 
 
     # Create datasheet for dfg
-
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 1
+    to_pl = 6
     pl_units = []                   # Pipelined unit
     conpl_units = []                # Constant latency pipelined units, latency already shown in dot file
     varpl_units = []                # Variable latency pipelined units, which have long delays
     dfg_dict = {}                   # DFG datasheet indexed by units
     # Here pipelined units will be splitted to two nodes and a channel connecting them. 
-    # Relation to previous and successor nodes unchanged.
+    # Relationship with previous and successor nodes unchanged.
     for unit in dfg:
         if dfg.get_latency(unit) > 0:
             dfg_dict[unit + '_plin'] = dfg.gen_dict(unit)
@@ -52,7 +55,7 @@ if __name__ == "__main__":
         elif dfg.get_delay(unit) > to_pl:
             dfg_dict[unit + '_plin'] = dfg.gen_dict(unit)
             dfg_dict[unit + '_plout'] = dfg.gen_dict(unit)
-            dfg_dict[unit + '_plin']['delay'] /= 2
+            dfg_dict[unit + '_plin']['delay'] /= 2      # Splitted nodes have halved delays
             dfg_dict[unit + '_plout']['delay'] /= 2
             varpl_units.append(unit)
             pl_units.append(unit)
@@ -61,6 +64,10 @@ if __name__ == "__main__":
             dfg_dict[unit] = dfg.gen_dict(unit)
         # print("the latency of ", unit, "is", dfg.get_latency(unit))
         # print("the delay of ", unit, "is", dfg.get_delay(unit))
+
+# This is the test code
+# for u in dfg_dict:
+#     print(dfg_dict[u]['delay'])
 
 
     # Gain four types of channel list
@@ -80,10 +87,8 @@ if __name__ == "__main__":
         elif e[1] in pl_units:
             dfg_edges[i] = (e[0], e[1] + '_plin')
             dfg_edges_nopl[i] = (e[0], e[1] + '_plin')
-
     # for u in pl_units:
     #     dfg_edges.append( (u + '_plin', u + '_plout') )
-
     for u in conpl_units:
         dfg_edges.append( (u + '_plin', u + '_plout') )
         dfg_edges_conpl.append( (u + '_plin', u + '_plout') ) 
@@ -141,7 +146,6 @@ if __name__ == "__main__":
         cfdfcs_nopl.append(cfdfc_nopl)
         cfdfcs_conpl.append(cfdfc_conpl)
         cfdfcs_varpl.append(cfdfc_varpl)
-
     # for i, cfc in enumerate(cfdfcs):
     #     for unit in cfc:
     #         print("the", i + 1, "-th extracted cfdfc has node:", unit)
@@ -153,7 +157,6 @@ if __name__ == "__main__":
     #             "-th extracted cfdfc has edge:",
     #             f"{pred}-->{succ}",
     #         )
-
 
     # CFDFC numbers and weights
     CFDFC_NUM = len(cfdfcs)
@@ -201,14 +204,12 @@ if __name__ == "__main__":
             else:
                 path_pair_nopl[n] = {"succ": succ_edge, "prev": prev_edge}
 
-
     # Build a dictionary to find the original name of pipelined units. Used for latency variable and constraints.
     varpl_origin = {}
     for u in varpl_units:
         varpl_origin[u + '_plin'] = u
         varpl_origin[u + '_plout'] = u
         varpl_origin[(u + '_plin', u + '_plout')] = u
-
 
     # Prepare constant latencies for opt model
     Lu_con = {}
@@ -220,26 +221,27 @@ if __name__ == "__main__":
                     break
 
 
+
     # Initialize model
     model = gp.Model()
 
 
     # Output variables of the model.
     Var_Rc = model.addVars(             # Insert non-tran buffer or not.
-        dfg_edges_nopl, 
+        dfg_edges_nopl,                 # Exclude channels inside the pipelined units
         vtype=gp.GRB.BINARY, 
         name='Rc',
     )
 
     Var_Nc = model.addVars(             # The buffer size. Rc = 0, Nc > 0 means transparent buffer.
-        dfg_edges_nopl, 
+        dfg_edges_nopl,                 # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER, 
         lb=0, 
         ub=gp.GRB.INFINITY, 
         name='Nc',
     )
 
-    Var_plRc = model.addVars(
+    Var_plRc = model.addVars(           # Indicate whether the unit is pipelined
         varpl_units, 
         vtype=gp.GRB.BINARY, 
         name='plRc',
@@ -254,7 +256,8 @@ if __name__ == "__main__":
         name='Lu',
     )
 
-    # TODO: Not used until I understand sometimes it is good to be larger when we could have minimized it
+    # Initiation interval. 
+    # TODO: Not used until I understand sometimes it is good to be larger when we could have minimized it.
     # II_ub = 2                           # Initiation interval upbound
     # II = model.addVars(                 # Pipelined unit initiation interval. Indexed by pipelined units.
     #     varpl_units, 
@@ -316,16 +319,19 @@ if __name__ == "__main__":
 
 
     # Set Objective
-    # TODO: Pipelined unit buffers not included
+    # TODO: Constant latency pipelined unit buffers not included, add it after optimization.
     Lambda = 1e-5                       # Weight of total buffer size relative to throughputs
     Objective = gp.LinExpr()
     for i in range(CFDFC_NUM):          # Weighted sum of throughputs of cfdfcs
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
 
-    for e in dfg_edges_nopl:            # Total buffer size
+    for e in dfg_edges_nopl:            # Not pipelined buffer size
         Objective.addTerms(-Lambda, Var_Nc[e])
-    model.setObjective(Objective, gp.GRB.MAXIMIZE)
 
+    for u in varpl_units:               # Pipelined buffer size. TODO: Complicated if II added.
+        Objective.addTerms(-Lambda, Lu[u])
+
+    model.setObjective(Objective, gp.GRB.MAXIMIZE)
 
 
     # Path timing constraints.
@@ -396,7 +402,6 @@ if __name__ == "__main__":
             )
 
 
-
     # Buffer sizing constraints.
 
     # Buffer size constraints.
@@ -412,11 +417,10 @@ if __name__ == "__main__":
                 name='SizingConstr2_nopl',
             )
 
-  
 
     # Pipeline specific constraints.
 
-    # Constant pipelined units must have buffers.
+    # If latency > 0, then it is pipelined (in optimal situation plRc = 1 if L = 1), and vice versa.
     PipelineConstr1 = model.addConstrs(
         (Var_plRc[varpl_origin[e]] <= Lu[varpl_origin[e]] 
         for e in dfg_edges_varpl), 
@@ -450,7 +454,7 @@ if __name__ == "__main__":
     model.optimize()
 
     # File name to record model and results
-    record_key = '_Mar09_1'
+    record_key = '_' + date + '_' + benchmark + '_' + str(to_pl)+ '_' + str(CP)
 
     # View constraints in this file.
     model.write("gurobi_out/model" + record_key + ".lp")
@@ -463,6 +467,7 @@ if __name__ == "__main__":
         f.write(f'Objective value: {model.objVal}\n')
 
 # Some testing codes.
+
 #     vars_list = model.getVars()
 #     for var in vars_list:
 #         print(f"{var.VarName} {var.X:g}")
@@ -476,9 +481,18 @@ if __name__ == "__main__":
 # constr = model.getConstrByName('PathConstr3')
 # constr.getAttr('LExpr')
 
-
 # for n in dfg_dict:
 #     if dfg_dict[n]["latency"] > 0:
 #         print(n)
 #         print(dfg_dict[n]["type"])
 #         print(dfg_dict[n]["latency"])
+
+# count_dict = {}
+# for item in dfg_edges_nopl:
+#     if item in count_dict:
+#         count_dict[item] += 1
+#     else:
+#         count_dict[item] = 1
+# for key, value in count_dict.items():
+#     if value > 1:
+#         print(key, value)
