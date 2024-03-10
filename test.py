@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 6
+    to_pl = 1
     pl_units = []                   # Pipelined unit
     conpl_units = []                # Constant latency pipelined units, latency already shown in dot file
     varpl_units = []                # Variable latency pipelined units, which have long delays
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     # Set input constants of the model.
     # TODO: Each of them not completed and verified, especially the Bc 
-    CP = 4
+    CP = 3
     CPmax = 100
     Bc = {}                 # Whether it is the back edge, indexed by edges
     for e in dfg_edges:
