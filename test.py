@@ -8,9 +8,9 @@ import gurobipy as gp
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "fir"
+    benchmark = "fir"                       # Choose circuit benchmark.
 
-    dfg = DFG(
+    dfg = DFG(                              # Generate dfg object from .dot file.
         AGraph(
             benchmark_directory
             / benchmark
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         )
     )
     
-    # Remove mem_controllers
+    # Remove mem_controllers node and edges from dfg graph 
     to_remove = []
     for n in dfg.nodes():
         if "mem_controller" in n:
@@ -37,9 +37,11 @@ if __name__ == "__main__":
     # If delay longer than to_pl, we pipeline the unit
     to_pl = 1
     pl_units = []                   # Pipelined unit
-    conpl_units = []                # Constant latency pipelined unit
-    varpl_units = []                # Variable latency pipelined unit
+    conpl_units = []                # Constant latency pipelined units, latency already shown in dot file
+    varpl_units = []                # Variable latency pipelined units, which have long delays
     dfg_dict = {}                   # DFG datasheet indexed by units
+    # Here pipelined units will be splitted to two nodes and a channel connecting them. 
+    # Relation to previous and successor nodes unchanged.
     for unit in dfg:
         if dfg.get_latency(unit) > 0:
             dfg_dict[unit + '_plin'] = dfg.gen_dict(unit)
@@ -61,7 +63,8 @@ if __name__ == "__main__":
         # print("the delay of ", unit, "is", dfg.get_delay(unit))
 
 
-
+    # Gain four types of channel list
+    # Total / exclude channels in pipeline / constant latency pipeline / variable latency pipeline
     dfg_edges = list(dfg.edges())
     dfg_edges_nopl = list(dfg.edges())
     dfg_edges_conpl, dfg_edges_varpl = [], []
@@ -112,6 +115,7 @@ if __name__ == "__main__":
     #     dfg.add_edge(node_in, node_out)
 
 
+    # The same way to get channel lists in each cfdfc in four forms as in dfg channels
     cfdfcs = dfg.generate_cfdfcs()
     cfdfcs_nopl, cfdfcs_conpl, cfdfcs_varpl = [], [], []
     for cfc in cfdfcs:
@@ -150,23 +154,23 @@ if __name__ == "__main__":
     #             f"{pred}-->{succ}",
     #         )
 
-    # Required Constants
+
+    # CFDFC numbers and weights
     CFDFC_NUM = len(cfdfcs)
     CFDFC_Weight = np.ones(CFDFC_NUM)/CFDFC_NUM     # TODO: Now just assume equal weights
 
 
-    # Input constants of the model.
+    # Set input constants of the model.
     # TODO: Each of them not completed and verified, especially the Bc 
-    # "Merge" not found but kept here, 
-    CP = 3
+    CP = 4
     CPmax = 100
-    Bc = {}                 # Indexed by edges
+    Bc = {}                 # Whether it is the back edge, indexed by edges
     for e in dfg_edges:
         Bc[e] = ((dfg_dict[e[0]]["bbID"] > dfg_dict[e[1]]["bbID"] and 
-                dfg_dict[e[1]]["bbID"] != 0) or                         # Exclude sinks    
+                dfg_dict[e[1]]["bbID"] != 0) or                             # To exclude sinks    
                 (dfg_dict[e[0]]["bbID"] == dfg_dict[e[1]]["bbID"] and
                 dfg_dict[e[0]]["type"] in ["Branch"] and
-                dfg_dict[e[1]]["type"] in ["Mux", "Merge", "CntrlMerge"])
+                dfg_dict[e[1]]["type"] in ["Mux", "Merge", "CntrlMerge"])   # "Merge" not found but kept here, 
                 )
     # And unit delays are represented by dfg_dict[unit]["delay"]
 
@@ -176,7 +180,8 @@ if __name__ == "__main__":
 #         print(i)
 
 
-    # Generate channel pairs for path constraints
+    # Generate neighbouring channel pairs for path timing constraints.
+    # Split in three ways, since the delay of pipelined units can be different fuctions.
     # TODO: To be improved; Efficiency; Whether it is good if there exist self loops.
     path_pair_nopl, path_pair_conpl, path_pair_varpl = {}, {}, {}
     conpl_units_ext = [ u + '_plin' for u in conpl_units ] + [ u + '_plout' for u in conpl_units ]
@@ -197,13 +202,15 @@ if __name__ == "__main__":
                 path_pair_nopl[n] = {"succ": succ_edge, "prev": prev_edge}
 
 
+    # Build a dictionary to find the original name of pipelined units. Used for latency variable and constraints.
     varpl_origin = {}
     for u in varpl_units:
         varpl_origin[u + '_plin'] = u
         varpl_origin[u + '_plout'] = u
         varpl_origin[(u + '_plin', u + '_plout')] = u
 
-            
+
+    # Prepare constant latencies for opt model
     Lu_con = {}
     for u in dfg_dict:
         if '_plin' in u:
@@ -213,16 +220,18 @@ if __name__ == "__main__":
                     break
 
 
+    # Initialize model
     model = gp.Model()
 
+
     # Output variables of the model.
-    Var_Rc = model.addVars(
+    Var_Rc = model.addVars(             # Insert non-tran buffer or not.
         dfg_edges_nopl, 
         vtype=gp.GRB.BINARY, 
         name='Rc',
     )
 
-    Var_Nc = model.addVars(
+    Var_Nc = model.addVars(             # The buffer size. Rc = 0, Nc > 0 means transparent buffer.
         dfg_edges_nopl, 
         vtype=gp.GRB.INTEGER, 
         lb=0, 
@@ -236,8 +245,8 @@ if __name__ == "__main__":
         name='plRc',
     )
     
-    Lu_ub = 10
-    Lu = model.addVars(                 # Indexed by pipelined units
+    Lu_ub = 10                          # Latency upbound.
+    Lu = model.addVars(                 # Pipelined unit latency. Indexed by pipelined units.
         varpl_units, 
         vtype=gp.GRB.INTEGER, 
         lb=0, 
@@ -246,9 +255,9 @@ if __name__ == "__main__":
     )
 
     # TODO: Not used until I understand sometimes it is good to be larger when we could have minimized it
-    # II_ub = 2
-    # II = model.addVars(                 # Indexed by pipelined channels
-    #     dfg_edges_varpl, 
+    # II_ub = 2                           # Initiation interval upbound
+    # II = model.addVars(                 # Pipelined unit initiation interval. Indexed by pipelined units.
+    #     varpl_units, 
     #     vtype=gp.GRB.INTEGER, 
     #     lb=0, 
     #     ub=II_ub, 
@@ -257,7 +266,7 @@ if __name__ == "__main__":
 
 
     # Internal variables of the model.
-    Var_Throughput = model.addVars(
+    Var_Throughput = model.addVars(     # Throughput of each cfdfc
         CFDFC_NUM, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -265,7 +274,7 @@ if __name__ == "__main__":
         name='Theta',
     )
 
-    Var_Token = model.addVars(
+    Var_Token = model.addVars(          # Average occupancy of channel c.
         dfg_edges, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -273,7 +282,7 @@ if __name__ == "__main__":
         name='Theta_1',
     )
 
-    Var_Bubble = model.addVars(
+    Var_Bubble = model.addVars(         # Average emptiness of channel c.
         dfg_edges_nopl, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -281,7 +290,7 @@ if __name__ == "__main__":
         name='Theta_0',
     )
 
-    Var_Retiming = model.addVars(
+    Var_Retiming = model.addVars(       # Fluid retiming of tokens across unit u.
         list(dfg_dict), 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -289,7 +298,7 @@ if __name__ == "__main__":
         name='ru',
     )
 
-    Var_Tin = model.addVars(
+    Var_Tin = model.addVars(            # Arrival time at the the input of channel c.
         dfg_edges, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -297,7 +306,7 @@ if __name__ == "__main__":
         name='Tin',
     )
 
-    Var_Tout = model.addVars(
+    Var_Tout = model.addVars(           # Arrival time at the the output of channel c.
         dfg_edges, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
@@ -308,18 +317,20 @@ if __name__ == "__main__":
 
     # Set Objective
     # TODO: Pipelined unit buffers not included
-    Lambda = 1e-5
+    Lambda = 1e-5                       # Weight of total buffer size relative to throughputs
     Objective = gp.LinExpr()
-    for i in range(CFDFC_NUM):
+    for i in range(CFDFC_NUM):          # Weighted sum of throughputs of cfdfcs
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
 
-    for e in dfg_edges_nopl:
+    for e in dfg_edges_nopl:            # Total buffer size
         Objective.addTerms(-Lambda, Var_Nc[e])
     model.setObjective(Objective, gp.GRB.MAXIMIZE)
 
 
 
-    # Path constraints.
+    # Path timing constraints.
+
+    # A buffer reset comb delay otherwise accumulate.
     PathConstr1 = model.addConstrs(
         (Var_Tout[e] >= Var_Tin[e] - CPmax * Var_Rc[e] for e in dfg_edges_nopl), 
         name='PathConstr1',
@@ -331,12 +342,13 @@ if __name__ == "__main__":
         (Var_Tout[e] >= Var_Tin[e] - CPmax * Var_plRc[varpl_origin[e]] for e in dfg_edges_varpl), 
         name='PathConstr1_pl',
     )
-
+    # Clock period constraints.
     PathConstr2 = model.addConstrs(
         (Var_Tin[e] <= CP for e in dfg_edges), 
         name='PathConstr2',
     )
     
+    # Unit delay of not pipelined / constant pipelined / variable pipelined units.
     for pn in path_pair_nopl:
         for prev in path_pair_nopl[pn]["prev"]:
             for succ in path_pair_nopl[pn]["succ"]:
@@ -367,11 +379,15 @@ if __name__ == "__main__":
 
 
     # Throughput constraints.
+
+    # Retiming constraints.
     ThroughputConstr1 = model.addConstrs(
         (Var_Token[e] == Bc[e] + Var_Retiming[e[1]] - Var_Retiming[e[0]] for e in dfg_edges), 
         name='ThroughputConstr1',
     )
 
+    # CFDFC throughputs confined by channel throughputs in each cfdfc.
+    # Split pipelined and not pipelined units so model can be easily modified.
     for i in range(CFDFC_NUM):
         for e in cfdfcs_nopl[i]:
             model.addConstr(
@@ -382,11 +398,13 @@ if __name__ == "__main__":
 
 
     # Buffer sizing constraints.
+
+    # Buffer size constraints.
     SizingConstr1 = model.addConstrs(
         (Var_Nc[e] == Var_Token[e] + Var_Bubble[e] for e in dfg_edges_nopl), 
         name='SizingConstr1',
     )
-
+    # Bubbles needed to avoid deadlocks.
     for i in range(CFDFC_NUM):
         for e in cfdfcs_nopl[i]:
             model.addConstr(
@@ -397,9 +415,15 @@ if __name__ == "__main__":
   
 
     # Pipeline specific constraints.
-    PipelineConstr1 = model.addConstrs((Var_plRc[varpl_origin[e]] <= Lu[varpl_origin[e]] for e in dfg_edges_varpl), name='PipelineConstr1')
+
+    # Constant pipelined units must have buffers.
+    PipelineConstr1 = model.addConstrs(
+        (Var_plRc[varpl_origin[e]] <= Lu[varpl_origin[e]] 
+        for e in dfg_edges_varpl), 
+        name='PipelineConstr1',
+        )
     
-    
+    # Throughput constraints inside pipelined units. Including latency, and initiation interval (not applied now).
     for i in range(CFDFC_NUM):
         for e in cfdfcs_conpl[i]:
             model.addConstr(
@@ -422,12 +446,26 @@ if __name__ == "__main__":
             )
 
 
+    # Run solver.
     model.optimize()
 
+    # File name to record model and results
+    record_key = '_Mar09_1'
+
+    # View constraints in this file.
+    model.write("gurobi_out/model" + record_key + ".lp")
+
+    # View solutions and results in this file.
+    with open("gurobi_out/solution" + record_key + ".txt", "w") as f:
+        f.write('Optimal solution:\n')
+        for v in model.getVars():
+            f.write(f'{v.VarName} = {v.x}\n')
+        f.write(f'Objective value: {model.objVal}\n')
+
+# Some testing codes.
 #     vars_list = model.getVars()
 #     for var in vars_list:
 #         print(f"{var.VarName} {var.X:g}")
-
 
 # for i in Var_Nc:
 #     print(Var_Nc[i].X)
