@@ -1,0 +1,75 @@
+
+Gurobi 11.0.0 (linux64) logging started Sun Mar 10 21:26:30 2024
+
+Set parameter LogFile to value "gurobi_out/log/Mar_10_fir_1_3.log"
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (linux64 - "CentOS Linux 7 (Core)")
+
+CPU model: Intel Xeon E3-12xx v2 (Ivy Bridge), instruction set [SSE2|AVX]
+Thread count: 24 physical cores, 24 logical processors, using up to 24 threads
+
+Optimize a model with 377 rows, 402 columns and 935 nonzeros
+Model fingerprint: 0xfa56239d
+Model has 29 quadratic constraints
+Variable types: 286 continuous, 116 integer (58 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  QMatrix range    [1e+00, 1e+00]
+  QLMatrix range   [7e-01, 1e+00]
+  Objective range  [1e-05, 1e+00]
+  Bounds range     [1e+00, 1e+01]
+  RHS range        [1e+00, 4e+00]
+  QRHS range       [7e-01, 1e+00]
+Presolve removed 229 rows and 207 columns
+Presolve time: 0.01s
+Presolved: 200 rows, 235 columns, 584 nonzeros
+Presolved model has 20 quadratic constraint(s)
+Presolved model has 6 bilinear constraint(s)
+
+Solving non-convex MIQCP
+
+Variable types: 141 continuous, 94 integer (32 binary)
+
+Root relaxation: objective 9.998500e-01, 144 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.99985    0    6          -    0.99985      -     -    0s
+     0     0    0.99984    0   24          -    0.99984      -     -    0s
+     0     0    0.99438    0   45          -    0.99438      -     -    0s
+     0     0    0.98522    0   51          -    0.98522      -     -    0s
+     0     0    0.98234    0   48          -    0.98234      -     -    0s
+     0     0    0.97979    0   48          -    0.97979      -     -    0s
+     0     0    0.97979    0   52          -    0.97979      -     -    0s
+H    0     0                      -0.0000700    0.97905      -     -    0s
+     0     0    0.97905    0   52   -0.00007    0.97905      -     -    0s
+     0     0    0.97905    0   53   -0.00007    0.97905      -     -    0s
+H    0     0                      -0.0000500    0.97905      -     -    0s
+H    0     0                      -0.0000300    0.97905      -     -    0s
+H    0     0                       0.4998600    0.97905  95.9%     -    0s
+     0     0    0.97905    0   52    0.49986    0.97905  95.9%     -    0s
+     0     0    0.95771    0   61    0.49986    0.95771  91.6%     -    0s
+     0     0    0.94884    0   57    0.49986    0.94884  89.8%     -    0s
+     0     0    0.94884    0   63    0.49986    0.94884  89.8%     -    0s
+     0     0    0.94884    0   63    0.49986    0.94884  89.8%     -    0s
+     0     0    0.94884    0   62    0.49986    0.94884  89.8%     -    0s
+H    0     0                       0.4998700    0.94884  89.8%     -    0s
+     0     2    0.94884    0   62    0.49987    0.94884  89.8%     -    0s
+
+Cutting planes:
+  Implied bound: 2
+  MIR: 18
+  Zero half: 1
+  RLT: 46
+
+Explored 59 nodes (975 simplex iterations) in 0.41 seconds (0.04 work units)
+Thread count was 24 (of 24 available processors)
+
+Solution count 5: 0.49987 0.49986 -3e-05 ... -7e-05
+
+Optimal solution found (tolerance 1.00e-04)
+Warning: max constraint violation (1.0235e+00) exceeds tolerance
+         (model may be infeasible or unbounded - try turning presolve off)
+Best objective 4.998700000000e-01, best bound 4.998850017104e-01, gap 0.0030%
+Warning: linear constraint 119 and linear constraint 120 have the same name "PathConstr3_nopl"
+Warning: quadratic constraint 0 and quadratic constraint 1 have the same name "PathConstr3_varpl"

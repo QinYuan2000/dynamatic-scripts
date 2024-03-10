@@ -6,7 +6,7 @@ import numpy as np
 import gurobipy as gp
 
 
-date = 'Marn10'                              # Date for output files in 'gurobi_out'
+date = 'Mar_10'                              # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
@@ -35,10 +35,13 @@ if __name__ == "__main__":
     for i in to_remove:
         dfg.remove_nodes_from([i])
 
+    # Clock period and maximum clock period
+    CP = 10
+    CPmax = 100
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 1
+    to_pl = 10
     pl_units = []                   # Pipelined unit
     conpl_units = []                # Constant latency pipelined units, latency already shown in dot file
     varpl_units = []                # Variable latency pipelined units, which have long delays
@@ -185,10 +188,7 @@ if __name__ == "__main__":
     CFDFC_Weight = np.ones(CFDFC_NUM)/CFDFC_NUM     # TODO: Now just assume equal weights
 
 
-    # Set input constants of the model.
-    # TODO: Each of them not completed and verified, especially the Bc 
-    CP = 3
-    CPmax = 100
+    # Find back edges
     Bc = {}                 # Whether it is the back edge, indexed by edges
     for e in dfg_edges:
         Bc[e] = ((dfg_dict[e[0]]["bbID"] > dfg_dict[e[1]]["bbID"] and 
@@ -475,17 +475,21 @@ if __name__ == "__main__":
             )
 
 
+    # File name to record model and results
+    record_key = date + '_' + benchmark + '_' + str(to_pl)+ '_' + str(CP)
+
+    # Output logfile
+    model.setParam('LogFile', 'gurobi_out/log/' + record_key + '.log')
+
     # Run solver.
     model.optimize()
 
-    # File name to record model and results
-    record_key = '_' + date + '_' + benchmark + '_' + str(to_pl)+ '_' + str(CP)
 
-    # View constraints in this file.
-    model.write("gurobi_out/model" + record_key + ".lp")
+    # View model in this file.
+    model.write("gurobi_out/model/" + record_key + ".lp")
 
     # View solutions and results in this file.
-    with open("gurobi_out/solution" + record_key + ".txt", "w") as f:
+    with open("gurobi_out/solution/" + record_key + ".txt", "w") as f:
         f.write('Optimal solution:\n')
         for v in model.getVars():
             f.write(f'{v.VarName} = {v.x}\n')

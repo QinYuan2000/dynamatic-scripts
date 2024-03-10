@@ -1,0 +1,98 @@
+
+Gurobi 11.0.0 (linux64) logging started Sun Mar 10 21:28:40 2024
+
+Set parameter LogFile to value "gurobi_out/log/Mar_10_fir_1_2.log"
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (linux64 - "CentOS Linux 7 (Core)")
+
+CPU model: Intel Xeon E3-12xx v2 (Ivy Bridge), instruction set [SSE2|AVX]
+Thread count: 24 physical cores, 24 logical processors, using up to 24 threads
+
+Optimize a model with 377 rows, 402 columns and 935 nonzeros
+Model fingerprint: 0x3f8d3c3e
+Model has 29 quadratic constraints
+Variable types: 286 continuous, 116 integer (58 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  QMatrix range    [1e+00, 1e+00]
+  QLMatrix range   [7e-01, 1e+00]
+  Objective range  [1e-05, 1e+00]
+  Bounds range     [1e+00, 1e+01]
+  RHS range        [1e+00, 4e+00]
+  QRHS range       [7e-01, 1e+00]
+Presolve removed 229 rows and 207 columns
+Presolve time: 0.01s
+Presolved: 200 rows, 235 columns, 584 nonzeros
+Presolved model has 20 quadratic constraint(s)
+Presolved model has 6 bilinear constraint(s)
+
+Solving non-convex MIQCP
+
+Variable types: 141 continuous, 94 integer (32 binary)
+
+Root relaxation: objective 9.998500e-01, 130 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.99985    0   13          -    0.99985      -     -    0s
+     0     0    0.99428    0   49          -    0.99428      -     -    0s
+     0     0    0.99387    0   49          -    0.99387      -     -    0s
+     0     0    0.96259    0   56          -    0.96259      -     -    0s
+     0     0    0.95883    0   57          -    0.95883      -     -    0s
+     0     0    0.95843    0   65          -    0.95843      -     -    0s
+     0     0    0.95417    0   67          -    0.95417      -     -    0s
+     0     0    0.95417    0   49          -    0.95417      -     -    0s
+     0     0    0.95417    0   58          -    0.95417      -     -    0s
+     0     0    0.95417    0   57          -    0.95417      -     -    0s
+H    0     0                      -0.0000500    0.95417      -     -    0s
+     0     0    0.95417    0   58   -0.00005    0.95417      -     -    0s
+     0     0    0.95417    0   62   -0.00005    0.95417      -     -    0s
+     0     0    0.95417    0   63   -0.00005    0.95417      -     -    0s
+     0     0    0.95323    0   61   -0.00005    0.95323      -     -    0s
+     0     0    0.93980    0   60   -0.00005    0.93980      -     -    0s
+     0     0    0.93980    0   62   -0.00005    0.93980      -     -    0s
+     0     0    0.93980    0   60   -0.00005    0.93980      -     -    0s
+     0     0    0.93980    0   60   -0.00005    0.93980      -     -    0s
+     0     0    0.93980    0   60   -0.00005    0.93980      -     -    0s
+     0     0    0.93980    0   60   -0.00005    0.93980      -     -    0s
+     0     0    0.93612    0   61   -0.00005    0.93612      -     -    0s
+     0     0    0.93612    0   61   -0.00005    0.93612      -     -    0s
+     0     0    0.93612    0   62   -0.00005    0.93612      -     -    0s
+H    0     0                       0.1998400    0.93612   368%     -    0s
+     0     0    0.88016    0   53    0.19984    0.88016   340%     -    0s
+     0     0    0.87838    0   53    0.19984    0.87838   340%     -    0s
+H    0     0                       0.2498600    0.87838   252%     -    0s
+     0     0    0.79222    0   58    0.24986    0.79222   217%     -    0s
+     0     0    0.78968    0   57    0.24986    0.78968   216%     -    0s
+     0     0    0.71795    0   43    0.24986    0.71795   187%     -    0s
+H    0     0                       0.3331433    0.69430   108%     -    0s
+     0     0    0.63120    0   42    0.33314    0.63120  89.5%     -    0s
+     0     0    0.62866    0   49    0.33314    0.62866  88.7%     -    0s
+     0     0    0.62865    0   49    0.33314    0.62865  88.7%     -    0s
+     0     0    0.62150    0   36    0.33314    0.62150  86.6%     -    0s
+     0     0    0.60288    0   43    0.33314    0.60288  81.0%     -    0s
+     0     0    0.50013    0   48    0.33314    0.50013  50.1%     -    0s
+     0     0    0.49998    0   49    0.33314    0.49998  50.1%     -    0s
+     0     0    0.49993    0   44    0.33314    0.49993  50.1%     -    0s
+     0     0    0.49993    0   43    0.33314    0.49993  50.1%     -    0s
+H    0     0                       0.3331533    0.49993  50.1%     -    0s
+H    0     0                       0.3331833    0.49993  50.0%     -    0s
+     0     2    0.49993    0   42    0.33318    0.49993  50.0%     -    0s
+H   57    42                       0.3331933    0.46856  40.6%   9.6    0s
+
+Cutting planes:
+  MIR: 57
+  StrongCG: 1
+  RLT: 33
+
+Explored 327 nodes (2773 simplex iterations) in 0.38 seconds (0.07 work units)
+Thread count was 24 (of 24 available processors)
+
+Solution count 7: 0.333193 0.333183 0.333153 ... -5e-05
+
+Optimal solution found (tolerance 1.00e-04)
+Warning: max constraint violation (1.1435e+00) exceeds tolerance
+         (model may be infeasible or unbounded - try turning presolve off)
+Best objective 3.331933333333e-01, best bound 3.332038314436e-01, gap 0.0032%
+Warning: linear constraint 119 and linear constraint 120 have the same name "PathConstr3_nopl"
+Warning: quadratic constraint 0 and quadratic constraint 1 have the same name "PathConstr3_varpl"
