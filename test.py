@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Create datasheet for dfg
 
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 10
+    to_pl = 1
     pl_units = []                   # Pipelined unit
     conpl_units = []                # Constant latency pipelined unit
     varpl_units = []                # Variable latency pipelined unit
@@ -44,14 +44,14 @@ if __name__ == "__main__":
         if dfg.get_latency(unit) > 0:
             dfg_dict[unit + '_plin'] = dfg.gen_dict(unit)
             dfg_dict[unit + '_plout'] = dfg.gen_dict(unit)
-            dfg_dict[unit + '_plin']['delay'] /= dfg_dict[unit + '_plin']['latency']
-            dfg_dict[unit + '_plout']['delay'] /= dfg_dict[unit + '_plout']['latency']
             conpl_units.append(unit)
             pl_units.append(unit)
 
         elif dfg.get_delay(unit) > to_pl:
             dfg_dict[unit + '_plin'] = dfg.gen_dict(unit)
             dfg_dict[unit + '_plout'] = dfg.gen_dict(unit)
+            dfg_dict[unit + '_plin']['delay'] /= 2
+            dfg_dict[unit + '_plout']['delay'] /= 2
             varpl_units.append(unit)
             pl_units.append(unit)
             
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     # Input constants of the model.
     # TODO: Each of them not completed and verified, especially the Bc 
     # "Merge" not found but kept here, 
-    CP = 4
+    CP = 3
     CPmax = 100
     Bc = {}                 # Indexed by edges
     for e in dfg_edges:
@@ -217,17 +217,23 @@ if __name__ == "__main__":
 
     # Output variables of the model.
     Var_Rc = model.addVars(
-        dfg_edges, 
+        dfg_edges_nopl, 
         vtype=gp.GRB.BINARY, 
         name='Rc',
     )
 
     Var_Nc = model.addVars(
-        dfg_edges, 
+        dfg_edges_nopl, 
         vtype=gp.GRB.INTEGER, 
         lb=0, 
         ub=gp.GRB.INFINITY, 
         name='Nc',
+    )
+
+    Var_plRc = model.addVars(
+        varpl_units, 
+        vtype=gp.GRB.BINARY, 
+        name='plRc',
     )
     
     Lu_ub = 10
@@ -245,7 +251,7 @@ if __name__ == "__main__":
     #     dfg_edges_varpl, 
     #     vtype=gp.GRB.INTEGER, 
     #     lb=0, 
-    #     ub=II_up, 
+    #     ub=II_ub, 
     #     name='II',
     # )
 
@@ -268,7 +274,7 @@ if __name__ == "__main__":
     )
 
     Var_Bubble = model.addVars(
-        dfg_edges, 
+        dfg_edges_nopl, 
         vtype=gp.GRB.CONTINUOUS, 
         lb=0, 
         ub=gp.GRB.INFINITY, 
@@ -301,19 +307,29 @@ if __name__ == "__main__":
 
 
     # Set Objective
+    # TODO: Pipelined unit buffers not included
     Lambda = 1e-5
     Objective = gp.LinExpr()
     for i in range(CFDFC_NUM):
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
-    for e in dfg_edges:
+
+    for e in dfg_edges_nopl:
         Objective.addTerms(-Lambda, Var_Nc[e])
     model.setObjective(Objective, gp.GRB.MAXIMIZE)
 
 
+
     # Path constraints.
     PathConstr1 = model.addConstrs(
-        (Var_Tout[e] >= Var_Tin[e] - CPmax * Var_Rc[e] for e in dfg_edges), 
+        (Var_Tout[e] >= Var_Tin[e] - CPmax * Var_Rc[e] for e in dfg_edges_nopl), 
         name='PathConstr1',
+    )
+
+    # Since there must be no constraints here on constant pipelined units, we skip them
+
+    PathConstr1_pl = model.addConstrs(
+        (Var_Tout[e] >= Var_Tin[e] - CPmax * Var_plRc[varpl_origin[e]] for e in dfg_edges_varpl), 
+        name='PathConstr1_pl',
     )
 
     PathConstr2 = model.addConstrs(
@@ -329,7 +345,7 @@ if __name__ == "__main__":
                     name='PathConstr3_nopl',
                 )
 
-    for pn in path_pair_conpl:                              # Currently same as nopl but the model can change later.
+    for pn in path_pair_conpl:                              # Currently same as nopl but the model can be easily modified.
         for prev in path_pair_conpl[pn]["prev"]:
             for succ in path_pair_conpl[pn]["succ"]:
                 model.addConstr(
@@ -341,7 +357,11 @@ if __name__ == "__main__":
         for prev in path_pair_varpl[pn]["prev"]:
             for succ in path_pair_varpl[pn]["succ"]:
                 model.addConstr(
-                    (Var_Tin[succ] * (Lu[varpl_origin[pn]] + 1) >= Var_Tout[prev] * (Lu[varpl_origin[pn]] + 1) + dfg_dict[pn]["delay"]), 
+                    (Var_Tin[succ] * (Lu[varpl_origin[pn]] + 1) >= 
+                    Var_Tout[prev] * (Lu[varpl_origin[pn]] + 1) + 
+                    # Delay already * 0.5 in dictionary generation
+                    dfg_dict[pn]["delay"] + dfg_dict[pn]["delay"] * Var_plRc[varpl_origin[pn]]        
+                    ),         
                     name='PathConstr3_varpl',
                 )
 
@@ -359,23 +379,11 @@ if __name__ == "__main__":
                 name='ThroughputConstr2_nopl',
             )
 
-        for e in cfdfcs_conpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Token[e] - Var_Rc[e] + 1), 
-                name='ThroughputConstr2_conpl',
-            )
-
-        # TODO: Should we change it to Lu >= Rc ?
-        for e in cfdfcs_varpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Token[e] - Var_Rc[e] + 1), 
-                name='ThroughputConstr2_varpl',
-            )
 
 
     # Buffer sizing constraints.
     SizingConstr1 = model.addConstrs(
-        (Var_Nc[e] == Var_Token[e] + Var_Bubble[e] for e in dfg_edges), 
+        (Var_Nc[e] == Var_Token[e] + Var_Bubble[e] for e in dfg_edges_nopl), 
         name='SizingConstr1',
     )
 
@@ -386,21 +394,12 @@ if __name__ == "__main__":
                 name='SizingConstr2_nopl',
             )
 
-        for e in cfdfcs_conpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Bubble[e] - Var_Rc[e] + 1), 
-                name='SizingConstr2_conpl',
-            )
+  
 
-        for e in cfdfcs_varpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Bubble[e] - Var_Rc[e] + 1), 
-                name='SizingConstr2_varpl',
-            )
-
-
-    # Pipeline constraints.
-    PipelineConstr1 = model.addConstrs((Var_Rc[e] == 1 for e in dfg_edges_conpl), name='PipelineConstr1')
+    # Pipeline specific constraints.
+    PipelineConstr1 = model.addConstrs((Var_plRc[varpl_origin[e]] <= Lu[varpl_origin[e]] for e in dfg_edges_varpl), name='PipelineConstr1')
+    
+    
     for i in range(CFDFC_NUM):
         for e in cfdfcs_conpl[i]:
             model.addConstr(
@@ -445,6 +444,3 @@ if __name__ == "__main__":
 #         print(n)
 #         print(dfg_dict[n]["type"])
 #         print(dfg_dict[n]["latency"])
-
-
-#test
