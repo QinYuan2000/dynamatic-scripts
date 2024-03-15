@@ -1,0 +1,57 @@
+
+Gurobi 11.0.0 (linux64) logging started Fri Mar 15 22:27:57 2024
+
+Set parameter LogFile to value "gurobi_out/log/Mar_16_fir_6_4.log"
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (linux64 - "CentOS Linux 7 (Core)")
+
+CPU model: Intel Xeon E3-12xx v2 (Ivy Bridge), instruction set [SSE2|AVX]
+Thread count: 24 physical cores, 24 logical processors, using up to 24 threads
+
+Optimize a model with 404 rows, 354 columns and 981 nonzeros
+Model fingerprint: 0x49c78762
+Variable types: 254 continuous, 100 integer (50 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e-05, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 4e+00]
+Found heuristic solution: objective -0.0001000
+Presolve removed 245 rows and 201 columns
+Presolve time: 0.01s
+Presolved: 159 rows, 153 columns, 471 nonzeros
+Variable types: 89 continuous, 64 integer (28 binary)
+Found heuristic solution: objective -0.0000800
+
+Root relaxation: objective 9.602344e-01, 118 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.96023    0   36   -0.00008    0.96023      -     -    0s
+H    0     0                       0.4998300    0.96023  92.1%     -    0s
+H    0     0                       0.4998800    0.96023  92.1%     -    0s
+     0     0    0.95456    0   47    0.49988    0.95456  91.0%     -    0s
+     0     0    0.94702    0   49    0.49988    0.94702  89.4%     -    0s
+     0     0    0.92063    0   48    0.49988    0.92063  84.2%     -    0s
+     0     0    0.89423    0   52    0.49988    0.89423  78.9%     -    0s
+     0     0    0.50006    0   51    0.49988    0.50006  0.04%     -    0s
+     0     0    0.50006    0   50    0.49988    0.50006  0.04%     -    0s
+     0     2    0.50006    0   50    0.49988    0.50006  0.04%     -    0s
+*   27    13               4       0.4998900    0.50006  0.03%  18.0    0s
+
+Cutting planes:
+  Gomory: 13
+  Cover: 2
+  Implied bound: 1
+  MIR: 13
+  RLT: 13
+
+Explored 52 nodes (1292 simplex iterations) in 0.16 seconds (0.03 work units)
+Thread count was 24 (of 24 available processors)
+
+Solution count 5: 0.49989 0.49988 0.49983 ... -0.0001
+No other solutions better than 0.49989
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.998900000000e-01, best bound 4.998900000000e-01, gap 0.0000%
+Warning: linear constraint 103 and linear constraint 104 have the same name "PathConstr3_nopl"

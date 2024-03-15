@@ -6,7 +6,7 @@ import numpy as np
 import gurobipy as gp
 
 
-date = 'Mar_10'                              # Date for output files in 'gurobi_out'
+date = 'Mar_16'                              # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
@@ -36,12 +36,12 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 10
+    CP = 5.3
     CPmax = 100
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 10
+    to_pl = 6
     pl_units = []                   # Pipelined unit
     conpl_units = []                # Constant latency pipelined units, latency already shown in dot file
     varpl_units = []                # Variable latency pipelined units, which have long delays

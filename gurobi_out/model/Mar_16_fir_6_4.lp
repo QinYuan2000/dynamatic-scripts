@@ -126,63 +126,63 @@ Subject To
    + Tout[cond_br3,sink1] >= 0
  PathConstr1[return1,end0]: 100 Rc[return1,end0] - Tin[return1,end0]
    + Tout[return1,end0] >= 0
- PathConstr2[start_0,fork0]: Tin[start_0,fork0] <= 3
- PathConstr2[fork0,constant1]: Tin[fork0,constant1] <= 3
- PathConstr2[fork0,control_merge2]: Tin[fork0,control_merge2] <= 3
- PathConstr2[constant1,fork1]: Tin[constant1,fork1] <= 3
- PathConstr2[fork1,extsi4]: Tin[fork1,extsi4] <= 3
- PathConstr2[fork1,extsi5]: Tin[fork1,extsi5] <= 3
- PathConstr2[extsi4,mux2]: Tin[extsi4,mux2] <= 3
- PathConstr2[extsi5,mux1]: Tin[extsi5,mux1] <= 3
- PathConstr2[mux2,fork2]: Tin[mux2,fork2] <= 3
- PathConstr2[fork2,extsi6]: Tin[fork2,extsi6] <= 3
- PathConstr2[fork2,extsi7]: Tin[fork2,extsi7] <= 3
- PathConstr2[fork2,extsi8]: Tin[fork2,extsi8] <= 3
- PathConstr2[extsi6,addi1]: Tin[extsi6,addi1] <= 3
- PathConstr2[extsi7,subi1]: Tin[extsi7,subi1] <= 3
- PathConstr2[extsi8,mc_load0_plin]: Tin[extsi8,mc_load0_plin] <= 3
- PathConstr2[mux1,addi0]: Tin[mux1,addi0] <= 3
- PathConstr2[control_merge2,fork3]: Tin[control_merge2,fork3] <= 3
- PathConstr2[control_merge2,cond_br3]: Tin[control_merge2,cond_br3] <= 3
- PathConstr2[fork3,mux2]: Tin[fork3,mux2] <= 3
- PathConstr2[fork3,mux1]: Tin[fork3,mux1] <= 3
- PathConstr2[source0,constant4]: Tin[source0,constant4] <= 3
- PathConstr2[constant4,extsi9]: Tin[constant4,extsi9] <= 3
- PathConstr2[extsi9,subi1]: Tin[extsi9,subi1] <= 3
- PathConstr2[source1,constant8]: Tin[source1,constant8] <= 3
- PathConstr2[constant8,extsi10]: Tin[constant8,extsi10] <= 3
- PathConstr2[extsi10,cmpi1]: Tin[extsi10,cmpi1] <= 3
- PathConstr2[source2,constant9]: Tin[source2,constant9] <= 3
- PathConstr2[constant9,extsi11]: Tin[constant9,extsi11] <= 3
- PathConstr2[extsi11,addi1]: Tin[extsi11,addi1] <= 3
+ PathConstr2[start_0,fork0]: Tin[start_0,fork0] <= 4
+ PathConstr2[fork0,constant1]: Tin[fork0,constant1] <= 4
+ PathConstr2[fork0,control_merge2]: Tin[fork0,control_merge2] <= 4
+ PathConstr2[constant1,fork1]: Tin[constant1,fork1] <= 4
+ PathConstr2[fork1,extsi4]: Tin[fork1,extsi4] <= 4
+ PathConstr2[fork1,extsi5]: Tin[fork1,extsi5] <= 4
+ PathConstr2[extsi4,mux2]: Tin[extsi4,mux2] <= 4
+ PathConstr2[extsi5,mux1]: Tin[extsi5,mux1] <= 4
+ PathConstr2[mux2,fork2]: Tin[mux2,fork2] <= 4
+ PathConstr2[fork2,extsi6]: Tin[fork2,extsi6] <= 4
+ PathConstr2[fork2,extsi7]: Tin[fork2,extsi7] <= 4
+ PathConstr2[fork2,extsi8]: Tin[fork2,extsi8] <= 4
+ PathConstr2[extsi6,addi1]: Tin[extsi6,addi1] <= 4
+ PathConstr2[extsi7,subi1]: Tin[extsi7,subi1] <= 4
+ PathConstr2[extsi8,mc_load0_plin]: Tin[extsi8,mc_load0_plin] <= 4
+ PathConstr2[mux1,addi0]: Tin[mux1,addi0] <= 4
+ PathConstr2[control_merge2,fork3]: Tin[control_merge2,fork3] <= 4
+ PathConstr2[control_merge2,cond_br3]: Tin[control_merge2,cond_br3] <= 4
+ PathConstr2[fork3,mux2]: Tin[fork3,mux2] <= 4
+ PathConstr2[fork3,mux1]: Tin[fork3,mux1] <= 4
+ PathConstr2[source0,constant4]: Tin[source0,constant4] <= 4
+ PathConstr2[constant4,extsi9]: Tin[constant4,extsi9] <= 4
+ PathConstr2[extsi9,subi1]: Tin[extsi9,subi1] <= 4
+ PathConstr2[source1,constant8]: Tin[source1,constant8] <= 4
+ PathConstr2[constant8,extsi10]: Tin[constant8,extsi10] <= 4
+ PathConstr2[extsi10,cmpi1]: Tin[extsi10,cmpi1] <= 4
+ PathConstr2[source2,constant9]: Tin[source2,constant9] <= 4
+ PathConstr2[constant9,extsi11]: Tin[constant9,extsi11] <= 4
+ PathConstr2[extsi11,addi1]: Tin[extsi11,addi1] <= 4
  PathConstr2[mc_load0_plout,muli0_plin]: Tin[mc_load0_plout,muli0_plin]
-   <= 3
- PathConstr2[subi1,extsi12]: Tin[subi1,extsi12] <= 3
- PathConstr2[extsi12,mc_load1_plin]: Tin[extsi12,mc_load1_plin] <= 3
+   <= 4
+ PathConstr2[subi1,extsi12]: Tin[subi1,extsi12] <= 4
+ PathConstr2[extsi12,mc_load1_plin]: Tin[extsi12,mc_load1_plin] <= 4
  PathConstr2[mc_load1_plout,muli0_plin]: Tin[mc_load1_plout,muli0_plin]
-   <= 3
- PathConstr2[muli0_plout,addi0]: Tin[muli0_plout,addi0] <= 3
- PathConstr2[addi0,cond_br2]: Tin[addi0,cond_br2] <= 3
- PathConstr2[addi1,fork4]: Tin[addi1,fork4] <= 3
- PathConstr2[fork4,trunci0]: Tin[fork4,trunci0] <= 3
- PathConstr2[fork4,cmpi1]: Tin[fork4,cmpi1] <= 3
- PathConstr2[trunci0,cond_br0]: Tin[trunci0,cond_br0] <= 3
- PathConstr2[cmpi1,fork5]: Tin[cmpi1,fork5] <= 3
- PathConstr2[fork5,cond_br0]: Tin[fork5,cond_br0] <= 3
- PathConstr2[fork5,cond_br2]: Tin[fork5,cond_br2] <= 3
- PathConstr2[fork5,cond_br3]: Tin[fork5,cond_br3] <= 3
- PathConstr2[cond_br0,mux2]: Tin[cond_br0,mux2] <= 3
- PathConstr2[cond_br0,sink0]: Tin[cond_br0,sink0] <= 3
- PathConstr2[cond_br2,mux1]: Tin[cond_br2,mux1] <= 3
- PathConstr2[cond_br2,return1]: Tin[cond_br2,return1] <= 3
- PathConstr2[cond_br3,control_merge2]: Tin[cond_br3,control_merge2] <= 3
- PathConstr2[cond_br3,sink1]: Tin[cond_br3,sink1] <= 3
- PathConstr2[return1,end0]: Tin[return1,end0] <= 3
+   <= 4
+ PathConstr2[muli0_plout,addi0]: Tin[muli0_plout,addi0] <= 4
+ PathConstr2[addi0,cond_br2]: Tin[addi0,cond_br2] <= 4
+ PathConstr2[addi1,fork4]: Tin[addi1,fork4] <= 4
+ PathConstr2[fork4,trunci0]: Tin[fork4,trunci0] <= 4
+ PathConstr2[fork4,cmpi1]: Tin[fork4,cmpi1] <= 4
+ PathConstr2[trunci0,cond_br0]: Tin[trunci0,cond_br0] <= 4
+ PathConstr2[cmpi1,fork5]: Tin[cmpi1,fork5] <= 4
+ PathConstr2[fork5,cond_br0]: Tin[fork5,cond_br0] <= 4
+ PathConstr2[fork5,cond_br2]: Tin[fork5,cond_br2] <= 4
+ PathConstr2[fork5,cond_br3]: Tin[fork5,cond_br3] <= 4
+ PathConstr2[cond_br0,mux2]: Tin[cond_br0,mux2] <= 4
+ PathConstr2[cond_br0,sink0]: Tin[cond_br0,sink0] <= 4
+ PathConstr2[cond_br2,mux1]: Tin[cond_br2,mux1] <= 4
+ PathConstr2[cond_br2,return1]: Tin[cond_br2,return1] <= 4
+ PathConstr2[cond_br3,control_merge2]: Tin[cond_br3,control_merge2] <= 4
+ PathConstr2[cond_br3,sink1]: Tin[cond_br3,sink1] <= 4
+ PathConstr2[return1,end0]: Tin[return1,end0] <= 4
  PathConstr2[mc_load0_plin,mc_load0_plout]:
-   Tin[mc_load0_plin,mc_load0_plout] <= 3
+   Tin[mc_load0_plin,mc_load0_plout] <= 4
  PathConstr2[mc_load1_plin,mc_load1_plout]:
-   Tin[mc_load1_plin,mc_load1_plout] <= 3
- PathConstr2[muli0_plin,muli0_plout]: Tin[muli0_plin,muli0_plout] <= 3
+   Tin[mc_load1_plin,mc_load1_plout] <= 4
+ PathConstr2[muli0_plin,muli0_plout]: Tin[muli0_plin,muli0_plout] <= 4
  PathConstr3_nopl: Tin[fork0,constant1] - Tout[start_0,fork0] >= 0
  PathConstr3_nopl: Tin[fork0,control_merge2] - Tout[start_0,fork0] >= 0
  PathConstr3_nopl: Tin[constant1,fork1] - Tout[fork0,constant1] >= 0
@@ -635,6 +635,81 @@ Subject To
  PipelineConstr3_conpl: Theta_1[mc_load1_plin,mc_load1_plout] <= 1
  PipelineConstr2_conpl: 4 Theta[0] - Theta_1[muli0_plin,muli0_plout] <= 0
  PipelineConstr3_conpl: Theta_1[muli0_plin,muli0_plout] <= 4
+ ExtraConstr[start_0,fork0]: - Rc[start_0,fork0] + Nc[start_0,fork0] >= 0
+ ExtraConstr[fork0,constant1]: - Rc[fork0,constant1] + Nc[fork0,constant1]
+   >= 0
+ ExtraConstr[fork0,control_merge2]: - Rc[fork0,control_merge2]
+   + Nc[fork0,control_merge2] >= 0
+ ExtraConstr[constant1,fork1]: - Rc[constant1,fork1] + Nc[constant1,fork1]
+   >= 0
+ ExtraConstr[fork1,extsi4]: - Rc[fork1,extsi4] + Nc[fork1,extsi4] >= 0
+ ExtraConstr[fork1,extsi5]: - Rc[fork1,extsi5] + Nc[fork1,extsi5] >= 0
+ ExtraConstr[extsi4,mux2]: - Rc[extsi4,mux2] + Nc[extsi4,mux2] >= 0
+ ExtraConstr[extsi5,mux1]: - Rc[extsi5,mux1] + Nc[extsi5,mux1] >= 0
+ ExtraConstr[mux2,fork2]: - Rc[mux2,fork2] + Nc[mux2,fork2] >= 0
+ ExtraConstr[fork2,extsi6]: - Rc[fork2,extsi6] + Nc[fork2,extsi6] >= 0
+ ExtraConstr[fork2,extsi7]: - Rc[fork2,extsi7] + Nc[fork2,extsi7] >= 0
+ ExtraConstr[fork2,extsi8]: - Rc[fork2,extsi8] + Nc[fork2,extsi8] >= 0
+ ExtraConstr[extsi6,addi1]: - Rc[extsi6,addi1] + Nc[extsi6,addi1] >= 0
+ ExtraConstr[extsi7,subi1]: - Rc[extsi7,subi1] + Nc[extsi7,subi1] >= 0
+ ExtraConstr[extsi8,mc_load0_plin]: - Rc[extsi8,mc_load0_plin]
+   + Nc[extsi8,mc_load0_plin] >= 0
+ ExtraConstr[mux1,addi0]: - Rc[mux1,addi0] + Nc[mux1,addi0] >= 0
+ ExtraConstr[control_merge2,fork3]: - Rc[control_merge2,fork3]
+   + Nc[control_merge2,fork3] >= 0
+ ExtraConstr[control_merge2,cond_br3]: - Rc[control_merge2,cond_br3]
+   + Nc[control_merge2,cond_br3] >= 0
+ ExtraConstr[fork3,mux2]: - Rc[fork3,mux2] + Nc[fork3,mux2] >= 0
+ ExtraConstr[fork3,mux1]: - Rc[fork3,mux1] + Nc[fork3,mux1] >= 0
+ ExtraConstr[source0,constant4]: - Rc[source0,constant4]
+   + Nc[source0,constant4] >= 0
+ ExtraConstr[constant4,extsi9]: - Rc[constant4,extsi9]
+   + Nc[constant4,extsi9] >= 0
+ ExtraConstr[extsi9,subi1]: - Rc[extsi9,subi1] + Nc[extsi9,subi1] >= 0
+ ExtraConstr[source1,constant8]: - Rc[source1,constant8]
+   + Nc[source1,constant8] >= 0
+ ExtraConstr[constant8,extsi10]: - Rc[constant8,extsi10]
+   + Nc[constant8,extsi10] >= 0
+ ExtraConstr[extsi10,cmpi1]: - Rc[extsi10,cmpi1] + Nc[extsi10,cmpi1] >= 0
+ ExtraConstr[source2,constant9]: - Rc[source2,constant9]
+   + Nc[source2,constant9] >= 0
+ ExtraConstr[constant9,extsi11]: - Rc[constant9,extsi11]
+   + Nc[constant9,extsi11] >= 0
+ ExtraConstr[extsi11,addi1]: - Rc[extsi11,addi1] + Nc[extsi11,addi1] >= 0
+ ExtraConstr[mc_load0_plout,muli0_plin]: - Rc[mc_load0_plout,muli0_plin]
+   + Nc[mc_load0_plout,muli0_plin] >= 0
+ ExtraConstr[subi1,extsi12]: - Rc[subi1,extsi12] + Nc[subi1,extsi12] >= 0
+ ExtraConstr[extsi12,mc_load1_plin]: - Rc[extsi12,mc_load1_plin]
+   + Nc[extsi12,mc_load1_plin] >= 0
+ ExtraConstr[mc_load1_plout,muli0_plin]: - Rc[mc_load1_plout,muli0_plin]
+   + Nc[mc_load1_plout,muli0_plin] >= 0
+ ExtraConstr[muli0_plout,addi0]: - Rc[muli0_plout,addi0]
+   + Nc[muli0_plout,addi0] >= 0
+ ExtraConstr[addi0,cond_br2]: - Rc[addi0,cond_br2] + Nc[addi0,cond_br2]
+   >= 0
+ ExtraConstr[addi1,fork4]: - Rc[addi1,fork4] + Nc[addi1,fork4] >= 0
+ ExtraConstr[fork4,trunci0]: - Rc[fork4,trunci0] + Nc[fork4,trunci0] >= 0
+ ExtraConstr[fork4,cmpi1]: - Rc[fork4,cmpi1] + Nc[fork4,cmpi1] >= 0
+ ExtraConstr[trunci0,cond_br0]: - Rc[trunci0,cond_br0]
+   + Nc[trunci0,cond_br0] >= 0
+ ExtraConstr[cmpi1,fork5]: - Rc[cmpi1,fork5] + Nc[cmpi1,fork5] >= 0
+ ExtraConstr[fork5,cond_br0]: - Rc[fork5,cond_br0] + Nc[fork5,cond_br0]
+   >= 0
+ ExtraConstr[fork5,cond_br2]: - Rc[fork5,cond_br2] + Nc[fork5,cond_br2]
+   >= 0
+ ExtraConstr[fork5,cond_br3]: - Rc[fork5,cond_br3] + Nc[fork5,cond_br3]
+   >= 0
+ ExtraConstr[cond_br0,mux2]: - Rc[cond_br0,mux2] + Nc[cond_br0,mux2] >= 0
+ ExtraConstr[cond_br0,sink0]: - Rc[cond_br0,sink0] + Nc[cond_br0,sink0]
+   >= 0
+ ExtraConstr[cond_br2,mux1]: - Rc[cond_br2,mux1] + Nc[cond_br2,mux1] >= 0
+ ExtraConstr[cond_br2,return1]: - Rc[cond_br2,return1]
+   + Nc[cond_br2,return1] >= 0
+ ExtraConstr[cond_br3,control_merge2]: - Rc[cond_br3,control_merge2]
+   + Nc[cond_br3,control_merge2] >= 0
+ ExtraConstr[cond_br3,sink1]: - Rc[cond_br3,sink1] + Nc[cond_br3,sink1]
+   >= 0
+ ExtraConstr[return1,end0]: - Rc[return1,end0] + Nc[return1,end0] >= 0
 Bounds
  Theta[0] <= 1
 Binaries
