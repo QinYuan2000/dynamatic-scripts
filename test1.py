@@ -87,12 +87,12 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 4
+    CP = 6
     CPmax = 100
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 6
+    to_pl = 7
     pl_units = []  # Pipelined unit
     conpl_units = (
         []
