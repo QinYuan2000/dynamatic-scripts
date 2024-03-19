@@ -1,6 +1,6 @@
 set-dynamatic-path  ./dynamatic
 
-set-clock-period 5.2
+set-clock-period 6
 
 set-src             ./dynamatic/integration-test/fir/fir.c
 # set-src             ./dynamatic/integration-test/iir/iir.c

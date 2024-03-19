@@ -7,7 +7,7 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Mar_16"  # Date for output files in 'gurobi_out'
+date = "Mar_19"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 6
+    CP = 5.3
     CPmax = 100
 
     # Create datasheet for dfg
