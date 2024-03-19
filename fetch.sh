@@ -13,7 +13,12 @@ DYNAMATIC_ROOT=$SCRIPT_CWD/dynamatic
 
 mkdir -p $DYNAMATIC_ROOT
 
-git clone git@github.com:epfl-lap/dynamatic.git $DYNAMATIC_ROOT
+# git clone git@github.com:EPFL-LAP/dynamatic.git $DYNAMATIC_ROOT
+# track my remote
+
+git clone git@github.com:Jiahui17/dynamatic-mlir.git $DYNAMATIC_ROOT
 cd $DYNAMATIC_ROOT
+
+git checkout frontend-compile-options
 
 bash $SCRIPT_CWD/mybuild.sh && echo "successfully built dynamatic"
