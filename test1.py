@@ -120,6 +120,9 @@ if __name__ == "__main__":
 
         else:
             dfg_dict[unit] = dfg.gen_dict(unit)
+            # To avoid combinational loop.
+            if dfg_dict[unit]["delay"] == 0:
+                dfg_dict[unit]["delay"] += 0.0001
         # print("the latency of ", unit, "is", dfg.get_latency(unit))
         # print("the delay of ", unit, "is", dfg.get_delay(unit))
 
@@ -551,9 +554,11 @@ if __name__ == "__main__":
     )
 
 
-
-
-
+    # model.setParam(gp.GRB.Param.PoolSolutions, 2)
+    # model.setParam(gp.GRB.Param.PoolGap, 0)
+    # model.setParam(gp.GRB.Param.PoolSearchMode, 2)  
+    # model.setParam('OptimalityTol', 1e-9)
+    model.setParam('MIPGap', 1e-5)
 
 
     # File name to record model and results
@@ -644,3 +649,4 @@ if __name__ == "__main__":
     # run simulation
 
     # =============================================================================================================#
+
