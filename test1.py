@@ -7,7 +7,7 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Mar_19"           # Date for output files in 'gurobi_out'
+date = "Mar_25"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
@@ -87,12 +87,12 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 5.3
+    CP = 8
     CPmax = 100
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 7
+    to_pl = 100
     pl_units = []  # Pipelined unit
     conpl_units = (
         []
@@ -351,7 +351,7 @@ if __name__ == "__main__":
     Var_Throughput = model.addVars(  # Throughput of each cfdfc
         CFDFC_NUM,
         vtype=gp.GRB.CONTINUOUS,
-        lb=0,
+        lb=0.001,
         ub=1,
         name="Theta",
     )
@@ -588,18 +588,22 @@ if __name__ == "__main__":
         pred = pred.removesuffix("_plout")
         succ = succ.removesuffix("_plin")
         succ = succ.removesuffix("_plout")
-        # TODO: be aware that here dfg[pred][succ][0]["from"] gets one of the
-        # parallel edges! Please handle this
         slots = int(Var_Nc[e].x)
-        outid = int(dfg[pred][succ][0]["from"].replace("out", "")) - 1
         type_ = "oehb" if Var_Rc[e].x == 1 else "tehb"
-        # a HACK for inverted output channels of the mc_load port (and perhaps
-        # also lsq_load ports) in MILR convention vs in DOT convention.
-        if outid == 0 and "mc_load" in pred:
-            outid = 1
-        if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-            cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
-            cmds.append(cmd)
+        # TODO: Function not verified
+        for i in dfg[pred][succ]:
+            outid = int(dfg[pred][succ][i]["from"].replace("out", "")) - 1
+            # a HACK for inverted output channels of the mc_load port (and perhaps
+            # also lsq_load ports) in MILR convention vs in DOT convention.
+            if outid == 0 and "mc_load" in pred:
+                outid = 1
+            if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
+                # cmd2 = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
+                cmd1 = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                cmds.append(cmd1)
+                # cmds.append(cmd2)
+                # cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
+                # cmds.append(cmd)
 
     # insert buffers into the mlir file that has no buffer inside
     print("\n".join(cmds))

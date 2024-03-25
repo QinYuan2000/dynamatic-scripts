@@ -1,0 +1,45 @@
+
+Gurobi 11.0.0 (linux64) logging started Mon Mar 25 16:08:54 2024
+
+Set parameter LogFile to value "gurobi_out/log/Mar_25_fir_100_8.log"
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (linux64 - "CentOS Linux 7 (Core)")
+
+CPU model: Intel Xeon E3-12xx v2 (Ivy Bridge), instruction set [SSE2|AVX]
+Thread count: 24 physical cores, 24 logical processors, using up to 24 threads
+
+Optimize a model with 404 rows, 354 columns and 981 nonzeros
+Model fingerprint: 0xe055d6d5
+Variable types: 254 continuous, 100 integer (50 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e-05, 1e+00]
+  Bounds range     [1e-03, 1e+00]
+  RHS range        [1e-04, 8e+00]
+Presolve removed 209 rows and 173 columns
+Presolve time: 0.01s
+Presolved: 195 rows, 181 columns, 564 nonzeros
+Variable types: 103 continuous, 78 integer (38 binary)
+
+Root relaxation: objective 9.998388e-01, 115 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.99984    0    8          -    0.99984      -     -    0s
+H    0     0                       0.9998200    0.99984  0.00%     -    0s
+
+Cutting planes:
+  Learned: 1
+  Gomory: 4
+  Implied bound: 1
+  MIR: 6
+  RLT: 1
+
+Explored 1 nodes (140 simplex iterations) in 0.03 seconds (0.00 work units)
+Thread count was 24 (of 24 available processors)
+
+Solution count 1: 0.99982 
+
+Optimal solution found (tolerance 1.00e-05)
+Best objective 9.998200000000e-01, best bound 9.998287915000e-01, gap 0.0009%
+Warning: linear constraint 103 and linear constraint 104 have the same name "PathConstr3_nopl"
