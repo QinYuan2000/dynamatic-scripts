@@ -8,7 +8,7 @@ import re
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "fir"  # Choose circuit benchmark.
+    benchmark = "image_resize"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -74,6 +74,10 @@ if __name__ == "__main__":
     )
 
     dfg_nodes = list(dfg.nodes())
+    # In case some benchmarks have the start node named 'c'
+    dfg_nodes = [node for node in dfg_nodes if len(node) > 1]
+    # In case extsi23 is matched as extsi2, or similar things
+    dfg_nodes.sort(key=len, reverse=True)
     file_path = f'dynamatic/integration-test/{benchmark}/out/comp/buffer-placement/{benchmark}/placement.log'
     pred_succ_pairs = {}
     duplicated_info_count = {}

@@ -12,7 +12,7 @@ date = "Mar_25"           # Date for output files in 'gurobi_out'
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "fir"  # Choose circuit benchmark.
+    benchmark = "gemver"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -239,10 +239,31 @@ if __name__ == "__main__":
     #         )
 
     # CFDFC numbers and weights
+    # TODO: Sequence not match!
     CFDFC_NUM = len(cfdfcs)
-    CFDFC_Weight = (
-        np.ones(CFDFC_NUM) / CFDFC_NUM
-    )  # TODO: Now just assume equal weights
+    cfdfc_file = f'dynamatic/integration-test/{benchmark}/out/comp/buffer-placement/{benchmark}/placement.log'
+    execution_counts = []
+    CFDFC_Weight = []
+
+    try:
+        with open(cfdfc_file, 'r') as file:
+            lines = file.readlines()
+        
+        for i in range(len(lines) - 1):
+            if lines[i].startswith("CFDFC #"):
+                next_line = lines[i + 1]
+                if next_line.startswith("  - Number of executions:"):
+                    num_executions = int(next_line.split(":")[1].strip())
+                    execution_counts.append(num_executions)
+        
+        total_executions = sum(execution_counts)
+        
+        if total_executions > 0:
+            CFDFC_Weight = [count / total_executions for count in execution_counts]
+
+    except FileNotFoundError:
+        print(f"The file {cfdfc_file} does not exist.")
+
 
     # Find back edges
     Bc = {}  # Whether it is the back edge, indexed by edges
