@@ -7,12 +7,12 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Mar_25"           # Date for output files in 'gurobi_out'
+date = "Jun_28"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "histogram"  # Choose circuit benchmark.
+    benchmark = "image_resize"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 8
+    CP = 5.5
     CPmax = 100
 
     # Create datasheet for dfg
@@ -422,11 +422,13 @@ if __name__ == "__main__":
     for i in range(CFDFC_NUM):  # Weighted sum of throughputs of cfdfcs
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
 
-    for e in dfg_edges_nopl:  # Not pipelined buffer size
-        Objective.addTerms(-Lambda, Var_Nc[e])
+    for num in range(signal_num):
+        for e in dfg_edges_nopl:  # Not pipelined buffer size
+            Objective.addTerms(-Lambda, Var_Nc[e[0],e[1],num])
 
-    for e in multi_edges:  # Multiple edges between the same unit pair
-        Objective.addTerms(-Lambda * multi_edges[e], Var_Nc[e])
+    for num in range(signal_num):
+        for e in multi_edges:  # Multiple edges between the same unit pair
+            Objective.addTerms(-Lambda * multi_edges[e], Var_Nc[e[0],e[1],num])
 
     # for (
     #     u
@@ -439,7 +441,7 @@ if __name__ == "__main__":
 
     # A buffer reset comb delay otherwise accumulate.
     PathConstr1 = model.addConstrs(
-        (Var_Tout[e,num] >= Var_Tin[e,num] - CPmax * Var_Rc[e,num] for num in range(signal_num) for e in dfg_edges_nopl),
+        (Var_Tout[e[0],e[1],num] >= Var_Tin[e[0],e[1],num] - CPmax * Var_Rc[e[0],e[1],num] for num in range(signal_num) for e in dfg_edges_nopl),
         name="PathConstr1",
     )
 
@@ -447,7 +449,7 @@ if __name__ == "__main__":
 
     # Clock period constraints.
     PathConstr2 = model.addConstrs(
-        (Var_Tin[e,num] <= CP for num in range(signal_num) for e in dfg_edges),
+        (Var_Tin[e[0],e[1],num] <= CP for num in range(signal_num) for e in dfg_edges),
         name="PathConstr2",
     )
 
@@ -458,7 +460,7 @@ if __name__ == "__main__":
         for prev in path_pair_nopl[pn]["prev"]:
             for succ in path_pair_nopl[pn]["succ"]:
                 model.addConstrs(
-                    (Var_Tin[succ,num] >= Var_Tout[prev,num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
+                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
                     name="PathConstr3_nopl_" + str(num2),
                 )
                 num2 += 1
@@ -468,7 +470,7 @@ if __name__ == "__main__":
         for prev in path_pair_conpl[pn]["prev"]:
             for succ in path_pair_conpl[pn]["succ"]:
                 model.addConstrs(
-                    (Var_Tin[succ,num] >= Var_Tout[prev,num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
+                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
                     name="PathConstr3_conpl_" + str(num2),
                 )
                 num2 += 1
@@ -484,23 +486,12 @@ if __name__ == "__main__":
     model.addConstrs(
         (
             gp.quicksum(
-                buffercut[i, num] * Var_Nc[e, i] for i in range(buffertype_num)
-            ) >= Var_Rc[e, num]
+                buffercut[i, num] * Var_Nc[e[0],e[1],i] for i in range(buffertype_num)
+            ) >= Var_Rc[e[0],e[1],num]
             for num in range(signal_num) 
             for e in dfg_edges_nopl
         ),
         name="buffercut_nopl",
-    )
-
-    model.addConstrs(
-        (
-            gp.quicksum(
-                buffercut[i, num] * Var_Nc[e, i] for i in range(buffertype_num)
-            ) >= Var_Rc[e, num]
-            for num in range(signal_num) 
-            for e in dfg_edges_conpl
-        ),
-        name="buffercut_conpl",
     )
 
 
@@ -528,8 +519,8 @@ if __name__ == "__main__":
     model.addConstrs(
         (
             Var_Token[num][e] >= 
-            Var_Nc[e, 0] * Var_Throughput[num] + 
-            Var_Nc[e, 3] * Var_Throughput[num]
+            Var_Nc[e[0],e[1],0] * Var_Throughput[num] + 
+            Var_Nc[e[0],e[1],3] * Var_Throughput[num]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
@@ -572,7 +563,7 @@ if __name__ == "__main__":
 
     model.addConstrs(
         (
-            Ceiling[num][e] < Var_Nc[e, 3] * Var_Throughput[num] + 1
+            Ceiling[num][e] <= Var_Nc[e[0],e[1],3] * Var_Throughput[num] + 1 - 1e-5
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
@@ -591,8 +582,8 @@ if __name__ == "__main__":
     model.addConstrs(
         (
             Var_Token[num][e] <= 
-            Var_Nc[e, 0] + Var_Nc[e, 1] * (1 - Var_Throughput[num]) +
-            Var_Nc[e, 2] + Ceiling[num][e]
+            Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] * (1 - Var_Throughput[num]) +
+            Var_Nc[e[0],e[1],2] + Ceiling[num][e]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
@@ -612,7 +603,7 @@ if __name__ == "__main__":
     # model.setParam(gp.GRB.Param.PoolGap, 0)
     # model.setParam(gp.GRB.Param.PoolSearchMode, 2)  
     # model.setParam('OptimalityTol', 1e-9)
-    model.setParam('MIPGap', 1e-5)
+    # model.setParam('MIPGap', 1e-5)
 
 
     # File name to record model and results
