@@ -77,7 +77,7 @@ if __name__ == "__main__":
         )
     )
 
-    # Remove mem_controllers node and edges from dfg graph
+    # Remove mem_controllers and LSQ node and edges from dfg graph
     to_remove = []
     for n in dfg.nodes():
         if "mem_controller" in n or ("LSQ" in n and "load" not in n and "store" not in n):
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 100
+    to_pl = 100000
     pl_units = []  # Pipelined unit
     conpl_units = (
         []
@@ -324,18 +324,20 @@ if __name__ == "__main__":
                     Lu_con[e] = dfg_dict[u]["latency"]
                     break
 
+    signal_num = 3  # Index sequence: DATA, VALID, READY
+    buffertype_num = 4 # Index sequence: OB TB FT PL
     # Initialize model
     model = gp.Model()
 
     # Output variables of the model.
     Var_Rc = model.addVars(  # Insert non-tran buffer or not.
-        dfg_edges_nopl,  # Exclude channels inside the pipelined units
+        dfg_edges_nopl, signal_num,  # Exclude channels inside the pipelined units
         vtype=gp.GRB.BINARY,
         name="Rc",
     )
 
     Var_Nc = model.addVars(  # The buffer size. Rc = 0, Nc > 0 means transparent buffer.
-        dfg_edges_nopl,  # Exclude channels inside the pipelined units
+        dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
         ub=gp.GRB.INFINITY,
@@ -343,19 +345,19 @@ if __name__ == "__main__":
     )
 
     Var_plRc = model.addVars(  # Indicate whether the unit is pipelined
-        varpl_units,
+        varpl_units, signal_num,
         vtype=gp.GRB.BINARY,
         name="plRc",
     )
 
-    Lu_ub = 10  # Latency upbound.
-    Lu = model.addVars(  # Pipelined unit latency. Indexed by pipelined units.
-        varpl_units,
-        vtype=gp.GRB.INTEGER,
-        lb=0,
-        ub=Lu_ub,
-        name="Lu",
-    )
+    # Lu_ub = 10  # Latency upbound.
+    # Lu = model.addVars(  # Pipelined unit latency. Indexed by pipelined units.
+    #     varpl_units,
+    #     vtype=gp.GRB.INTEGER,
+    #     lb=0,
+    #     ub=Lu_ub,
+    #     name="Lu",
+    # )
 
     # Initiation interval.
     # TODO: Not used until I understand sometimes it is good to be larger when we could have minimized it.
@@ -378,7 +380,7 @@ if __name__ == "__main__":
     )
 
     Var_Token = model.addVars(  # Average occupancy of channel c.
-        dfg_edges,
+        dfg_edges, CFDFC_NUM,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
         ub=gp.GRB.INFINITY,
@@ -386,7 +388,7 @@ if __name__ == "__main__":
     )
 
     Var_Bubble = model.addVars(  # Average emptiness of channel c.
-        dfg_edges_nopl,
+        dfg_edges_nopl, CFDFC_NUM,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
         ub=gp.GRB.INFINITY,
