@@ -354,12 +354,6 @@ if __name__ == "__main__":
         name="Nc",
     )
 
-    Var_plRc = model.addVars(  # Indicate whether the unit is pipelined
-        varpl_units, signal_num,
-        vtype=gp.GRB.BINARY,
-        name="plRc",
-    )
-
     # Internal variables of the model.
     Var_Throughput = model.addVars(  # Throughput of each cfdfc
         CFDFC_NUM,
@@ -451,13 +445,6 @@ if __name__ == "__main__":
 
     # Since there must be no constraints here on constant pipelined units, we skip them
 
-    PathConstr1_pl = model.addConstrs(
-        (
-            Var_Tout[e,num] >= Var_Tin[e,num] - CPmax * Var_plRc[varpl_origin[e],num]
-            for num in range(signal_num) for e in dfg_edges_varpl
-        ),
-        name="PathConstr1_pl",
-    )
     # Clock period constraints.
     PathConstr2 = model.addConstrs(
         (Var_Tin[e,num] <= CP for num in range(signal_num) for e in dfg_edges),
@@ -552,8 +539,7 @@ if __name__ == "__main__":
     model.addConstrs(
         (
             Var_Tokenpl[num][e] >= 
-            Var_Nc[e, 0] * Var_Throughput[num] + 
-            Var_Nc[e, 3] * Var_Throughput[num]
+            Lu_con[e] * Var_Throughput[num]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_conpl[num]
         ),
@@ -563,8 +549,9 @@ if __name__ == "__main__":
     # Upperbound
     # Pipeline's ceiling function need auxiliary variables.
     # Minimizing ceiling requires integer variables strictly less than the real values plus one
+    # Ceilingpl is used when we model pipelined units as a pipeline buffer in the internal channel
     Ceiling = {}
-    Ceilingpl = {}
+    # Ceilingpl = {}
     for num in range(CFDFC_NUM):
         Ceiling[num] = model.addVars( 
             cfdfcs_nopl[num],
@@ -574,14 +561,14 @@ if __name__ == "__main__":
             name="Ceiling_" + str(num),
         )
 
-    for num in range(CFDFC_NUM):
-        Ceilingpl[num] = model.addVars( 
-            cfdfcs_conpl[num],
-            vtype=gp.GRB.INTEGER,
-            lb=0,
-            ub=gp.GRB.INFINITY,
-            name="Ceilingpl_" + str(num),
-        )
+    # for num in range(CFDFC_NUM):
+    #     Ceilingpl[num] = model.addVars( 
+    #         cfdfcs_conpl[num],
+    #         vtype=gp.GRB.INTEGER,
+    #         lb=0,
+    #         ub=gp.GRB.INFINITY,
+    #         name="Ceilingpl_" + str(num),
+    #     )
 
     model.addConstrs(
         (
@@ -592,14 +579,14 @@ if __name__ == "__main__":
         name="CeilingConstr",
     )
 
-    model.addConstrs(
-        (
-            Ceilingpl[num][e] < Var_Nc[e, 3] * Var_Throughput[num] + 1
-            for num in range(CFDFC_NUM)
-            for e in cfdfcs_conpl[num]
-        ),
-        name="CeilingConstrpl",
-    )
+    # model.addConstrs(
+    #     (
+    #         Ceilingpl[num][e] < Lu_con[e] * Var_Throughput[num] + 1
+    #         for num in range(CFDFC_NUM)
+    #         for e in cfdfcs_conpl[num]
+    #     ),
+    #     name="CeilingConstrpl",
+    # )
 
     model.addConstrs(
         (
@@ -614,60 +601,12 @@ if __name__ == "__main__":
 
     model.addConstrs(
         (
-            Var_Tokenpl[num][e] <= 
-            Var_Nc[e, 0] + Var_Nc[e, 1] * (1 - Var_Throughput[num]) +
-            Var_Nc[e, 2] + Ceilingpl[num][e]
+            Var_Tokenpl[num][e] <= Lu_con[e]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_conpl[num]
         ),
         name="upperbound_conpl",
     )
-
-
-    # Pipeline specific constraints.
-
-    # If latency > 0, then it is pipelined (in optimal situation plRc = 1 if L = 1), and vice versa.
-    PipelineConstr1 = model.addConstrs(
-        (
-            Var_plRc[varpl_origin[e]] <= Lu[varpl_origin[e]]
-            for e in dfg_edges_varpl
-        ),
-        name="PipelineConstr1",
-    )
-
-    # Throughput constraints inside pipelined units. Including latency, and initiation interval (not applied now).
-    for i in range(CFDFC_NUM):
-        for e in cfdfcs_conpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] * Lu_con[e] <= Var_Token[e]),
-                name="PipelineConstr2_conpl",
-            )
-            model.addConstr(
-                (Var_Token[e] <= Lu_con[e]),
-                name="PipelineConstr3_conpl",
-            )
-
-        for e in cfdfcs_varpl[i]:
-            model.addConstr(
-                (Var_Throughput[i] * Lu[varpl_origin[e]] <= Var_Token[e]),
-                name="PipelineConstr2_varpl",
-            )
-            model.addConstr(
-                (Var_Token[e] <= Lu[varpl_origin[e]]),
-                name="PipelineConstr3_varpl",
-            )
-
-
-
-
-
-
-    # TODO: This is just temporary.
-    ExtraConstr = model.addConstrs(
-        (Var_Nc[e] >= Var_Rc[e] for e in dfg_edges_nopl),
-        name="ExtraConstr",
-    )
-
 
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
