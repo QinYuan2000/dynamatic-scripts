@@ -519,37 +519,110 @@ if __name__ == "__main__":
 
     # The following are Throughput constraints.
     # Retiming constraints.
-    ThroughputConstr1 = model.addConstrs(
+    model.addConstrs(
         (
-            Var_Token[e] == Bc[e] + Var_Retiming[e[1]] - Var_Retiming[e[0]]
-            for e in dfg_edges
+            Var_Token[num][e] == Bc[e] + Var_Retiming[num][e[1]] - Var_Retiming[num][e[0]]
+            for num in range(CFDFC_NUM) for e in cfdfcs_nopl[num]
+        ),
+        name="ThroughputConstr1",
+    )
+
+    model.addConstrs(
+        (
+            Var_Tokenpl[num][e] == Bc[e] + Var_Retiming[num][e[1]] - Var_Retiming[num][e[0]]
+            for num in range(CFDFC_NUM) for e in cfdfcs_conpl[num]
         ),
         name="ThroughputConstr1",
     )
 
     # CFDFC throughputs confined by channel throughputs in each cfdfc.
-    # Split pipelined and not pipelined units so model can be easily modified.
-    for i in range(CFDFC_NUM):
-        for e in cfdfcs_nopl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Token[e] - Var_Rc[e] + 1),
-                name="ThroughputConstr2_nopl",
-            )
-
-    # Buffer sizing constraints.
-
-    # Buffer size constraints.
-    SizingConstr1 = model.addConstrs(
-        (Var_Nc[e] == Var_Token[e] + Var_Bubble[e] for e in dfg_edges_nopl),
-        name="SizingConstr1",
+    # Buffer latency upperbound & lowerbound for each channel.
+    # Lower bound
+    model.addConstrs(
+        (
+            Var_Token[num][e] >= 
+            Var_Nc[e, 0] * Var_Throughput[num] + 
+            Var_Nc[e, 3] * Var_Throughput[num]
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_nopl[num]
+        ),
+        name="lowerbound_nopl",
     )
-    # Bubbles needed to avoid deadlocks.
-    for i in range(CFDFC_NUM):
-        for e in cfdfcs_nopl[i]:
-            model.addConstr(
-                (Var_Throughput[i] <= Var_Bubble[e] - Var_Rc[e] + 1),
-                name="SizingConstr2_nopl",
-            )
+
+    model.addConstrs(
+        (
+            Var_Tokenpl[num][e] >= 
+            Var_Nc[e, 0] * Var_Throughput[num] + 
+            Var_Nc[e, 3] * Var_Throughput[num]
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_conpl[num]
+        ),
+        name="lowerbound_conpl",
+    )
+
+    # Upperbound
+    # Pipeline's ceiling function need auxiliary variables.
+    # Minimizing ceiling requires integer variables strictly less than the real values plus one
+    Ceiling = {}
+    Ceilingpl = {}
+    for num in range(CFDFC_NUM):
+        Ceiling[num] = model.addVars( 
+            cfdfcs_nopl[num],
+            vtype=gp.GRB.INTEGER,
+            lb=0,
+            ub=gp.GRB.INFINITY,
+            name="Ceiling_" + str(num),
+        )
+
+    for num in range(CFDFC_NUM):
+        Ceilingpl[num] = model.addVars( 
+            cfdfcs_conpl[num],
+            vtype=gp.GRB.INTEGER,
+            lb=0,
+            ub=gp.GRB.INFINITY,
+            name="Ceilingpl_" + str(num),
+        )
+
+    model.addConstrs(
+        (
+            Ceiling[num][e] < Var_Nc[e, 3] * Var_Throughput[num] + 1
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_nopl[num]
+        ),
+        name="CeilingConstr",
+    )
+
+    model.addConstrs(
+        (
+            Ceilingpl[num][e] < Var_Nc[e, 3] * Var_Throughput[num] + 1
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_conpl[num]
+        ),
+        name="CeilingConstrpl",
+    )
+
+    model.addConstrs(
+        (
+            Var_Token[num][e] <= 
+            Var_Nc[e, 0] + Var_Nc[e, 1] * (1 - Var_Throughput[num]) +
+            Var_Nc[e, 2] + Ceiling[num][e]
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_nopl[num]
+        ),
+        name="upperbound_nopl",
+    )
+
+    model.addConstrs(
+        (
+            Var_Tokenpl[num][e] <= 
+            Var_Nc[e, 0] + Var_Nc[e, 1] * (1 - Var_Throughput[num]) +
+            Var_Nc[e, 2] + Ceilingpl[num][e]
+            for num in range(CFDFC_NUM)
+            for e in cfdfcs_conpl[num]
+        ),
+        name="upperbound_conpl",
+    )
+
 
     # Pipeline specific constraints.
 
