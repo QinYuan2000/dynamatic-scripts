@@ -12,7 +12,7 @@ date = "Jun_28"           # Date for output files in 'gurobi_out'
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "image_resize"  # Choose circuit benchmark.
+    benchmark = "gemver"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -92,12 +92,12 @@ if __name__ == "__main__":
 
     # Create datasheet for dfg
     # If delay longer than to_pl, we pipeline the unit
-    to_pl = 100000
+    # to_pl = 100000
     pl_units = []  # Pipelined unit
     conpl_units = (
         []
     )  # Constant latency pipelined units, latency already shown in dot file
-    varpl_units = []  # Variable latency pipelined units, which have long delays
+    # varpl_units = []  # Variable latency pipelined units, which have long delays
     dfg_dict = {}  # DFG datasheet indexed by units
     # Here pipelined units will be splitted to two nodes and a channel connecting them.
     # Relationship with previous and successor nodes unchanged.
@@ -108,15 +108,15 @@ if __name__ == "__main__":
             conpl_units.append(unit)
             pl_units.append(unit)
 
-        elif dfg.get_delay(unit) > to_pl:
-            dfg_dict[unit + "_plin"] = dfg.gen_dict(unit)
-            dfg_dict[unit + "_plout"] = dfg.gen_dict(unit)
-            dfg_dict[unit + "_plin"][
-                "delay"
-            ] /= 2  # Splitted nodes have halved delays
-            dfg_dict[unit + "_plout"]["delay"] /= 2
-            varpl_units.append(unit)
-            pl_units.append(unit)
+        # elif dfg.get_delay(unit) > to_pl:
+        #     dfg_dict[unit + "_plin"] = dfg.gen_dict(unit)
+        #     dfg_dict[unit + "_plout"] = dfg.gen_dict(unit)
+        #     dfg_dict[unit + "_plin"][
+        #         "delay"
+        #     ] /= 2  # Splitted nodes have halved delays
+        #     dfg_dict[unit + "_plout"]["delay"] /= 2
+        #     varpl_units.append(unit)
+        #     pl_units.append(unit)
 
         else:
             dfg_dict[unit] = dfg.gen_dict(unit)
@@ -153,9 +153,9 @@ if __name__ == "__main__":
         dfg_edges.append((u + "_plin", u + "_plout"))
         dfg_edges_conpl.append((u + "_plin", u + "_plout"))
 
-    for u in varpl_units:
-        dfg_edges.append((u + "_plin", u + "_plout"))
-        dfg_edges_varpl.append((u + "_plin", u + "_plout"))
+    # for u in varpl_units:
+    #     dfg_edges.append((u + "_plin", u + "_plout"))
+    #     dfg_edges_varpl.append((u + "_plin", u + "_plout"))
 
     # Extract multiple edges between the same unit pair and count their occurence
     single_edges = []
@@ -179,33 +179,78 @@ if __name__ == "__main__":
         # dfg_edges = single_edges
         dfg_edges = set(dfg_edges)
 
-    # This is to change dfg structure but currently not compatible with other functions
-    # for unit in pl_units:
-    #     predecessors = list(dfg.predecessors(unit))
-    #     successors = list(dfg.successors(unit))
-
-    #     node_in = unit + '_plin'
-    #     node_out = unit + '_plout'
-    #     dfg.add_node(node_in)
-    #     dfg.add_node(node_out)
-
-    #     for predecessor in predecessors:
-    #         for edge_key in dfg[predecessor][unit]:
-    #             dfg.add_edge(predecessor, node_in, key = edge_key)
-
-    #     for successor in successors:
-    #         for edge_key in dfg[unit][successor]:
-    #             dfg.add_edge(node_out, successor, key = edge_key)
-
-    #     dfg.remove_node(unit)
-    #     dfg.add_edge(node_in, node_out)
-
     # The same way to get channel lists in each cfdfc in four forms as in dfg channels
     cfdfcs = dfg.generate_cfdfcs()
-    cfdfcs_nopl, cfdfcs_conpl, cfdfcs_varpl = [], [], []
+    # CFDFC numbers and weights before filtering
+    CFDFC_NUM = len(cfdfcs)
+    cfdfc_file = f'dynamatic/integration-test/{benchmark}/out/comp/buffer-placement/{benchmark}/placement.log'
+    execution_counts = []
+    CFDFC_Weight = []
+
+    try:
+        with open(cfdfc_file, 'r') as file:
+            lines = file.readlines()
+        
+        bb_numbers = {}  # Dictionary to store bbID numbers associated with each CFDFC
+        execution_counts = []
+        
+        for i in range(len(lines) - 1):
+            if lines[i].startswith("CFDFC #"):
+                parts = lines[i].split(':')
+                cfdfc_id = int(parts[0].strip()[-1])
+                numbers = parts[1].strip()
+                number_set = set(map(lambda x: int(x) + 1, numbers.replace('->', ' ').split()))
+                bb_numbers[cfdfc_id] = set(sorted(number_set))
+                
+                next_line = lines[i + 1]
+                if next_line.startswith("  - Number of executions:"):
+                    num_executions = int(next_line.split(":")[1].strip())
+                    execution_counts.append(num_executions)
+        
+        total_executions = sum(execution_counts)
+        
+        if total_executions > 0:
+            CFDFC_Weight_unsorted = [count / total_executions for count in execution_counts]
+
+        bbID_dict = {}
+        for num in range(CFDFC_NUM):
+            cfdfc_set = set()
+            for i in cfdfcs[num]:
+                if i in dfg_dict:
+                    cfdfc_set.add(dfg_dict[i]['bbID'])
+                else:
+                    cfdfc_set.add(dfg_dict[i+'_plin']['bbID'])
+            bbID_dict[num] = cfdfc_set
+
+        check_duplicated_bb_path = set()
+        CFDFC_Weight = []
+        CFDFC_delete = []
+        for index0, num in bbID_dict.items():
+            flag = 0
+            for index, num2 in bb_numbers.items():
+                if num == num2:
+                    CFDFC_Weight.append(CFDFC_Weight_unsorted[index])
+                    check_duplicated_bb_path.add(index)
+                    flag = 1
+            if flag == 0:
+                CFDFC_delete.append(index0)
+
+        assert (
+            len(CFDFC_Weight) == len(CFDFC_Weight_unsorted) and 
+            len(CFDFC_Weight) == len(check_duplicated_bb_path)
+        ), "CFDFC alignment fault!"
+
+    except FileNotFoundError:
+        print(f"The file {cfdfc_file} does not exist.")
+
+    # Filter cfdfcs if not executed
+    cfdfcs = [item for index, item in enumerate(cfdfcs) if index not in CFDFC_delete]
+
+    # CFDFC numbers and weights after filtering
+    CFDFC_NUM = len(cfdfcs)
+    cfdfcs_nopl, cfdfcs_conpl = [], []
     cfc_nodes = []
     for cfc in cfdfcs:
-        # TODO: When multiple cfdfcs, index sequence consistency not verified yet.
         cfdfc_nopl, cfdfc_conpl, cfdfc_varpl = list(cfc.edges()), [], []
         for i, e in enumerate(cfc.edges()):
             if e[0] in pl_units and e[1] in pl_units:
@@ -221,12 +266,8 @@ if __name__ == "__main__":
             if u in conpl_units:
                 cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-            if u in varpl_units:
-                cfdfc_varpl.append((u + "_plin", u + "_plout"))
-
         cfdfcs_nopl.append(cfdfc_nopl)
         cfdfcs_conpl.append(cfdfc_conpl)
-        cfdfcs_varpl.append(cfdfc_varpl)
 
         cfc_node = list(cfc)
         for u in conpl_units:
@@ -235,44 +276,6 @@ if __name__ == "__main__":
                 cfc_node.append(u + "_plin")
                 cfc_node.append(u + "_plout")
         cfc_nodes.append(cfc_node)
-
-    # for i, cfc in enumerate(cfdfcs):
-    #     for unit in cfc:
-    #         print("the", i + 1, "-th extracted cfdfc has node:", unit)
-
-    #     for pred, succ in cfc.edges():
-    #         print(
-    #             "the",
-    #             i + 1,
-    #             "-th extracted cfdfc has edge:",
-    #             f"{pred}-->{succ}",
-    #         )
-
-    # CFDFC numbers and weights
-    # TODO: Sequence not match!
-    CFDFC_NUM = len(cfdfcs)
-    cfdfc_file = f'dynamatic/integration-test/{benchmark}/out/comp/buffer-placement/{benchmark}/placement.log'
-    execution_counts = []
-    CFDFC_Weight = []
-
-    try:
-        with open(cfdfc_file, 'r') as file:
-            lines = file.readlines()
-        
-        for i in range(len(lines) - 1):
-            if lines[i].startswith("CFDFC #"):
-                next_line = lines[i + 1]
-                if next_line.startswith("  - Number of executions:"):
-                    num_executions = int(next_line.split(":")[1].strip())
-                    execution_counts.append(num_executions)
-        
-        total_executions = sum(execution_counts)
-        
-        if total_executions > 0:
-            CFDFC_Weight = [count / total_executions for count in execution_counts]
-
-    except FileNotFoundError:
-        print(f"The file {cfdfc_file} does not exist.")
 
 
     # Find back edges
@@ -295,14 +298,14 @@ if __name__ == "__main__":
 
     # Generate neighbouring channel pairs for path timing constraints.
     # Split in three ways, since the delay of pipelined units can be different fuctions.
-    # TODO: To be improved; Efficiency; Whether it is good if there exist self loops.
+    # TODO: To be improved in efficiency; Whether it is good if there exist self loops.
     path_pair_nopl, path_pair_conpl, path_pair_varpl = {}, {}, {}
     conpl_units_ext = [u + "_plin" for u in conpl_units] + [
         u + "_plout" for u in conpl_units
     ]
-    varpl_units_ext = [u + "_plin" for u in varpl_units] + [
-        u + "_plout" for u in varpl_units
-    ]
+    # varpl_units_ext = [u + "_plin" for u in varpl_units] + [
+    #     u + "_plout" for u in varpl_units
+    # ]
     for n in dfg_dict:
         succ_edge, prev_edge = [], []
         for e in dfg_edges:
@@ -313,17 +316,17 @@ if __name__ == "__main__":
         if len(succ_edge) and len(prev_edge):
             if n in conpl_units_ext:
                 path_pair_conpl[n] = {"succ": succ_edge, "prev": prev_edge}
-            elif n in varpl_units_ext:
-                path_pair_varpl[n] = {"succ": succ_edge, "prev": prev_edge}
+            # elif n in varpl_units_ext:
+            #     path_pair_varpl[n] = {"succ": succ_edge, "prev": prev_edge}
             else:
                 path_pair_nopl[n] = {"succ": succ_edge, "prev": prev_edge}
 
     # Build a dictionary to find the original name of pipelined units. Used for latency variable and constraints.
-    varpl_origin = {}
-    for u in varpl_units:
-        varpl_origin[u + "_plin"] = u
-        varpl_origin[u + "_plout"] = u
-        varpl_origin[(u + "_plin", u + "_plout")] = u
+    # varpl_origin = {}
+    # for u in varpl_units:
+    #     varpl_origin[u + "_plin"] = u
+    #     varpl_origin[u + "_plout"] = u
+    #     varpl_origin[(u + "_plin", u + "_plout")] = u
 
     # Prepare constant latencies for opt model
     Lu_con = {}
@@ -336,6 +339,7 @@ if __name__ == "__main__":
 
     signal_num = 3  # Index sequence: DATA, VALID, READY
     buffertype_num = 4 # Index sequence: OB TB FT PL
+    buffertype = ['oehb', 'tehb', 'full', 'pipeline']   # TODO
     # Initialize model
     model = gp.Model()
 
@@ -350,7 +354,7 @@ if __name__ == "__main__":
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
-        ub=gp.GRB.INFINITY,
+        ub=1000,                # May need a larger upbound for large circuits
         name="Nc",
     )
 
@@ -607,7 +611,7 @@ if __name__ == "__main__":
 
 
     # File name to record model and results
-    record_key = date + "_" + benchmark + "_" + str(to_pl) + "_" + str(CP)
+    record_key = date + "_" + benchmark + "_" + str(CP)
 
     # Output logfile
     model.setParam("LogFile", "gurobi_out/log/" + record_key + ".log")
@@ -633,8 +637,6 @@ if __name__ == "__main__":
         pred = pred.removesuffix("_plout")
         succ = succ.removesuffix("_plin")
         succ = succ.removesuffix("_plout")
-        slots = int(Var_Nc[e].x)
-        type_ = "oehb" if Var_Rc[e].x == 1 else "tehb"
         # TODO: Function not verified
         for i in dfg[pred][succ]:
             outid = int(dfg[pred][succ][i]["from"].replace("out", "")) - 1
@@ -642,13 +644,11 @@ if __name__ == "__main__":
             # also lsq_load ports) in MILR convention vs in DOT convention.
             if outid == 0 and "mc_load" in pred:
                 outid = 1
-            if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-                # cmd2 = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
-                cmd1 = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
-                cmds.append(cmd1)
-                # cmds.append(cmd2)
-                # cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
-                # cmds.append(cmd)
+            for num in range(buffertype_num):
+                slots = int(Var_Nc[e[0],e[1],num].x)
+                if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[i]}"
+                    cmds.append(cmd)
 
     # insert buffers into the mlir file that has no buffer inside
     print("\n".join(cmds))
