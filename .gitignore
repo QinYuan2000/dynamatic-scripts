@@ -10,9 +10,3 @@ sim/
 hdl/
 tags
 gurobi_out
-.Xil
-.*
-!.gitignore
-*.log
-*.rpt
-*.jou
