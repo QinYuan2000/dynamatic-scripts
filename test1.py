@@ -12,7 +12,7 @@ date = "Jun_28"           # Date for output files in 'gurobi_out'
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "gemver"  # Choose circuit benchmark.
+    benchmark = "histogram"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -338,7 +338,7 @@ if __name__ == "__main__":
                     break
 
     signal_num = 3  # Index sequence: DATA, VALID, READY
-    buffertype_num = 4 # Index sequence: OB TB FT PL
+    buffertype_num = 4 # Index sequence: OB TB FT PL ; TODO: Indexed by name
     buffertype = ['oehb', 'tehb', 'full', 'pipeline']   # TODO
     # Initialize model
     model = gp.Model()
