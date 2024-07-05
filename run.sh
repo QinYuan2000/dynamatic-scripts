@@ -15,5 +15,7 @@ write-hdl
 
 simulate
 
+synthesize
+
 exit
 

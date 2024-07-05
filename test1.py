@@ -7,12 +7,12 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_4"           # Date for output files in 'gurobi_out'
+date = "Jul_5"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "gemver"  # Choose circuit benchmark.
+    benchmark = "fir"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -339,7 +339,7 @@ if __name__ == "__main__":
 
     signal_num = 2  # Index sequence: (DATA, VALID), READY
     buffertype_num = 4 # Index sequence: OB TB FT PL ; TODO: Indexed by name
-    buffertype = ['oehb', 'tehb', 'full', 'pipeline']   # TODO
+    buffertype = ['oehb', 'tehb', 'oehb', 'tehb']   # TODO: Actually OB TB FT PL
     # Initialize model
     model = gp.Model()
 
@@ -354,7 +354,7 @@ if __name__ == "__main__":
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
-        ub=1000,                # May need a larger upbound for large circuits
+        ub=999,                # May need a larger upbound for large circuits
         name="Nc",
     )
 
@@ -419,6 +419,15 @@ if __name__ == "__main__":
         name="Tout",
     )
 
+    Is_Pipeline = model.addVars(
+        dfg_edges_nopl,
+        vtype=gp.GRB.BINARY,
+        name="Is_Pipeline",
+    )
+
+    register_area = 8
+    area_calculate = [2, 25, 16, 1]
+
     # Set Objective
     # TODO: A new lambda needed.
     Lambda = 1e-5  # Weight of total buffer size relative to throughputs
@@ -428,11 +437,25 @@ if __name__ == "__main__":
 
     for num in range(signal_num):
         for e in dfg_edges_nopl:  # Not pipelined buffer size
-            Objective.addTerms(-Lambda, Var_Nc[e[0],e[1],num])
+            Objective.addTerms(-Lambda * area_calculate[0], Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * area_calculate[1], Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * area_calculate[2], Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],3])
 
     for num in range(signal_num):
         for e in multi_edges:  # Multiple edges between the same unit pair
-            Objective.addTerms(-Lambda * multi_edges[e], Var_Nc[e[0],e[1],num])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[0], Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[1], Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],3])
 
     # for (
     #     u
@@ -615,6 +638,15 @@ if __name__ == "__main__":
         name="upperbound_conpl",
     )
 
+    model.addConstrs(
+        (
+            1000 * Is_Pipeline[e] >= Var_Nc[e[0],e[1],3]
+            for e in dfg_edges_nopl
+        ),
+        name="is_pipeline"
+    )
+    
+
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
     # model.setParam(gp.GRB.Param.PoolSearchMode, 2)  
@@ -659,7 +691,10 @@ if __name__ == "__main__":
             for num in range(buffertype_num):
                 slots = int(Var_Nc[e[0],e[1],num].x)
                 if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[i]}"
+                    slots += 1000
+                    if num >= 2:
+                        slots += 1000
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
                     cmds.append(cmd)
 
     # insert buffers into the mlir file that has no buffer inside
