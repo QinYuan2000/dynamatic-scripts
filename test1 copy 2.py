@@ -7,12 +7,12 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_4"           # Date for output files in 'gurobi_out'
+date = "Jun_28"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "gemver"  # Choose circuit benchmark.
+    benchmark = "histogram"  # Choose circuit benchmark.
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -337,7 +337,7 @@ if __name__ == "__main__":
                     Lu_con[e] = dfg_dict[u]["latency"]
                     break
 
-    signal_num = 2  # Index sequence: (DATA, VALID), READY
+    signal_num = 3  # Index sequence: DATA, VALID, READY
     buffertype_num = 4 # Index sequence: OB TB FT PL ; TODO: Indexed by name
     buffertype = ['oehb', 'tehb', 'full', 'pipeline']   # TODO
     # Initialize model
@@ -449,11 +449,7 @@ if __name__ == "__main__":
         name="PathConstr1",
     )
 
-    # Since there must be no Valid signal constraints here on constant pipelined units, we skip them
-    PathConstr1pl = model.addConstrs(
-        (Var_Tout[e[0],e[1],1] >= Var_Tin[e[0],e[1],1] for e in dfg_edges_conpl),
-        name="PathConstr1pl",
-    )
+    # Since there must be no constraints here on constant pipelined units, we skip them
 
     # Clock period constraints.
     PathConstr2 = model.addConstrs(
@@ -467,13 +463,9 @@ if __name__ == "__main__":
     for pn in path_pair_nopl:
         for prev in path_pair_nopl[pn]["prev"]:
             for succ in path_pair_nopl[pn]["succ"]:
-                model.addConstr(
-                    (Var_Tin[succ[0],succ[1],0] >= Var_Tout[prev[0],prev[1],0] + dfg_dict[pn]["delay"]),
-                    name="PathConstr3_nopl_valid_" + str(num2),
-                )
-                model.addConstr(
-                    (Var_Tin[succ[0],succ[1],1] >= Var_Tout[prev[0],prev[1],1] + 0.001),
-                    name="PathConstr3_nopl_ready_" + str(num2),
+                model.addConstrs(
+                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
+                    name="PathConstr3_nopl_" + str(num2),
                 )
                 num2 += 1
 
@@ -481,23 +473,19 @@ if __name__ == "__main__":
     for pn in path_pair_conpl:  # Currently same as nopl but the model can be easily modified.
         for prev in path_pair_conpl[pn]["prev"]:
             for succ in path_pair_conpl[pn]["succ"]:
-                model.addConstr(
-                    (Var_Tin[succ[0],succ[1],0] >= Var_Tout[prev[0],prev[1],0] + dfg_dict[pn]["delay"]),
-                    name="PathConstr3_conpl_valid_" + str(num2),
-                )
-                model.addConstr(
-                    (Var_Tin[succ[0],succ[1],1] >= Var_Tout[prev[0],prev[1],1] + 0.001),
-                    name="PathConstr3_conpl_ready_" + str(num2),
+                model.addConstrs(
+                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
+                    name="PathConstr3_conpl_" + str(num2),
                 )
                 num2 += 1
 
     # whenever it’s necessary to cut the timing path of a specific signal type in a channel, 
     # there is a buffer within that channel capable of performing this cut.
     buffercut = np.array([
-        [1,0],    #OB
-        [0,1],    #TB
-        [0,0],    #FT
-        [1,0],    #PL
+        [1,1,0],    #OB
+        [0,0,1],    #TB
+        [0,0,0],    #FT
+        [1,1,0],    #PL
     ])
     model.addConstrs(
         (
@@ -588,7 +576,7 @@ if __name__ == "__main__":
 
     # model.addConstrs(
     #     (
-    #         Ceilingpl[num][e] <= Lu_con[e] * Var_Throughput[num] + 1 - 1e-5
+    #         Ceilingpl[num][e] < Lu_con[e] * Var_Throughput[num] + 1
     #         for num in range(CFDFC_NUM)
     #         for e in cfdfcs_conpl[num]
     #     ),
