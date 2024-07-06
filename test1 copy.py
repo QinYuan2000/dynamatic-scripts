@@ -7,12 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jun_28"           # Date for output files in 'gurobi_out'
+date = "Jul_5"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "histogram"  # Choose circuit benchmark.
+    # Choose circuit benchmark.
+    benchmark = "if_loop_1"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -87,7 +88,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 5.5
+    CP = 6
     CPmax = 100
 
     # Create datasheet for dfg
@@ -122,7 +123,7 @@ if __name__ == "__main__":
             dfg_dict[unit] = dfg.gen_dict(unit)
             # To avoid combinational loop.
             if dfg_dict[unit]["delay"] == 0:
-                dfg_dict[unit]["delay"] += 0.0001
+                dfg_dict[unit]["delay"] += 1e-5
         # print("the latency of ", unit, "is", dfg.get_latency(unit))
         # print("the delay of ", unit, "is", dfg.get_delay(unit))
 
@@ -337,9 +338,9 @@ if __name__ == "__main__":
                     Lu_con[e] = dfg_dict[u]["latency"]
                     break
 
-    signal_num = 3  # Index sequence: DATA, VALID, READY
+    signal_num = 2  # Index sequence: (DATA, VALID), READY
     buffertype_num = 4 # Index sequence: OB TB FT PL ; TODO: Indexed by name
-    buffertype = ['oehb', 'tehb', 'full', 'pipeline']   # TODO
+    buffertype = ['oehb', 'tehb', 'oehb', 'tehb']   # TODO: Actually OB TB FT PL
     # Initialize model
     model = gp.Model()
 
@@ -354,7 +355,7 @@ if __name__ == "__main__":
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
-        ub=1000,                # May need a larger upbound for large circuits
+        ub=999,                # May need a larger upbound for large circuits
         name="Nc",
     )
 
@@ -419,6 +420,15 @@ if __name__ == "__main__":
         name="Tout",
     )
 
+    Is_Pipeline = model.addVars(
+        dfg_edges_nopl,
+        vtype=gp.GRB.BINARY,
+        name="Is_Pipeline",
+    )
+
+    register_area = 8
+    area_calculate = [2, 25, 16, 1]
+
     # Set Objective
     # TODO: A new lambda needed.
     Lambda = 1e-5  # Weight of total buffer size relative to throughputs
@@ -428,11 +438,25 @@ if __name__ == "__main__":
 
     for num in range(signal_num):
         for e in dfg_edges_nopl:  # Not pipelined buffer size
-            Objective.addTerms(-Lambda, Var_Nc[e[0],e[1],num])
+            Objective.addTerms(-Lambda * area_calculate[0], Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * area_calculate[1], Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * area_calculate[2], Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],3])
 
     for num in range(signal_num):
         for e in multi_edges:  # Multiple edges between the same unit pair
-            Objective.addTerms(-Lambda * multi_edges[e], Var_Nc[e[0],e[1],num])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[0], Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[1], Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],3])
 
     # for (
     #     u
@@ -449,7 +473,11 @@ if __name__ == "__main__":
         name="PathConstr1",
     )
 
-    # Since there must be no constraints here on constant pipelined units, we skip them
+    # Since there must be no Valid signal constraints here on constant pipelined units, we skip them
+    PathConstr1pl = model.addConstrs(
+        (Var_Tout[e[0],e[1],1] >= Var_Tin[e[0],e[1],1] for e in dfg_edges_conpl),
+        name="PathConstr1pl",
+    )
 
     # Clock period constraints.
     PathConstr2 = model.addConstrs(
@@ -463,9 +491,13 @@ if __name__ == "__main__":
     for pn in path_pair_nopl:
         for prev in path_pair_nopl[pn]["prev"]:
             for succ in path_pair_nopl[pn]["succ"]:
-                model.addConstrs(
-                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
-                    name="PathConstr3_nopl_" + str(num2),
+                model.addConstr(
+                    (Var_Tin[succ[0],succ[1],0] >= Var_Tout[prev[0],prev[1],0] + dfg_dict[pn]["delay"]),
+                    name="PathConstr3_nopl_valid_" + str(num2),
+                )
+                model.addConstr(
+                    (Var_Tin[succ[0],succ[1],1] >= Var_Tout[prev[0],prev[1],1] + 0.001),
+                    name="PathConstr3_nopl_ready_" + str(num2),
                 )
                 num2 += 1
 
@@ -473,19 +505,23 @@ if __name__ == "__main__":
     for pn in path_pair_conpl:  # Currently same as nopl but the model can be easily modified.
         for prev in path_pair_conpl[pn]["prev"]:
             for succ in path_pair_conpl[pn]["succ"]:
-                model.addConstrs(
-                    (Var_Tin[succ[0],succ[1],num] >= Var_Tout[prev[0],prev[1],num] + dfg_dict[pn]["delay"] for num in range(signal_num)),
-                    name="PathConstr3_conpl_" + str(num2),
+                model.addConstr(
+                    (Var_Tin[succ[0],succ[1],0] >= Var_Tout[prev[0],prev[1],0] + dfg_dict[pn]["delay"]),
+                    name="PathConstr3_conpl_valid_" + str(num2),
+                )
+                model.addConstr(
+                    (Var_Tin[succ[0],succ[1],1] >= Var_Tout[prev[0],prev[1],1] + 0.001),
+                    name="PathConstr3_conpl_ready_" + str(num2),
                 )
                 num2 += 1
 
     # whenever it’s necessary to cut the timing path of a specific signal type in a channel, 
     # there is a buffer within that channel capable of performing this cut.
     buffercut = np.array([
-        [1,1,0],    #OB
-        [0,0,1],    #TB
-        [0,0,0],    #FT
-        [1,1,0],    #PL
+        [1,0],    #OB
+        [0,1],    #TB
+        [0,0],    #FT
+        [1,0],    #PL
     ])
     model.addConstrs(
         (
@@ -576,7 +612,7 @@ if __name__ == "__main__":
 
     # model.addConstrs(
     #     (
-    #         Ceilingpl[num][e] < Lu_con[e] * Var_Throughput[num] + 1
+    #         Ceilingpl[num][e] <= Lu_con[e] * Var_Throughput[num] + 1 - 1e-5
     #         for num in range(CFDFC_NUM)
     #         for e in cfdfcs_conpl[num]
     #     ),
@@ -602,6 +638,15 @@ if __name__ == "__main__":
         ),
         name="upperbound_conpl",
     )
+
+    model.addConstrs(
+        (
+            1000 * Is_Pipeline[e] >= Var_Nc[e[0],e[1],3]
+            for e in dfg_edges_nopl
+        ),
+        name="is_pipeline"
+    )
+    
 
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
@@ -647,7 +692,10 @@ if __name__ == "__main__":
             for num in range(buffertype_num):
                 slots = int(Var_Nc[e[0],e[1],num].x)
                 if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[i]}"
+                    slots += 1000
+                    if num >= 2:
+                        slots += 1000
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
                     cmds.append(cmd)
 
     # insert buffers into the mlir file that has no buffer inside

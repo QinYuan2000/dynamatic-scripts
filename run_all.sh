@@ -3,7 +3,7 @@
 
 benchmarks=("fir" "iir")  
 clock_period=6
-if_synthesize=1
+if_synthesize=0
 
 
 function process_dynamatic1() {
@@ -39,13 +39,13 @@ function process_dynamatic1() {
             echo "$line" >> output.txt
             break
         fi
-        if [[ "$line" == "** Note: simulation done!" ]]; then
+        if [[ "$line" == "# ** Note: simulation done!" ]]; then
             next_line=true
         fi
     done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
 
     if [ "$if_synthesize" -eq 1 ]; then
-        mkdir -p report/${benchmark}_$tag
+        mkdir -p report/${benchmark}_$tag2
         cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_$tag2/
         cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_$tag2/
     fi
@@ -94,13 +94,13 @@ function process_dynamatic3() {
             echo "$line" >> output.txt
             break
         fi
-        if [[ "$line" == "** Note: simulation done!" ]]; then
+        if [[ "$line" == "# ** Note: simulation done!" ]]; then
             next_line=true
         fi
     done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
 
     if [ "$if_synthesize" -eq 1 ]; then
-        mkdir -p report/${benchmark}_$tag
+        mkdir -p report/${benchmark}_$tag2
         cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_$tag2/
         cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_$tag2/
     fi
