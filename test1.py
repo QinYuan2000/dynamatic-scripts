@@ -13,7 +13,7 @@ date = "Jul_5"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "iir"  
+    benchmark = "gcd"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -267,8 +267,8 @@ if __name__ == "__main__":
             if u in conpl_units:
                 cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-        cfdfcs_nopl.append(cfdfc_nopl)
-        cfdfcs_conpl.append(cfdfc_conpl)
+        cfdfcs_nopl.append(list(set(cfdfc_nopl)))
+        cfdfcs_conpl.append(list(set(cfdfc_conpl)))
 
         cfc_node = list(cfc)
         for u in conpl_units:
@@ -687,7 +687,7 @@ if __name__ == "__main__":
             outid = int(dfg[pred][succ][i]["from"].replace("out", "")) - 1
             # a HACK for inverted output channels of the mc_load port (and perhaps
             # also lsq_load ports) in MILR convention vs in DOT convention.
-            if outid == 0 and "mc_load" in pred:
+            if outid == 0 and "mc_load" in pred or "LSQ_load" in pred:
                 outid = 1
             for num in range(buffertype_num):
                 slots = int(Var_Nc[e[0],e[1],num].x)
@@ -697,6 +697,65 @@ if __name__ == "__main__":
                         slots += 1000
                     cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
                     cmds.append(cmd)
+
+
+    # cmd = f"--handshake-placebuffers-custom=pred=mux10 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux11 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux3 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux12 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=control_merge7 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux13 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux6 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=fork8 outid=3 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux7 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux7 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=fork9 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mux15 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=fork10 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=fork12 outid=1 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=fork12 outid=1 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=addi13 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=LSQ_load0 outid=1 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=mc_load0 outid=1 slots=1002 type=oehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=extsi37 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=addi5 outid=0 slots=2007 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=addi16 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=cond_br22 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=cond_br16 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=cond_br16 outid=1 slots=2001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=cond_br17 outid=0 slots=1001 type=tehb"
+    # cmds.append(cmd)
+    # cmd = f"--handshake-placebuffers-custom=pred=cond_br17 outid=0 slots=2001 type=tehb"
+    # cmds.append(cmd)
+
+
+
+
+
 
     # insert buffers into the mlir file that has no buffer inside
     print("\n".join(cmds))

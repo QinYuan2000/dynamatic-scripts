@@ -13,7 +13,7 @@ date = "Jul_6"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "iir"  
+    benchmark = "gcd"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -267,8 +267,8 @@ if __name__ == "__main__":
             if u in conpl_units:
                 cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-        cfdfcs_nopl.append(cfdfc_nopl)
-        cfdfcs_conpl.append(cfdfc_conpl)
+        cfdfcs_nopl.append(list(set(cfdfc_nopl)))
+        cfdfcs_conpl.append(list(set(cfdfc_conpl)))
 
         cfc_node = list(cfc)
         for u in conpl_units:
