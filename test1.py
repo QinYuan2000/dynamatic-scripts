@@ -12,7 +12,8 @@ date = "Jul_5"           # Date for output files in 'gurobi_out'
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
-    benchmark = "fir"  # Choose circuit benchmark.
+    # Choose circuit benchmark.
+    benchmark = "if_loop_1"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -87,7 +88,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 5.5
+    CP = 6
     CPmax = 100
 
     # Create datasheet for dfg
@@ -122,7 +123,7 @@ if __name__ == "__main__":
             dfg_dict[unit] = dfg.gen_dict(unit)
             # To avoid combinational loop.
             if dfg_dict[unit]["delay"] == 0:
-                dfg_dict[unit]["delay"] += 0.0001
+                dfg_dict[unit]["delay"] += 1e-5
         # print("the latency of ", unit, "is", dfg.get_latency(unit))
         # print("the delay of ", unit, "is", dfg.get_delay(unit))
 
