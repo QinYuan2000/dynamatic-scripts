@@ -13,7 +13,7 @@ date = "Jul_7"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gaussian"  
+    benchmark = "if_loop_2"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -557,7 +557,7 @@ if __name__ == "__main__":
 
 
     # File name to record model and results
-    record_key = date + "_" + benchmark + "_" + str(CP)
+    record_key = date + "_" + benchmark + "_" + str(CP) + "_2"
 
     # Output logfile
     model.setParam("LogFile", "gurobi_out/log/" + record_key + ".log")

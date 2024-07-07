@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-benchmarks=("gcd" "histogram" "if_loop_1" "if_loop_2" "if_loop_3" "image_resize")  
+benchmarks=("if_loop_2")  
 clock_period=6
-if_synthesize=0
+if_synthesize=1
 
 
 function process_dynamatic1() {
@@ -106,6 +106,23 @@ function process_dynamatic3() {
     fi
 }
 
+function process_dynamatic4() {
+    local benchmark=$1
+    local tag=$2
+
+    echo "set-dynamatic-path ./dynamatic" > run${tag}.sh
+    echo "" >> run${tag}.sh
+    echo "set-clock-period $clock_period" >> run${tag}.sh
+    echo "" >> run${tag}.sh
+    echo "set-src ./dynamatic/integration-test/${benchmark}/${benchmark}.c" >> run${tag}.sh
+    echo "" >> run${tag}.sh
+    echo "compile" >> run${tag}.sh
+    echo "" >> run${tag}.sh
+    echo "write-hdl" >> run${tag}.sh
+    echo "" >> run${tag}.sh
+    echo "exit" >> run${tag}.sh
+}
+
 # Function to update Python test scripts
 function update_python_script() {
     local benchmark=$1
@@ -131,6 +148,7 @@ for benchmark in "${benchmarks[@]}"; do
     process_dynamatic2 $benchmark "2"
     update_python_script2 $benchmark "revise_vhdl.py"
     process_dynamatic3 $benchmark "3" "2"
+    process_dynamatic4 $benchmark ""
     update_python_script $benchmark "test2.py"
     process_dynamatic2 $benchmark "2"
     process_dynamatic3 $benchmark "3" "3"

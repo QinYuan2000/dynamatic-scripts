@@ -13,7 +13,7 @@ date = "Jul_7"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gcd"  
+    benchmark = "if_loop_2"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -248,36 +248,40 @@ if __name__ == "__main__":
     cfdfcs = [item for index, item in enumerate(cfdfcs) if index not in CFDFC_delete]
 
     # CFDFC numbers and weights after filtering
-    CFDFC_NUM = len(cfdfcs)
     cfdfcs_nopl, cfdfcs_conpl = [], []
     cfc_nodes = []
-    for cfc in cfdfcs:
-        cfdfc_nopl, cfdfc_conpl, cfdfc_varpl = list(cfc.edges()), [], []
-        for i, e in enumerate(cfc.edges()):
-            if e[0] in pl_units and e[1] in pl_units:
-                cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
+    temp_weight = []
+    for index, cfc in enumerate(cfdfcs):
+        if CFDFC_Weight[index] > 0.15:
+            cfdfc_nopl, cfdfc_conpl = list(cfc.edges()), []
+            for i, e in enumerate(cfc.edges()):
+                if e[0] in pl_units and e[1] in pl_units:
+                    cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
 
-            elif e[0] in pl_units:
-                cfdfc_nopl[i] = (e[0] + "_plout", e[1])
+                elif e[0] in pl_units:
+                    cfdfc_nopl[i] = (e[0] + "_plout", e[1])
 
-            elif e[1] in pl_units:
-                cfdfc_nopl[i] = (e[0], e[1] + "_plin")
+                elif e[1] in pl_units:
+                    cfdfc_nopl[i] = (e[0], e[1] + "_plin")
 
-        for u in cfc.nodes():
-            if u in conpl_units:
-                cfdfc_conpl.append((u + "_plin", u + "_plout"))
+            for u in cfc.nodes():
+                if u in conpl_units:
+                    cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-        cfdfcs_nopl.append(list(set(cfdfc_nopl)))
-        cfdfcs_conpl.append(list(set(cfdfc_conpl)))
+            cfdfcs_nopl.append(list(set(cfdfc_nopl)))
+            cfdfcs_conpl.append(list(set(cfdfc_conpl)))
 
-        cfc_node = list(cfc)
-        for u in conpl_units:
-            if u in cfc_node:
-                cfc_node.remove(u)
-                cfc_node.append(u + "_plin")
-                cfc_node.append(u + "_plout")
-        cfc_nodes.append(cfc_node)
-
+            cfc_node = list(cfc)
+            for u in conpl_units:
+                if u in cfc_node:
+                    cfc_node.remove(u)
+                    cfc_node.append(u + "_plin")
+                    cfc_node.append(u + "_plout")
+            cfc_nodes.append(cfc_node)
+            temp_weight.append(CFDFC_Weight[index])
+    CFDFC_NUM = len(temp_weight)
+    CFDFC_Weight = temp_weight
+    CFDFC_Weight = [count / sum(CFDFC_Weight) for count in CFDFC_Weight]
 
     # Find back edges
     Bc = {}  # Whether it is the back edge, indexed by edges
@@ -355,7 +359,7 @@ if __name__ == "__main__":
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
-        ub=50,                # May need a larger upbound for large circuits
+        ub=999,                # May need a larger upbound for large circuits
         name="Nc",
     )
 
@@ -376,7 +380,7 @@ if __name__ == "__main__":
             i,
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=50,
+            ub=gp.GRB.INFINITY,
             name="Theta1_" + str(num),
         )
         num += 1
@@ -392,7 +396,7 @@ if __name__ == "__main__":
             i,
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=max_plunit_latency,
+            ub=gp.GRB.INFINITY,
             name="Theta1pl_" + str(num),
         )
         num += 1
@@ -404,7 +408,7 @@ if __name__ == "__main__":
             i, 
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=len(i) - 1,
+            ub=gp.GRB.INFINITY,
             name="ru_" + str(num),
         )
         num += 1
@@ -413,7 +417,7 @@ if __name__ == "__main__":
         dfg_edges, signal_num,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
-        ub=CP,
+        ub=gp.GRB.INFINITY,
         name="Tin",
     )
 
@@ -421,7 +425,7 @@ if __name__ == "__main__":
         dfg_edges, signal_num,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
-        ub=CP,
+        ub=gp.GRB.INFINITY,
         name="Tout",
     )
 
@@ -447,10 +451,10 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * area_calculate[3], Is_Pipeline[e])
-            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
-            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
-            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
-            Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],3])
+            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
+            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
+            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * 0.01, Var_Nc[e[0],e[1],3])
 
     for num in range(signal_num):
         for e in multi_edges:  # Multiple edges between the same unit pair
@@ -458,10 +462,10 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[3], Is_Pipeline[e])
-            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
-            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
-            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
-            Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],3])
+            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
+            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
+            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
+            Objective.addTerms(-Lambda * multi_edges[e] * 0.01, Var_Nc[e[0],e[1],3])
 
     # for (
     #     u
@@ -661,7 +665,7 @@ if __name__ == "__main__":
 
 
     # File name to record model and results
-    record_key = date + "_" + benchmark + "_" + str(CP)
+    record_key = date + "_" + benchmark + "_" + str(CP) + "_1"
 
     # Output logfile
     model.setParam("LogFile", "gurobi_out/log/" + record_key + ".log")
