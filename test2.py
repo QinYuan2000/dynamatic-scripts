@@ -13,7 +13,7 @@ date = "Jul_6"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gcd"  
+    benchmark = "gaussian"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -590,9 +590,11 @@ if __name__ == "__main__":
             outid = int(dfg[pred][succ][i]["from"].replace("out", "")) - 1
             # a HACK for inverted output channels of the mc_load port (and perhaps
             # also lsq_load ports) in MILR convention vs in DOT convention.
-            if outid == 0 and "mc_load" in pred:
+            if outid == 0 and "mc_load" in pred or "LSQ_load" in pred:
                 outid = 1
             if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
+                if "LSQ" in pred:
+                    pred = pred.replace("LSQ", "lsq")
                 cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
                 cmds.append(cmd)
 

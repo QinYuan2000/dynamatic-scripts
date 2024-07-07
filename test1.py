@@ -13,7 +13,7 @@ date = "Jul_5"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gcd"  
+    benchmark = "gaussian"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -355,7 +355,7 @@ if __name__ == "__main__":
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
         lb=0,
-        ub=999,                # May need a larger upbound for large circuits
+        ub=50,                # May need a larger upbound for large circuits
         name="Nc",
     )
 
@@ -376,7 +376,7 @@ if __name__ == "__main__":
             i,
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=gp.GRB.INFINITY,
+            ub=50,
             name="Theta1_" + str(num),
         )
         num += 1
@@ -387,7 +387,7 @@ if __name__ == "__main__":
             i,
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=gp.GRB.INFINITY,
+            ub=Lu_con[i],
             name="Theta1pl_" + str(num),
         )
         num += 1
@@ -399,7 +399,7 @@ if __name__ == "__main__":
             i, 
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=gp.GRB.INFINITY,
+            ub=len(cfc_nodes) - 1,
             name="ru_" + str(num),
         )
         num += 1
@@ -408,7 +408,7 @@ if __name__ == "__main__":
         dfg_edges, signal_num,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
-        ub=gp.GRB.INFINITY,
+        ub=CP,
         name="Tin",
     )
 
@@ -416,7 +416,7 @@ if __name__ == "__main__":
         dfg_edges, signal_num,
         vtype=gp.GRB.CONTINUOUS,
         lb=0,
-        ub=gp.GRB.INFINITY,
+        ub=CP,
         name="Tout",
     )
 
@@ -695,66 +695,12 @@ if __name__ == "__main__":
                     slots += 1000
                     if num >= 2:
                         slots += 1000
+                    if "LSQ" in pred:
+                        pred = pred.replace("LSQ", "lsq")
                     cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
                     cmds.append(cmd)
 
-
-    # cmd = f"--handshake-placebuffers-custom=pred=mux10 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux11 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux3 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux12 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=control_merge7 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux13 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux6 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=fork8 outid=3 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux7 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux7 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=fork9 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mux15 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=fork10 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=fork12 outid=1 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=fork12 outid=1 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=addi13 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=LSQ_load0 outid=1 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=mc_load0 outid=1 slots=1002 type=oehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=extsi37 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=addi5 outid=0 slots=2007 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=addi16 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=cond_br22 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=cond_br16 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=cond_br16 outid=1 slots=2001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=cond_br17 outid=0 slots=1001 type=tehb"
-    # cmds.append(cmd)
-    # cmd = f"--handshake-placebuffers-custom=pred=cond_br17 outid=0 slots=2001 type=tehb"
-    # cmds.append(cmd)
-
-
-
-
+    
 
 
     # insert buffers into the mlir file that has no buffer inside

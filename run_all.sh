@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-benchmarks=("gaussian" "gcd" "histogram" "if_loop_1" "if_loop_2" "if_loop_3" "image_resize")  
+benchmarks=("gcd" "histogram" "if_loop_1" "if_loop_2" "if_loop_3" "image_resize")  
 clock_period=6
 if_synthesize=0
 
