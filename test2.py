@@ -7,7 +7,7 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_6"           # Date for output files in 'gurobi_out'
+date = "Jul_7"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":

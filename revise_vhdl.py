@@ -36,5 +36,5 @@ def process_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
 
-benchmark = "gaussian"
+benchmark = "gcd"
 process_file("dynamatic/integration-test/" + benchmark + "/out/hdl/" + benchmark + ".vhd")

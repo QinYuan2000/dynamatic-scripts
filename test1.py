@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_5"           # Date for output files in 'gurobi_out'
+date = "Jul_7"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gaussian"  
+    benchmark = "gcd"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -381,13 +381,18 @@ if __name__ == "__main__":
         )
         num += 1
 
+    max_plunit_latency = 0
+    for i in dfg_dict:
+        if dfg_dict[i]["latency"] > max_plunit_latency:
+            max_plunit_latency = dfg_dict[i]["latency"]
+            
     num = 0
     for i in cfdfcs_conpl:
         Var_Tokenpl[num] = model.addVars(  # Average occupancy of pipelined units
             i,
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=Lu_con[i],
+            ub=max_plunit_latency,
             name="Theta1pl_" + str(num),
         )
         num += 1
@@ -399,7 +404,7 @@ if __name__ == "__main__":
             i, 
             vtype=gp.GRB.CONTINUOUS,
             lb=0,
-            ub=len(cfc_nodes) - 1,
+            ub=len(i) - 1,
             name="ru_" + str(num),
         )
         num += 1
