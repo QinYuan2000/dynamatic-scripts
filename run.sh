@@ -2,7 +2,7 @@ set-dynamatic-path ./dynamatic
 
 set-clock-period 6
 
-set-src ./dynamatic/integration-test/if_loop_2/if_loop_2.c
+set-src ./dynamatic/integration-test/if_loop_1/if_loop_1.c
 
 compile
 

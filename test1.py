@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_7"           # Date for output files in 'gurobi_out'
+date = "Jul_8"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "if_loop_2"  
+    benchmark = "if_loop_1"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -355,6 +355,12 @@ if __name__ == "__main__":
         name="Rc",
     )
 
+    Var_Rc_total = model.addVars(  # Insert non-tran buffer or not.
+        dfg_edges_nopl,
+        vtype=gp.GRB.BINARY,
+        name="Rc_total",
+    )
+
     Var_Nc = model.addVars(  # The buffer size. Rc = 0, Nc > 0 means transparent buffer.
         dfg_edges_nopl, buffertype_num, # Exclude channels inside the pipelined units
         vtype=gp.GRB.INTEGER,
@@ -436,11 +442,11 @@ if __name__ == "__main__":
     )
 
     register_area = 8
-    area_calculate = [2, 25, 16, 1]
+    area_calculate = [2, 25, 16, 3]
 
     # Set Objective
     # TODO: A new lambda needed.
-    Lambda = 1e-5  # Weight of total buffer size relative to throughputs
+    Lambda = 3e-5  # Weight of total buffer size relative to throughputs
     Objective = gp.LinExpr()
     for i in range(CFDFC_NUM):  # Weighted sum of throughputs of cfdfcs
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
@@ -451,6 +457,7 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * area_calculate[2], Var_Rc_total[e])
             # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
             # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
             # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
@@ -462,6 +469,7 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Rc_total[e])
             # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
             # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
             # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
@@ -541,6 +549,14 @@ if __name__ == "__main__":
             for e in dfg_edges_nopl
         ),
         name="buffercut_nopl",
+    )
+
+    model.addConstrs(
+        (
+            Var_Rc_total[e] * 2 >= Var_Rc[e[0],e[1],0] + Var_Rc[e[0],e[1],1]
+            for e in dfg_edges_nopl
+        ),
+        name="buffercut_total",
     )
 
 
@@ -698,16 +714,23 @@ if __name__ == "__main__":
             # also lsq_load ports) in MILR convention vs in DOT convention.
             if outid == 0 and "mc_load" in pred or "LSQ_load" in pred:
                 outid = 1
-            for num in range(buffertype_num):
-                slots = int(Var_Nc[e[0],e[1],num].x)
-                if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-                    slots += 1000
-                    if num >= 2:
+            if "LSQ" in pred:
+                pred = pred.replace("LSQ", "lsq")
+            if (
+                int(Var_Nc[e[0],e[1],0].x) == 1 and int(Var_Nc[e[0],e[1],1].x) == 1
+                and int(Var_Nc[e[0],e[1],2].x) == 0 and int(Var_Nc[e[0],e[1],3].x) == 0
+            ):
+                cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=oehb"
+                cmds.append(cmd)
+            else:
+                for num in [0,1,2,3]:
+                    slots = int(Var_Nc[e[0],e[1],num].x)
+                    if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
                         slots += 1000
-                    if "LSQ" in pred:
-                        pred = pred.replace("LSQ", "lsq")
-                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
-                    cmds.append(cmd)
+                        if num >= 2:
+                            slots += 1000
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
+                        cmds.append(cmd)
 
     
 
