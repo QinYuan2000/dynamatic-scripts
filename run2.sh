@@ -1,6 +1,6 @@
 set-dynamatic-path ./dynamatic
 
-set-src ./dynamatic/integration-test/if_loop_1/if_loop_1.c
+set-src ./dynamatic/integration-test/kernel_2mm/kernel_2mm.c
 
 write-hdl
 

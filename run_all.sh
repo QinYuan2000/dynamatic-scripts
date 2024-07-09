@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-benchmarks=("if_loop_1")
+benchmarks=("kernel_2mm")
 clock_period=6
 if_synthesize=1
 

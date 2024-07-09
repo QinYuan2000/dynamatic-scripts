@@ -36,5 +36,5 @@ def process_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
 
-benchmark = "if_loop_1"
+benchmark = "kernel_2mm"
 process_file("dynamatic/integration-test/" + benchmark + "/out/hdl/" + benchmark + ".vhd")
