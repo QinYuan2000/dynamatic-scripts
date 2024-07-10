@@ -23,9 +23,12 @@ def process_file(file_path):
         first_four = match.group(1) 
         fifth_number = int(match.group(2)) 
 
-        if fifth_number >= 2000:
-            new_number = fifth_number - 2000
+        if fifth_number >= 3000:
+            new_number = fifth_number - 3000
             return f'entity work.elasticFifoInner(arch) generic map ({first_four},{new_number})'
+        elif fifth_number >= 2000:
+            new_number = fifth_number - 2000
+            return f'entity work.transpFIFO(arch) generic map ({first_four},{new_number})'
         else:
             new_number = fifth_number - 1000
             return f'entity work.OEHB_Chain(arch) generic map ({first_four},{new_number})'

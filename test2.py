@@ -600,7 +600,12 @@ if __name__ == "__main__":
             if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
                 if "LSQ" in pred:
                     pred = pred.replace("LSQ", "lsq")
-                cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
+                if slots == 1 and type_ == "tehb":
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
+                    # cmds.append(cmd)
+                    # cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=2001 type=oehb"
+                else:
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
                 cmds.append(cmd)
 
     with open("gurobi_out/buffers/" + record_key + ".txt", 'w') as f:

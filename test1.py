@@ -671,6 +671,14 @@ if __name__ == "__main__":
         ),
         name="is_pipeline"
     )
+
+    model.addConstrs(
+        (
+            Var_Nc[e[0],e[1],1] <= 1
+            for e in dfg_edges_nopl
+        ),
+        name="ConfineTEHBnum",
+    )
     
 
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
@@ -716,21 +724,43 @@ if __name__ == "__main__":
                 outid = 1
             if "LSQ" in pred:
                 pred = pred.replace("LSQ", "lsq")
-            if (
-                int(Var_Nc[e[0],e[1],0].x) == 1 and int(Var_Nc[e[0],e[1],1].x) == 1
-                and int(Var_Nc[e[0],e[1],2].x) == 0 and int(Var_Nc[e[0],e[1],3].x) == 0
-            ):
-                cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=oehb"
-                cmds.append(cmd)
-            else:
-                for num in [0,1,2,3]:
-                    slots = int(Var_Nc[e[0],e[1],num].x)
-                    if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
-                        slots += 1000
-                        if num >= 2:
-                            slots += 1000
-                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
+            if ("start" not in pred) and ("return" not in pred):
+                if int(Var_Nc[e[0],e[1],1].x) >= 1:
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
+                    cmds.append(cmd)
+                if int(Var_Nc[e[0],e[1],2].x) >= 1 and int(Var_Nc[e[0],e[1],0].x) >= 1:
+                    # Should shift
+                    slots = int(Var_Nc[e[0],e[1],2].x) + 3001
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                    cmds.append(cmd)
+                    if int(Var_Nc[e[0],e[1],0].x) == 2:
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=oehb"
                         cmds.append(cmd)
+                    elif int(Var_Nc[e[0],e[1],0].x) >= 3:
+                        slots = int(Var_Nc[e[0],e[1],0].x) + 1000 - 1
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                        cmds.append(cmd)
+                else:
+                    slots = int(Var_Nc[e[0],e[1],0].x)
+                    if slots >= 1:
+                        if slots >= 2:
+                            slots += 1000
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                        cmds.append(cmd)
+                    slots = int(Var_Nc[e[0],e[1],2].x)
+                    if slots >= 1:
+                        slots += 2000
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                        cmds.append(cmd)
+                    
+                slots = int(Var_Nc[e[0],e[1],3].x)
+                if slots >= 1:
+                    slots += 2000
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=tehb"
+                    cmds.append(cmd)
+
+
+
 
     with open("gurobi_out/buffers/" + record_key + ".txt", 'w') as f:
         f.write("\n".join(cmds))

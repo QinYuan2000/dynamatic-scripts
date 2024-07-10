@@ -6,7 +6,8 @@
 
 # exit
 
-benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "matvec" "gcd" "bicg" "sumi3_mem" "image_resize" "matrix")
+benchmarks=("fir")
+# benchmarks=("iir" "if_loop_1" "if_loop_2" "matvec" "gcd" "bicg" "sumi3_mem" "image_resize" "matrix")
 clock_period=6
 if_synthesize=1
 
@@ -49,7 +50,13 @@ function process_dynamatic1() {
         fi
     done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
 
-    cp -r dynamatic/integration-test/${benchmark}/out dynamatic/integration-test/${benchmark}/out${tag2}
+    rsync -av --delete dynamatic/integration-test/${benchmark}/out/ dynamatic/integration-test/${benchmark}/out${tag2}/
+
+    if [ "$if_synthesize" -eq 1 ]; then
+        mkdir -p report/${benchmark}_$tag2
+        cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_${tag2}/
+        cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_${tag2}/
+    fi
 }
 
 function process_dynamatic2() {
@@ -100,7 +107,13 @@ function process_dynamatic3() {
         fi
     done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
 
-    cp -r dynamatic/integration-test/${benchmark}/out dynamatic/integration-test/${benchmark}/out${tag2}
+    rsync -av --delete dynamatic/integration-test/${benchmark}/out/ dynamatic/integration-test/${benchmark}/out${tag2}/
+
+    if [ "$if_synthesize" -eq 1 ]; then
+        mkdir -p report/${benchmark}_$tag2
+        cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_${tag2}/
+        cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_${tag2}/
+    fi
 }
 
 function process_dynamatic4() {
@@ -151,5 +164,6 @@ for benchmark in "${benchmarks[@]}"; do
     process_dynamatic4 $benchmark
     update_python_script $benchmark "test2.py"
     process_dynamatic2 $benchmark "2"
+    # update_python_script2 $benchmark "revise_vhdl.py"
     process_dynamatic3 $benchmark "3" "3"
 done

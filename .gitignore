@@ -9,5 +9,5 @@ buffer-placement/
 sim/
 hdl/
 tags
-gurobi_out
-report
+gurobi_out*
+report*
