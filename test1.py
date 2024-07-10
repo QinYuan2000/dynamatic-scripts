@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_9"           # Date for output files in 'gurobi_out'
+date = "Jul_10"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "kernel_2mm"  
+    benchmark = "fir"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -732,7 +732,8 @@ if __name__ == "__main__":
                         cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={buffertype[num]}"
                         cmds.append(cmd)
 
-    
+    with open("gurobi_out/buffers/" + record_key + ".txt", 'w') as f:
+        f.write("\n".join(cmds))
 
 
     # insert buffers into the mlir file that has no buffer inside

@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_9"           # Date for output files in 'gurobi_out'
+date = "Jul_10"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "kernel_2mm"  
+    benchmark = "fir"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -248,35 +248,40 @@ if __name__ == "__main__":
     cfdfcs = [item for index, item in enumerate(cfdfcs) if index not in CFDFC_delete]
 
     # CFDFC numbers and weights after filtering
-    CFDFC_NUM = len(cfdfcs)
     cfdfcs_nopl, cfdfcs_conpl = [], []
     cfc_nodes = []
-    for cfc in cfdfcs:
-        cfdfc_nopl, cfdfc_conpl, cfdfc_varpl = list(cfc.edges()), [], []
-        for i, e in enumerate(cfc.edges()):
-            if e[0] in pl_units and e[1] in pl_units:
-                cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
+    temp_weight = []
+    for index, cfc in enumerate(cfdfcs):
+        if CFDFC_Weight[index] > 0.15:
+            cfdfc_nopl, cfdfc_conpl = list(cfc.edges()), []
+            for i, e in enumerate(cfc.edges()):
+                if e[0] in pl_units and e[1] in pl_units:
+                    cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
 
-            elif e[0] in pl_units:
-                cfdfc_nopl[i] = (e[0] + "_plout", e[1])
+                elif e[0] in pl_units:
+                    cfdfc_nopl[i] = (e[0] + "_plout", e[1])
 
-            elif e[1] in pl_units:
-                cfdfc_nopl[i] = (e[0], e[1] + "_plin")
+                elif e[1] in pl_units:
+                    cfdfc_nopl[i] = (e[0], e[1] + "_plin")
 
-        for u in cfc.nodes():
-            if u in conpl_units:
-                cfdfc_conpl.append((u + "_plin", u + "_plout"))
+            for u in cfc.nodes():
+                if u in conpl_units:
+                    cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-        cfdfcs_nopl.append(list(set(cfdfc_nopl)))
-        cfdfcs_conpl.append(list(set(cfdfc_conpl)))
+            cfdfcs_nopl.append(list(set(cfdfc_nopl)))
+            cfdfcs_conpl.append(list(set(cfdfc_conpl)))
 
-        cfc_node = list(cfc)
-        for u in conpl_units:
-            if u in cfc_node:
-                cfc_node.remove(u)
-                cfc_node.append(u + "_plin")
-                cfc_node.append(u + "_plout")
-        cfc_nodes.append(cfc_node)
+            cfc_node = list(cfc)
+            for u in conpl_units:
+                if u in cfc_node:
+                    cfc_node.remove(u)
+                    cfc_node.append(u + "_plin")
+                    cfc_node.append(u + "_plout")
+            cfc_nodes.append(cfc_node)
+            temp_weight.append(CFDFC_Weight[index])
+    CFDFC_NUM = len(temp_weight)
+    CFDFC_Weight = temp_weight
+    CFDFC_Weight = [count / sum(CFDFC_Weight) for count in CFDFC_Weight]
 
 
     # Find back edges
@@ -597,6 +602,10 @@ if __name__ == "__main__":
                     pred = pred.replace("LSQ", "lsq")
                 cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
                 cmds.append(cmd)
+
+    with open("gurobi_out/buffers/" + record_key + ".txt", 'w') as f:
+        f.write("\n".join(cmds))
+
 
     # insert buffers into the mlir file that has no buffer inside
     print("\n".join(cmds))
