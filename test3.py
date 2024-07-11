@@ -13,7 +13,7 @@ date = "Jul_10"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "fir"  
+    benchmark = "bicg"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -78,17 +78,49 @@ if __name__ == "__main__":
         )
     )
 
-    cmds = []
-    cmd = f"--handshake-placebuffers-custom=pred=mux1 outid=0 slots=1 type=oehb"
-    cmds.append(cmd)
-    cmd = f"--handshake-placebuffers-custom=pred=fork2 outid=0 slots=2 type=oehb"
-    cmds.append(cmd)
-    cmd = f"--handshake-placebuffers-custom=pred=fork3 outid=0 slots=3 type=oehb"
-    cmds.append(cmd)
-    cmd = f"--handshake-placebuffers-custom=pred=fork5 outid=0 slots=4 type=oehb"
-    cmds.append(cmd)
-    cmd = f"--handshake-placebuffers-custom=pred=mux2 outid=0 slots=5 type=oehb"
-    cmds.append(cmd)
+    # cmds = [
+    #     "--handshake-placebuffers-custom=pred=fork2 outid=1 slots=1 type=tehb",#
+    #     "--handshake-placebuffers-custom=pred=fork3 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=fork3 outid=0 slots=1 type=oehb",
+    #     "--handshake-placebuffers-custom=pred=fork4 outid=1 slots=1 type=oehb",#
+    #     "--handshake-placebuffers-custom=pred=fork4 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=fork4 outid=0 slots=1 type=oehb",
+    #     "--handshake-placebuffers-custom=pred=control_merge2 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=control_merge2 outid=0 slots=1 type=oehb",
+    #     "--handshake-placebuffers-custom=pred=addi2 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=addi2 outid=0 slots=1 type=oehb",
+    # ]
+    # cmds = [
+    #     "--handshake-placebuffers-custom=pred=mux3 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=fork2 outid=1 slots=1 type=tehb",#
+    #     "--handshake-placebuffers-custom=pred=fork3 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=fork3 outid=0 slots=1 type=oehb",
+    #     "--handshake-placebuffers-custom=pred=fork4 outid=0 slots=1 type=oehb",#
+    #     "--handshake-placebuffers-custom=pred=fork6 outid=1 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=fork6 outid=1 slots=1 type=oehb",
+    #     "--handshake-placebuffers-custom=pred=addi2 outid=0 slots=1 type=tehb",
+    #     "--handshake-placebuffers-custom=pred=addi2 outid=0 slots=1 type=oehb",
+    # ]
+    cmds = [
+        "--handshake-placebuffers-custom=pred=mux5 outid=0 slots=1 type=tehb",
+        "--handshake-placebuffers-custom=pred=mux5 outid=0 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=fork3 outid=0 slots=1004 type=oehb",#
+        "--handshake-placebuffers-custom=pred=extsi12 outid=0 slots=1004 type=oehb",#
+        "--handshake-placebuffers-custom=pred=fork4 outid=1 slots=1005 type=oehb",#
+        "--handshake-placebuffers-custom=pred=mux2 outid=0 slots=1 type=tehb",
+        "--handshake-placebuffers-custom=pred=mux2 outid=0 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=mux6 outid=0 slots=1 type=tehb",
+        "--handshake-placebuffers-custom=pred=mux6 outid=0 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=fork5 outid=2 slots=1004 type=oehb",#
+        "--handshake-placebuffers-custom=pred=control_merge5 outid=0 slots=1 type=tehb",
+        "--handshake-placebuffers-custom=pred=control_merge5 outid=0 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=fork6 outid=2 slots=1009 type=oehb",#
+        "--handshake-placebuffers-custom=pred=fork11 outid=2 slots=1009 type=oehb",#
+        "--handshake-placebuffers-custom=pred=extsi21 outid=0 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=fork14 outid=1 slots=1 type=oehb",
+        "--handshake-placebuffers-custom=pred=addi7 outid=0 slots=1 type=oehb",
+    ]
+
 
 
     # insert buffers into the mlir file that has no buffer inside

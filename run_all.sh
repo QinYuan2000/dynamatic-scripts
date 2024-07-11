@@ -6,8 +6,7 @@
 
 # exit
 
-benchmarks=("fir")
-# benchmarks=("iir" "if_loop_1" "if_loop_2" "matvec" "gcd" "bicg" "sumi3_mem" "image_resize" "matrix")
+benchmarks=("image_resize" "matrix" "gcd")
 clock_period=6
 if_synthesize=1
 
@@ -27,36 +26,36 @@ function process_dynamatic1() {
     echo "" >> run${tag}.sh
     echo "write-hdl" >> run${tag}.sh
     echo "" >> run${tag}.sh
-    echo "simulate" >> run${tag}.sh
-    if [ "$if_synthesize" -eq 1 ]; then
-        echo "" >> run${tag}.sh
-        echo "synthesize" >> run${tag}.sh
-    fi
-    echo "" >> run${tag}.sh
+    # echo "simulate" >> run${tag}.sh
+    # if [ "$if_synthesize" -eq 1 ]; then
+    #     echo "" >> run${tag}.sh
+    #     echo "synthesize" >> run${tag}.sh
+    # fi
+    # echo "" >> run${tag}.sh
     echo "exit" >> run${tag}.sh
 
     # Execute the Dynamatic script
     dynamatic/bin/dynamatic --run run${tag}.sh
 
-    # Process the output
-    next_line=false
-    while IFS= read -r line; do
-        if $next_line; then
-            echo "$line" >> output.txt
-            break
-        fi
-        if [[ "$line" == "# ** Note: simulation done!" ]]; then
-            next_line=true
-        fi
-    done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
+    # # Process the output
+    # next_line=false
+    # while IFS= read -r line; do
+    #     if $next_line; then
+    #         echo "$line" >> output.txt
+    #         break
+    #     fi
+    #     if [[ "$line" == "# ** Note: simulation done!" ]]; then
+    #         next_line=true
+    #     fi
+    # done < "dynamatic/integration-test/${benchmark}/out/sim/report.txt"
 
-    rsync -av --delete dynamatic/integration-test/${benchmark}/out/ dynamatic/integration-test/${benchmark}/out${tag2}/
+    # rsync -av --delete dynamatic/integration-test/${benchmark}/out/ dynamatic/integration-test/${benchmark}/out${tag2}/
 
-    if [ "$if_synthesize" -eq 1 ]; then
-        mkdir -p report/${benchmark}_$tag2
-        cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_${tag2}/
-        cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_${tag2}/
-    fi
+    # if [ "$if_synthesize" -eq 1 ]; then
+    #     mkdir -p report/${benchmark}_$tag2
+    #     cp dynamatic/integration-test/${benchmark}/out/synth/timing_post_syn.rpt report/${benchmark}_${tag2}/
+    #     cp dynamatic/integration-test/${benchmark}/out/synth/utilization_post_syn.rpt report/${benchmark}_${tag2}/
+    # fi
 }
 
 function process_dynamatic2() {
@@ -73,6 +72,10 @@ function process_dynamatic2() {
 
     # Execute the Dynamatic script
     dynamatic/bin/dynamatic --run run${tag}.sh
+
+    dynamatic/bin/export-dot "./dynamatic/integration-test/${benchmark}/out/comp/handshake_export.mlir" --mode=legacy --timing-models=./dynamatic/data/components.json > ./dynamatic/integration-test/${benchmark}/out/comp/${benchmark}.dot
+
+    dot -Tpng "./dynamatic/integration-test/${benchmark}/out/comp/${benchmark}.dot" > "./dynamatic/integration-test/${benchmark}/out/comp/${benchmark}.png"
 }
 
 function process_dynamatic3() {
@@ -161,9 +164,9 @@ for benchmark in "${benchmarks[@]}"; do
     process_dynamatic2 $benchmark "2"
     update_python_script2 $benchmark "revise_vhdl.py"
     process_dynamatic3 $benchmark "3" "2"
-    process_dynamatic4 $benchmark
-    update_python_script $benchmark "test2.py"
-    process_dynamatic2 $benchmark "2"
-    # update_python_script2 $benchmark "revise_vhdl.py"
-    process_dynamatic3 $benchmark "3" "3"
+    # process_dynamatic4 $benchmark
+    # update_python_script $benchmark "test2.py"
+    # process_dynamatic2 $benchmark "2"
+    # # update_python_script2 $benchmark "revise_vhdl.py"
+    # process_dynamatic3 $benchmark "3" "3"
 done

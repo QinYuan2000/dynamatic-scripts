@@ -13,7 +13,7 @@ date = "Jul_10"           # Date for output files in 'gurobi_out'
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "fir"  
+    benchmark = "matvec"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -252,33 +252,35 @@ if __name__ == "__main__":
     cfc_nodes = []
     temp_weight = []
     for index, cfc in enumerate(cfdfcs):
-        if CFDFC_Weight[index] > 0.15:
-            cfdfc_nopl, cfdfc_conpl = list(cfc.edges()), []
-            for i, e in enumerate(cfc.edges()):
-                if e[0] in pl_units and e[1] in pl_units:
-                    cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
+        cfdfc_nopl, cfdfc_conpl = list(cfc.edges()), []
+        for i, e in enumerate(cfc.edges()):
+            if e[0] in pl_units and e[1] in pl_units:
+                cfdfc_nopl[i] = (e[0] + "_plout", e[1] + "_plin")
 
-                elif e[0] in pl_units:
-                    cfdfc_nopl[i] = (e[0] + "_plout", e[1])
+            elif e[0] in pl_units:
+                cfdfc_nopl[i] = (e[0] + "_plout", e[1])
 
-                elif e[1] in pl_units:
-                    cfdfc_nopl[i] = (e[0], e[1] + "_plin")
+            elif e[1] in pl_units:
+                cfdfc_nopl[i] = (e[0], e[1] + "_plin")
 
-            for u in cfc.nodes():
-                if u in conpl_units:
-                    cfdfc_conpl.append((u + "_plin", u + "_plout"))
+        for u in cfc.nodes():
+            if u in conpl_units:
+                cfdfc_conpl.append((u + "_plin", u + "_plout"))
 
-            cfdfcs_nopl.append(list(set(cfdfc_nopl)))
-            cfdfcs_conpl.append(list(set(cfdfc_conpl)))
+        cfdfcs_nopl.append(list(set(cfdfc_nopl)))
+        cfdfcs_conpl.append(list(set(cfdfc_conpl)))
 
-            cfc_node = list(cfc)
-            for u in conpl_units:
-                if u in cfc_node:
-                    cfc_node.remove(u)
-                    cfc_node.append(u + "_plin")
-                    cfc_node.append(u + "_plout")
-            cfc_nodes.append(cfc_node)
-            temp_weight.append(CFDFC_Weight[index])
+        cfc_node = list(cfc)
+        for u in conpl_units:
+            if u in cfc_node:
+                cfc_node.remove(u)
+                cfc_node.append(u + "_plin")
+                cfc_node.append(u + "_plout")
+        cfc_nodes.append(cfc_node)
+        temp_weight.append(CFDFC_Weight[index])
+    for index,i in enumerate(temp_weight):
+        if i <= 0.15:
+            temp_weight[index] = 0
     CFDFC_NUM = len(temp_weight)
     CFDFC_Weight = temp_weight
     CFDFC_Weight = [count / sum(CFDFC_Weight) for count in CFDFC_Weight]
@@ -557,8 +559,10 @@ if __name__ == "__main__":
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
     # model.setParam(gp.GRB.Param.PoolSearchMode, 2)  
-    # model.setParam('OptimalityTol', 1e-9)
+    model.setParam('OptimalityTol', 1e-9)
     # model.setParam('MIPGap', 1e-5)
+    model.setParam('IntFeasTol', 1e-9)
+    model.setParam('FeasibilityTol', 1e-9)
 
 
     # File name to record model and results
