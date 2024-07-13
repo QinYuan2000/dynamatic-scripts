@@ -24,3 +24,6 @@
 #    Time: 3782 ns  Iteration: 1  Instance: /image_resize_tb
 #    Time: 111794 ns  Iteration: 1  Instance: /matrix_tb
 #    Time: 94 ns  Iteration: 1  Instance: /gcd_tb
+#    Time: 5474 ns  Iteration: 1  Instance: /video_filter_tb
+#    Time: 846 ns  Iteration: 1  Instance: /if_loop_2_tb
+#    Time: 446 ns  Iteration: 1  Instance: /if_loop_2_tb

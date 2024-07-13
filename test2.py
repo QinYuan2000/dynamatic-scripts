@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_10"           # Date for output files in 'gurobi_out'
+date = "Jul_13"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "matvec"  
+    benchmark = "sumi3_mem"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -438,7 +438,7 @@ if __name__ == "__main__":
 
     # Set Objective
     # TODO: Constant latency pipelined unit buffers not included, add it after optimization.
-    Lambda = 1e-5  # Weight of total buffer size relative to throughputs
+    Lambda = 1e-4  # Weight of total buffer size relative to throughputs
     Objective = gp.LinExpr()
     for i in range(CFDFC_NUM):  # Weighted sum of throughputs of cfdfcs
         Objective.addTerms(CFDFC_Weight[i], Var_Throughput[i])
@@ -555,6 +555,11 @@ if __name__ == "__main__":
         name="ExtraConstr",
     )
 
+    ExtraConstr2 = model.addConstrs(
+        (Var_Nc[e] <= Var_Rc[e] * 1000 for e in dfg_edges_nopl),
+        name="ExtraConstr2",
+    )
+
 
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
@@ -604,12 +609,20 @@ if __name__ == "__main__":
             if slots >= 1 and (("start" not in pred) and ("return" not in pred)):
                 if "LSQ" in pred:
                     pred = pred.replace("LSQ", "lsq")
-                if slots == 1 and type_ == "tehb":
+                if type_ == "tehb":
+                    if slots == 1:
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=2001 type=oehb"
+                    else:
+                        cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=tehb"
+                elif slots == 1:
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                elif slots == 2:
                     cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
-                    # cmds.append(cmd)
-                    # cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=2001 type=oehb"
+                    cmds.append(cmd)
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=oehb"
                 else:
-                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type={type_}"
+                    slots = slots + 4000 - 1 
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
                 cmds.append(cmd)
 
     with open("gurobi_out/buffers/" + record_key + ".txt", 'w') as f:

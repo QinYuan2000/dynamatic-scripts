@@ -5,8 +5,8 @@ def process_file(file_path):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    transpFifo_pattern = re.compile(r'entity work\.transpFifo\(arch\) generic map \((\d+,\d+,\d+,\d+),(2\d{3}|1\d{3})\)')
-    nontranspFifo_pattern = re.compile(r'entity work\.nontranspFifo\(arch\) generic map \((\d+,\d+,\d+,\d+),(2\d{3}|1\d{3})\)')
+    transpFifo_pattern = re.compile(r'entity work\.transpFifo\(arch\) generic map \((\d+,\d+,\d+,\d+),(4\d{3}|3\d{3}|2\d{3}|1\d{3})\)')
+    nontranspFifo_pattern = re.compile(r'entity work\.nontranspFifo\(arch\) generic map \((\d+,\d+,\d+,\d+),(4\d{3}|3\d{3}|2\d{3}|1\d{3})\)')
 
     def transpFifo_repl(match):
         first_four = match.group(1) 
@@ -23,7 +23,10 @@ def process_file(file_path):
         first_four = match.group(1) 
         fifth_number = int(match.group(2)) 
 
-        if fifth_number >= 3000:
+        if fifth_number >= 4000:
+            new_number = fifth_number - 4000
+            return f'entity work.nontranspFifo(arch) generic map ({first_four},{new_number})'
+        elif fifth_number >= 3000:
             new_number = fifth_number - 3000
             return f'entity work.elasticFifoInner(arch) generic map ({first_four},{new_number})'
         elif fifth_number >= 2000:
@@ -39,5 +42,5 @@ def process_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
 
-benchmark = "gcd"
+benchmark = "sumi3_mem"
 process_file("dynamatic/integration-test/" + benchmark + "/out/hdl/" + benchmark + ".vhd")

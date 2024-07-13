@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_11"           # Date for output files in 'gurobi_out'
+date = "Jul_13"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "gcd"  
+    benchmark = "stencil_2d"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -668,27 +668,27 @@ if __name__ == "__main__":
     #     name="CeilingConstrpl",
     # )
 
-    # model.addConstrs(
-    #     (
-    #         Var_Token[num][e] <= 
-    #         Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] * (1 - Var_Throughput[num]) +
-    #         Var_Nc[e[0],e[1],2] + Ceiling[num][e]
-    #         for num in range(CFDFC_NUM)
-    #         for e in cfdfcs_nopl[num]
-    #     ),
-    #     name="upperbound_nopl",
-    # )
-
     model.addConstrs(
         (
             Var_Token[num][e] <= 
-            Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] +
+            Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] * (1 - Var_Throughput[num]) +
             Var_Nc[e[0],e[1],2] + Ceiling[num][e]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
         name="upperbound_nopl",
     )
+
+    # model.addConstrs(
+    #     (
+    #         Var_Token[num][e] <= 
+    #         Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] +
+    #         Var_Nc[e[0],e[1],2] + Ceiling[num][e]
+    #         for num in range(CFDFC_NUM)
+    #         for e in cfdfcs_nopl[num]
+    #     ),
+    #     name="upperbound_nopl",
+    # )
 
     model.addConstrs(
         (
@@ -940,3 +940,5 @@ if __name__ == "__main__":
 
 
 # dfg_dict["muli1_plin"]["delay"]
+
+# rsync -av --delete dynamatic/integration-test/matrix/out/ dynamatic/integration-test/matrix/out3/
