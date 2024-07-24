@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_13"           # Date for output files in 'gurobi_out'
+date = "Jul_23"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "stencil_2d"  
+    benchmark = "video_filter"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 6
+    CP = 4
     CPmax = 100
 
     # Create datasheet for dfg
@@ -345,8 +345,8 @@ if __name__ == "__main__":
                     break
 
     signal_num = 2  # Index sequence: (DATA, VALID), READY
-    buffertype_num = 4 # Index sequence: OB TB FT PL ; TODO: Indexed by name
-    buffertype = ['oehb', 'tehb', 'oehb', 'tehb']   # TODO: Actually OB TB FT PL
+    buffertype_num = 5 # Index sequence: OB TB FT PL DR; TODO: Indexed by name
+    buffertype = ['oehb', 'tehb', 'oehb', 'tehb', 'tehb']   # TODO: Actually OB TB FT PL DR
     # Initialize model
     model = gp.Model()
 
@@ -444,7 +444,7 @@ if __name__ == "__main__":
     )
 
     register_area = 8
-    area_calculate = [2, 20, 25, 3]
+    area_calculate = [2, 20, 25, 3, 2.1]
 
     # Set Objective
     # TODO: A new lambda needed.
@@ -459,10 +459,8 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * area_calculate[4], Var_Nc[e[0],e[1],4])
             Objective.addTerms(-Lambda * 16, Var_Nc_total[e])
-            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],0])
-            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],1])
-            # Objective.addTerms(-Lambda * register_area, Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * 0.01, Var_Nc[e[0],e[1],3])
 
     for num in range(signal_num):
@@ -471,10 +469,8 @@ if __name__ == "__main__":
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[1], Var_Nc[e[0],e[1],1])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[2], Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[3], Is_Pipeline[e])
+            Objective.addTerms(-Lambda * multi_edges[e] * area_calculate[4], Var_Nc[e[0],e[1],4])
             Objective.addTerms(-Lambda * multi_edges[e] * 16, Var_Nc_total[e])
-            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],0])
-            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],1])
-            # Objective.addTerms(-Lambda * multi_edges[e] * register_area, Var_Nc[e[0],e[1],2])
             Objective.addTerms(-Lambda * multi_edges[e] * 0.01, Var_Nc[e[0],e[1],3])
 
     # for (
@@ -542,6 +538,7 @@ if __name__ == "__main__":
         [0,1],    #TB
         [0,0],    #FT
         [1,0],    #PL
+        [1,1],    #DR
     ])
     model.addConstrs(
         (
@@ -558,7 +555,7 @@ if __name__ == "__main__":
         (
             gp.quicksum(
                 buffercut[i, num] * Var_Nc[e[0],e[1],i] for i in range(buffertype_num)
-            ) <= Var_Rc[e[0],e[1],num] * 4000
+            ) <= Var_Rc[e[0],e[1],num] * 5000
             for num in range(signal_num) 
             for e in dfg_edges_nopl
         ),
@@ -567,8 +564,7 @@ if __name__ == "__main__":
 
     model.addConstrs(
         (
-            Var_Nc_total[e] * 4000 >= Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] + 
-            Var_Nc[e[0],e[1],2] + Var_Nc[e[0],e[1],3]
+            Var_Nc_total[e] * 5000 >= gp.quicksum(Var_Nc[e[0],e[1],i] for i in range(buffertype_num))
             for e in dfg_edges_nopl
         ),
         name="buffer_total",
@@ -576,8 +572,7 @@ if __name__ == "__main__":
 
     model.addConstrs(
         (
-            Var_Nc_total[e] <= Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] + 
-            Var_Nc[e[0],e[1],2] + Var_Nc[e[0],e[1],3]
+            Var_Nc_total[e] <= gp.quicksum(Var_Nc[e[0],e[1],i] for i in range(buffertype_num))
             for e in dfg_edges_nopl
         ),
         name="buffer_total",
@@ -609,7 +604,8 @@ if __name__ == "__main__":
         (
             Var_Token[num][e] >= 
             Var_Nc[e[0],e[1],0] * Var_Throughput[num] + 
-            Var_Nc[e[0],e[1],3] * Var_Throughput[num]
+            Var_Nc[e[0],e[1],3] * Var_Throughput[num] +
+            Var_Nc[e[0],e[1],4] * Var_Throughput[num]
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
@@ -672,7 +668,7 @@ if __name__ == "__main__":
         (
             Var_Token[num][e] <= 
             Var_Nc[e[0],e[1],0] + Var_Nc[e[0],e[1],1] * (1 - Var_Throughput[num]) +
-            Var_Nc[e[0],e[1],2] + Ceiling[num][e]
+            Var_Nc[e[0],e[1],2] + Ceiling[num][e] + Var_Nc[e[0],e[1],4] * (1 - Var_Throughput[num])
             for num in range(CFDFC_NUM)
             for e in cfdfcs_nopl[num]
         ),
@@ -715,84 +711,6 @@ if __name__ == "__main__":
         name="ConfineTEHBnum",
     )
 
-    # model.addConstr(
-    #     (
-    #         Var_Throughput[0] <= 0.2
-    #     ),
-    #     name="ConfineTEHBnum",
-    # )
-    
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork3","cond_br3",0] == 1
-    #     ),
-    #     name="1",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork3","cond_br3",1] == 1
-    #     ),
-    #     name="2",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork4","cond_br4",0] == 1
-    #     ),
-    #     name="3",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork2","mc_store0",1] == 1
-    #     ),
-    #     name="4",
-    # )
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork6","cond_br5",0] == 1
-    #     ),
-    #     name="5",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["fork6","cond_br5",1] == 1
-    #     ),
-    #     name="6",
-    # )
-    # model.addConstr(
-    #     (
-    #         Var_Nc["addi2","fork8",0] == 1
-    #     ),
-    #     name="7",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["addi2","fork8",1] == 1
-    #     ),
-    #     name="8",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["muli0_plout","addi0",0] == 1
-    #     ),
-    #     name="9",
-    # )
-
-    # model.addConstr(
-    #     (
-    #         Var_Nc["mux3","fork4",1] == 1
-    #     ),
-    #     name="10",
-    # )
-    
-
-
-
 
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
@@ -801,6 +719,7 @@ if __name__ == "__main__":
     # model.setParam('MIPGap', 1e-5)
     model.setParam('IntFeasTol', 1e-9)
     model.setParam('FeasibilityTol', 1e-9)
+    model.setParam('TimeLimit', 3000)
 
 
     # File name to record model and results
@@ -842,6 +761,10 @@ if __name__ == "__main__":
             if ("start" not in pred) and ("return" not in pred):
                 if int(Var_Nc[e[0],e[1],1].x) >= 1:
                     cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
+                    cmds.append(cmd)
+                if int(Var_Nc[e[0],e[1],4].x) >= 1:
+                    slots = int(Var_Nc[e[0],e[1],4].x) + 4000
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=tehb"
                     cmds.append(cmd)
                 if int(Var_Nc[e[0],e[1],2].x) >= 1 and int(Var_Nc[e[0],e[1],0].x) >= 1:
                     # Should shift

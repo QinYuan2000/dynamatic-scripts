@@ -12,7 +12,13 @@ def process_file(file_path):
         first_four = match.group(1) 
         fifth_number = int(match.group(2)) 
 
-        if fifth_number >= 2000:
+        if fifth_number >= 4000:
+            new_number = fifth_number - 4000
+            return f'entity work.DVR_Chain(arch) generic map ({first_four},{new_number})'
+        elif fifth_number >= 3000:
+            new_number = fifth_number - 3000
+            return f'entity work.DVR(arch) generic map ({first_four})'
+        elif fifth_number >= 2000:
             new_number = fifth_number - 2000
             return f'entity work.Pipeline(arch) generic map ({first_four},{new_number})'
         else:
@@ -42,5 +48,5 @@ def process_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
 
-benchmark = "sumi3_mem"
+benchmark = "video_filter"
 process_file("dynamatic/integration-test/" + benchmark + "/out/hdl/" + benchmark + ".vhd")

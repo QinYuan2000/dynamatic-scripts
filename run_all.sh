@@ -6,8 +6,9 @@
 
 # exit
 
-benchmarks=("if_loop_2" "if_loop_3")
-clock_period=6
+# benchmarks=("matvec")
+benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "image_resize" "matrix" "video_filter")
+clock_period=4
 if_synthesize=1
 
 
@@ -164,9 +165,9 @@ for benchmark in "${benchmarks[@]}"; do
     process_dynamatic2 $benchmark "2"
     update_python_script2 $benchmark "revise_vhdl.py"
     process_dynamatic3 $benchmark "3" "2"
-    # process_dynamatic4 $benchmark
-    # update_python_script $benchmark "test2.py"
-    # process_dynamatic2 $benchmark "2"
-    # # update_python_script2 $benchmark "revise_vhdl.py"
-    # process_dynamatic3 $benchmark "3" "3"
+    process_dynamatic4 $benchmark
+    update_python_script $benchmark "test2.py"
+    process_dynamatic2 $benchmark "2"
+    update_python_script2 $benchmark "revise_vhdl.py"
+    process_dynamatic3 $benchmark "3" "3"
 done

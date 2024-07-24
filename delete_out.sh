@@ -1,7 +1,7 @@
 #!/bin/bash
 
 base_folder="gurobi_out"
-folders=("log" "model" "solution")
+folders=("buffers" "log" "model" "solution")
 
 for folder in "${folders[@]}"; do
     path="$base_folder/$folder"

@@ -7,13 +7,13 @@ import gurobipy as gp
 import subprocess
 
 
-date = "Jul_13"           # Date for output files in 'gurobi_out'
+date = "Jul_23"           # Date for output files in 'gurobi_out'
 
 
 if __name__ == "__main__":
     benchmark_directory = Path("./dynamatic/integration-test")
     # Choose circuit benchmark.
-    benchmark = "sumi3_mem"  
+    benchmark = "video_filter"  
     # =============================================================================================================#
     dotfile = (
         benchmark_directory / benchmark / "out" / "comp" / (benchmark + ".dot")
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         dfg.remove_nodes_from([i])
 
     # Clock period and maximum clock period
-    CP = 6
+    CP = 4
     CPmax = 100
 
     # Create datasheet for dfg
@@ -560,7 +560,6 @@ if __name__ == "__main__":
         name="ExtraConstr2",
     )
 
-
     # model.setParam(gp.GRB.Param.PoolSolutions, 2)
     # model.setParam(gp.GRB.Param.PoolGap, 0)
     # model.setParam(gp.GRB.Param.PoolSearchMode, 2)  
@@ -615,7 +614,7 @@ if __name__ == "__main__":
                     else:
                         cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=tehb"
                 elif slots == 1:
-                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots={slots} type=oehb"
+                    cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=3001 type=tehb"
                 elif slots == 2:
                     cmd = f"--handshake-placebuffers-custom=pred={pred} outid={outid} slots=1 type=tehb"
                     cmds.append(cmd)
