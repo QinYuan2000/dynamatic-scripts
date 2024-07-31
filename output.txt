@@ -1,0 +1,16 @@
+#    Time: 8062 ns  Iteration: 1  Instance: /fir_tb
+#    Time: 8058 ns  Iteration: 1  Instance: /fir_tb
+#    Time: 20030 ns  Iteration: 1  Instance: /iir_tb
+#    Time: 16038 ns  Iteration: 1  Instance: /iir_tb
+#    Time: 866 ns  Iteration: 1  Instance: /if_loop_1_tb
+#    Time: 866 ns  Iteration: 1  Instance: /if_loop_1_tb
+#    Time: 850 ns  Iteration: 1  Instance: /if_loop_2_tb
+#    Time: 858 ns  Iteration: 1  Instance: /if_loop_2_tb
+#    Time: 8074 ns  Iteration: 1  Instance: /sumi3_mem_tb
+#    Time: 8074 ns  Iteration: 1  Instance: /sumi3_mem_tb
+#    Time: 80474 ns  Iteration: 1  Instance: /matvec_tb
+#    Time: 80874 ns  Iteration: 1  Instance: /matvec_tb
+#    Time: 7374 ns  Iteration: 1  Instance: /image_resize_tb
+#    Time: 8998 ns  Iteration: 1  Instance: /image_resize_tb
+#    Time: 219910 ns  Iteration: 1  Instance: /matrix_tb
+#    Time: 219910 ns  Iteration: 1  Instance: /matrix_tb

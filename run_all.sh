@@ -6,9 +6,9 @@
 
 # exit
 
-# benchmarks=("matvec")
-benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "image_resize" "matrix" "video_filter")
-clock_period=4
+benchmarks=("fir")
+# benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "image_resize" "matrix" "video_filter")
+clock_period=6
 if_synthesize=1
 
 

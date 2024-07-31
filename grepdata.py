@@ -15,13 +15,17 @@ def analyze_slots(benchmark, index, output_filename):
     data = {
         'OEHB': defaultdict(int),
         'TEHB': defaultdict(int),
+        'DVR': defaultdict(int),
         'transpFifo': {'bitwidth': defaultdict(int), 'total_slots': 0},
         'nontranspFifo': {'bitwidth': defaultdict(int), 'total_slots': 0},
-        'Pipeline': {'bitwidth': defaultdict(int), 'total_slots': 0}
+        'Pipeline': {'bitwidth': defaultdict(int), 'total_slots': 0},
+        'DVR_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
+        'OEHB_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
+        'TEHB_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
     }
 
     # 正则表达式模式，匹配到最后两个数字
-    pattern = r"work\.(OEHB|TEHB|transpFifo|nontranspFifo|Pipeline)\([^)]*?\)\s*generic\s*map\s*\([^)]*?(\d+)\s*,\s*(\d+)\s*\)"
+    pattern = r"work\.(OEHB|TEHB|transpFifo|nontranspFifo|Pipeline|DVR|DVR_Chain|OEHB_Chain|TEHB_Chain)\([^)]*?\)\s*generic\s*map\s*\([^)]*?(\d+)\s*,\s*(\d+)\s*\)"
     
     # 读取和处理文件
     total_bitwidth_sum = 0
@@ -31,7 +35,7 @@ def analyze_slots(benchmark, index, output_filename):
             matches = re.finditer(pattern, line)
             for match in matches:
                 slot_type = match.group(1)
-                if slot_type in ['OEHB', 'TEHB']:
+                if slot_type in ['OEHB', 'TEHB', 'DVR']:
                     bitwidth = int(match.group(3))  # 最后一个数字是bitwidth
                     data[slot_type][bitwidth] += 1
                     total_bitwidth_sum += bitwidth
@@ -48,7 +52,7 @@ def analyze_slots(benchmark, index, output_filename):
     with open(output_filename, 'a') as output_file:
         output_file.write(f"---------- Start of {benchmark} Index {index} ---------------------------------------\n")
         for slot_type, slots in data.items():
-            if slot_type in ['OEHB', 'TEHB']:
+            if slot_type in ['OEHB', 'TEHB', 'DVR']:
                 total_slots = sum(slots.values())
                 bitwidth_sum = sum(bw * count for bw, count in slots.items())
             else:
@@ -58,7 +62,7 @@ def analyze_slots(benchmark, index, output_filename):
             if total_slots > 0:
                 output_file.write(f"For {benchmark}, Index {index}, Slot Type {slot_type}:\n")
                 output_file.write(f"  Total slots: {total_slots}\n")
-                for bw, count in (slots['bitwidth'].items() if slot_type not in ['OEHB', 'TEHB'] else slots.items()):
+                for bw, count in (slots['bitwidth'].items() if slot_type not in ['OEHB', 'TEHB', 'DVR'] else slots.items()):
                     output_file.write(f"  Bitwidth {bw}: {count} slots\n")
                 output_file.write(f"  Total Bitwidth Sum: {bitwidth_sum}\n\n")
 
@@ -69,4 +73,4 @@ def analyze_slots(benchmark, index, output_filename):
     print(f"Analysis completed for {benchmark} Index {index}. Results appended to {output_filename}")
 
 # 示例调用
-analyze_slots('image_resize', 3, 'slot_bitwidth.txt')
+analyze_slots('if_loop_2', 3, 'slot_bitwidth.txt')
