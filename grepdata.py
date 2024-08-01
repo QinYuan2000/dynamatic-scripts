@@ -3,31 +3,26 @@ from collections import defaultdict
 import os
 
 def analyze_slots(benchmark, index, output_filename):
-    # 定义文件路径
     file_path = f"dynamatic/integration-test/{benchmark}/out{index}/hdl/{benchmark}.vhd"
     
-    # 确保文件存在
     if not os.path.exists(file_path):
         print(f"Error: The file {file_path} does not exist.")
         return
     
-    # 初始化存储结构
     data = {
         'OEHB': defaultdict(int),
         'TEHB': defaultdict(int),
         'DVR': defaultdict(int),
         'transpFifo': {'bitwidth': defaultdict(int), 'total_slots': 0},
-        'nontranspFifo': {'bitwidth': defaultdict(int), 'total_slots': 0},
+        # 'nontranspFifo': {'bitwidth': defaultdict(int), 'total_slots': 0},
         'Pipeline': {'bitwidth': defaultdict(int), 'total_slots': 0},
         'DVR_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
         'OEHB_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
         'TEHB_Chain': {'bitwidth': defaultdict(int), 'total_slots': 0},
     }
 
-    # 正则表达式模式，匹配到最后两个数字
     pattern = r"work\.(OEHB|TEHB|transpFifo|nontranspFifo|Pipeline|DVR|DVR_Chain|OEHB_Chain|TEHB_Chain)\([^)]*?\)\s*generic\s*map\s*\([^)]*?(\d+)\s*,\s*(\d+)\s*\)"
     
-    # 读取和处理文件
     total_bitwidth_sum = 0
     total_slot_count = 0
     with open(file_path, 'r') as file:
@@ -36,19 +31,33 @@ def analyze_slots(benchmark, index, output_filename):
             for match in matches:
                 slot_type = match.group(1)
                 if slot_type in ['OEHB', 'TEHB', 'DVR']:
-                    bitwidth = int(match.group(3))  # 最后一个数字是bitwidth
+                    bitwidth = int(match.group(3)) 
                     data[slot_type][bitwidth] += 1
                     total_bitwidth_sum += bitwidth
                     total_slot_count += 1
+
+                elif slot_type in ['nontranspFifo']:
+                    bitwidth = int(match.group(2)) 
+                    slots = int(match.group(3)) - 1
+                    data['transpFifo']['bitwidth'][bitwidth] += slots
+                    data['transpFifo']['total_slots'] += slots
+                    total_bitwidth_sum += bitwidth * slots
+                    total_slot_count += slots
+
+                    data['OEHB'][bitwidth] += 1
+                    data['TEHB'][bitwidth] += 1
+
+                    total_bitwidth_sum += 2 * bitwidth
+                    total_slot_count += 2
+
                 else:
-                    bitwidth = int(match.group(2))  # 倒数第二个数字是bitwidth
-                    slots = int(match.group(3))  # 最后一个数字是slot number
+                    bitwidth = int(match.group(2)) 
+                    slots = int(match.group(3)) 
                     data[slot_type]['bitwidth'][bitwidth] += slots
                     data[slot_type]['total_slots'] += slots
                     total_bitwidth_sum += bitwidth * slots
                     total_slot_count += slots
 
-    # 输出结果到文件
     with open(output_filename, 'a') as output_file:
         output_file.write(f"---------- Start of {benchmark} Index {index} ---------------------------------------\n")
         for slot_type, slots in data.items():
@@ -72,5 +81,6 @@ def analyze_slots(benchmark, index, output_filename):
 
     print(f"Analysis completed for {benchmark} Index {index}. Results appended to {output_filename}")
 
-# 示例调用
-analyze_slots('if_loop_2', 3, 'slot_bitwidth.txt')
+for index in ["fir", "iir", "if_loop_2", "sumi3_mem", "matvec", "video_filter", "image_resize", "matrix"]:
+    for i in [2,3]:
+        analyze_slots(index, i, 'slot_bitwidth.txt')

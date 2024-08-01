@@ -6,9 +6,9 @@
 
 # exit
 
-benchmarks=("fir")
+benchmarks=("video_filter")
 # benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "image_resize" "matrix" "video_filter")
-clock_period=6
+clock_period=4
 if_synthesize=1
 
 

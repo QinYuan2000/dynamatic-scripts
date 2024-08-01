@@ -14,3 +14,6 @@
 #    Time: 8998 ns  Iteration: 1  Instance: /image_resize_tb
 #    Time: 219910 ns  Iteration: 1  Instance: /matrix_tb
 #    Time: 219910 ns  Iteration: 1  Instance: /matrix_tb
+#    Time: 7390 ns  Iteration: 1  Instance: /video_filter_tb
+#    Time: 9482 ns  Iteration: 1  Instance: /video_filter_tb
+#    Time: 7510 ns  Iteration: 1  Instance: /video_filter_tb
