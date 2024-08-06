@@ -1,0 +1,701 @@
+---------- Start of fir Index 1 ---------------------------------------
+For fir, Index 1, Slot Type OEHB:
+  Total slots: 5
+  Bitwidth 11: 1 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 12: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 88
+
+For fir, Index 1, Slot Type TEHB:
+  Total slots: 2
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 33
+
+For fir, Index 1, Slot Type transpFifo:
+  Total slots: 4
+  Bitwidth 1: 4 slots
+  Total Bitwidth Sum: 4
+
+Total slot count across all types: 11
+Total bitwidth sum across all types: 125
+----------------------------------------------------------------------
+
+---------- Start of fir Index 2 ---------------------------------------
+For fir, Index 2, Slot Type OEHB:
+  Total slots: 3
+  Bitwidth 11: 1 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 44
+
+For fir, Index 2, Slot Type Pipeline:
+  Total slots: 6
+  Bitwidth 1: 6 slots
+  Total Bitwidth Sum: 6
+
+For fir, Index 2, Slot Type DVR_Chain:
+  Total slots: 3
+  Bitwidth 32: 1 slots
+  Bitwidth 12: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 45
+
+Total slot count across all types: 12
+Total bitwidth sum across all types: 95
+----------------------------------------------------------------------
+
+---------- Start of fir Index 3 ---------------------------------------
+For fir, Index 3, Slot Type OEHB:
+  Total slots: 4
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 35
+
+For fir, Index 3, Slot Type TEHB:
+  Total slots: 4
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 35
+
+For fir, Index 3, Slot Type transpFifo:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+For fir, Index 3, Slot Type DVR:
+  Total slots: 2
+  Bitwidth 11: 1 slots
+  Bitwidth 12: 1 slots
+  Total Bitwidth Sum: 23
+
+Total slot count across all types: 12
+Total bitwidth sum across all types: 95
+----------------------------------------------------------------------
+
+---------- Start of iir Index 1 ---------------------------------------
+For iir, Index 1, Slot Type OEHB:
+  Total slots: 7
+  Bitwidth 32: 4 slots
+  Bitwidth 1: 1 slots
+  Bitwidth 12: 2 slots
+  Total Bitwidth Sum: 153
+
+For iir, Index 1, Slot Type TEHB:
+  Total slots: 4
+  Bitwidth 1: 1 slots
+  Bitwidth 32: 3 slots
+  Total Bitwidth Sum: 97
+
+Total slot count across all types: 11
+Total bitwidth sum across all types: 250
+----------------------------------------------------------------------
+
+---------- Start of iir Index 2 ---------------------------------------
+For iir, Index 2, Slot Type OEHB:
+  Total slots: 6
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 12: 1 slots
+  Total Bitwidth Sum: 79
+
+For iir, Index 2, Slot Type Pipeline:
+  Total slots: 5
+  Bitwidth 32: 5 slots
+  Total Bitwidth Sum: 160
+
+For iir, Index 2, Slot Type DVR_Chain:
+  Total slots: 4
+  Bitwidth 11: 1 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 76
+
+Total slot count across all types: 15
+Total bitwidth sum across all types: 315
+----------------------------------------------------------------------
+
+---------- Start of iir Index 3 ---------------------------------------
+For iir, Index 3, Slot Type OEHB:
+  Total slots: 2
+  Bitwidth 1: 1 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 33
+
+For iir, Index 3, Slot Type TEHB:
+  Total slots: 2
+  Bitwidth 1: 1 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 33
+
+For iir, Index 3, Slot Type DVR:
+  Total slots: 8
+  Bitwidth 11: 1 slots
+  Bitwidth 1: 2 slots
+  Bitwidth 32: 4 slots
+  Bitwidth 12: 1 slots
+  Total Bitwidth Sum: 153
+
+Total slot count across all types: 12
+Total bitwidth sum across all types: 219
+----------------------------------------------------------------------
+
+---------- Start of if_loop_1 Index 1 ---------------------------------------
+For if_loop_1, Index 1, Slot Type OEHB:
+  Total slots: 11
+  Bitwidth 32: 9 slots
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 290
+
+For if_loop_1, Index 1, Slot Type TEHB:
+  Total slots: 3
+  Bitwidth 1: 2 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 34
+
+For if_loop_1, Index 1, Slot Type transpFifo:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+Total slot count across all types: 16
+Total bitwidth sum across all types: 326
+----------------------------------------------------------------------
+
+---------- Start of if_loop_1 Index 2 ---------------------------------------
+For if_loop_1, Index 2, Slot Type OEHB:
+  Total slots: 7
+  Bitwidth 32: 7 slots
+  Total Bitwidth Sum: 224
+
+For if_loop_1, Index 2, Slot Type Pipeline:
+  Total slots: 8
+  Bitwidth 1: 8 slots
+  Total Bitwidth Sum: 8
+
+For if_loop_1, Index 2, Slot Type DVR_Chain:
+  Total slots: 4
+  Bitwidth 32: 3 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 97
+
+Total slot count across all types: 19
+Total bitwidth sum across all types: 329
+----------------------------------------------------------------------
+
+---------- Start of if_loop_1 Index 3 ---------------------------------------
+For if_loop_1, Index 3, Slot Type OEHB:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+For if_loop_1, Index 3, Slot Type TEHB:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+For if_loop_1, Index 3, Slot Type transpFifo:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+For if_loop_1, Index 3, Slot Type DVR:
+  Total slots: 11
+  Bitwidth 32: 10 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 321
+
+Total slot count across all types: 17
+Total bitwidth sum across all types: 327
+----------------------------------------------------------------------
+
+---------- Start of if_loop_2 Index 1 ---------------------------------------
+For if_loop_2, Index 1, Slot Type OEHB:
+  Total slots: 9
+  Bitwidth 32: 8 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 257
+
+For if_loop_2, Index 1, Slot Type TEHB:
+  Total slots: 2
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 2
+
+Total slot count across all types: 11
+Total bitwidth sum across all types: 259
+----------------------------------------------------------------------
+
+---------- Start of if_loop_2 Index 2 ---------------------------------------
+For if_loop_2, Index 2, Slot Type OEHB:
+  Total slots: 5
+  Bitwidth 1: 1 slots
+  Bitwidth 32: 4 slots
+  Total Bitwidth Sum: 129
+
+For if_loop_2, Index 2, Slot Type Pipeline:
+  Total slots: 3
+  Bitwidth 1: 3 slots
+  Total Bitwidth Sum: 3
+
+For if_loop_2, Index 2, Slot Type DVR_Chain:
+  Total slots: 4
+  Bitwidth 32: 3 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 97
+
+Total slot count across all types: 12
+Total bitwidth sum across all types: 229
+----------------------------------------------------------------------
+
+---------- Start of if_loop_2 Index 3 ---------------------------------------
+For if_loop_2, Index 3, Slot Type OEHB:
+  Total slots: 1
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 1
+
+For if_loop_2, Index 3, Slot Type TEHB:
+  Total slots: 1
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 1
+
+For if_loop_2, Index 3, Slot Type DVR:
+  Total slots: 9
+  Bitwidth 32: 6 slots
+  Bitwidth 1: 3 slots
+  Total Bitwidth Sum: 195
+
+Total slot count across all types: 11
+Total bitwidth sum across all types: 197
+----------------------------------------------------------------------
+
+---------- Start of sumi3_mem Index 1 ---------------------------------------
+For sumi3_mem, Index 1, Slot Type OEHB:
+  Total slots: 6
+  Bitwidth 11: 1 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 12: 1 slots
+  Bitwidth 1: 2 slots
+  Total Bitwidth Sum: 89
+
+For sumi3_mem, Index 1, Slot Type TEHB:
+  Total slots: 1
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 1
+
+For sumi3_mem, Index 1, Slot Type transpFifo:
+  Total slots: 10
+  Bitwidth 1: 8 slots
+  Bitwidth 32: 2 slots
+  Total Bitwidth Sum: 72
+
+Total slot count across all types: 17
+Total bitwidth sum across all types: 162
+----------------------------------------------------------------------
+
+---------- Start of sumi3_mem Index 2 ---------------------------------------
+For sumi3_mem, Index 2, Slot Type OEHB:
+  Total slots: 3
+  Bitwidth 32: 1 slots
+  Bitwidth 12: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 45
+
+For sumi3_mem, Index 2, Slot Type Pipeline:
+  Total slots: 17
+  Bitwidth 1: 14 slots
+  Bitwidth 32: 3 slots
+  Total Bitwidth Sum: 110
+
+For sumi3_mem, Index 2, Slot Type DVR_Chain:
+  Total slots: 3
+  Bitwidth 11: 1 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 44
+
+Total slot count across all types: 23
+Total bitwidth sum across all types: 199
+----------------------------------------------------------------------
+
+---------- Start of sumi3_mem Index 3 ---------------------------------------
+For sumi3_mem, Index 3, Slot Type OEHB:
+  Total slots: 4
+  Bitwidth 1: 2 slots
+  Bitwidth 32: 2 slots
+  Total Bitwidth Sum: 66
+
+For sumi3_mem, Index 3, Slot Type TEHB:
+  Total slots: 4
+  Bitwidth 1: 2 slots
+  Bitwidth 32: 2 slots
+  Total Bitwidth Sum: 66
+
+For sumi3_mem, Index 3, Slot Type transpFifo:
+  Total slots: 6
+  Bitwidth 1: 5 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 37
+
+For sumi3_mem, Index 3, Slot Type DVR:
+  Total slots: 4
+  Bitwidth 11: 1 slots
+  Bitwidth 1: 2 slots
+  Bitwidth 12: 1 slots
+  Total Bitwidth Sum: 25
+
+Total slot count across all types: 18
+Total bitwidth sum across all types: 194
+----------------------------------------------------------------------
+
+---------- Start of video_filter Index 1 ---------------------------------------
+For video_filter, Index 1, Slot Type OEHB:
+  Total slots: 15
+  Bitwidth 32: 4 slots
+  Bitwidth 6: 5 slots
+  Bitwidth 1: 5 slots
+  Bitwidth 7: 1 slots
+  Total Bitwidth Sum: 170
+
+For video_filter, Index 1, Slot Type TEHB:
+  Total slots: 9
+  Bitwidth 1: 6 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 6: 1 slots
+  Total Bitwidth Sum: 76
+
+For video_filter, Index 1, Slot Type transpFifo:
+  Total slots: 29
+  Bitwidth 6: 8 slots
+  Bitwidth 1: 8 slots
+  Bitwidth 13: 4 slots
+  Bitwidth 32: 9 slots
+  Total Bitwidth Sum: 396
+
+Total slot count across all types: 53
+Total bitwidth sum across all types: 642
+----------------------------------------------------------------------
+
+---------- Start of video_filter Index 2 ---------------------------------------
+For video_filter, Index 2, Slot Type OEHB:
+  Total slots: 14
+  Bitwidth 32: 5 slots
+  Bitwidth 6: 3 slots
+  Bitwidth 13: 2 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 7: 1 slots
+  Total Bitwidth Sum: 214
+
+For video_filter, Index 2, Slot Type Pipeline:
+  Total slots: 56
+  Bitwidth 6: 24 slots
+  Bitwidth 1: 20 slots
+  Bitwidth 13: 12 slots
+  Total Bitwidth Sum: 320
+
+For video_filter, Index 2, Slot Type DVR_Chain:
+  Total slots: 5
+  Bitwidth 32: 2 slots
+  Bitwidth 6: 1 slots
+  Bitwidth 7: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 78
+
+Total slot count across all types: 75
+Total bitwidth sum across all types: 612
+----------------------------------------------------------------------
+
+---------- Start of video_filter Index 3 ---------------------------------------
+For video_filter, Index 3, Slot Type OEHB:
+  Total slots: 17
+  Bitwidth 6: 4 slots
+  Bitwidth 1: 5 slots
+  Bitwidth 32: 3 slots
+  Bitwidth 13: 5 slots
+  Total Bitwidth Sum: 190
+
+For video_filter, Index 3, Slot Type TEHB:
+  Total slots: 17
+  Bitwidth 6: 4 slots
+  Bitwidth 1: 5 slots
+  Bitwidth 32: 3 slots
+  Bitwidth 13: 5 slots
+  Total Bitwidth Sum: 190
+
+For video_filter, Index 3, Slot Type transpFifo:
+  Total slots: 3
+  Bitwidth 6: 1 slots
+  Bitwidth 13: 2 slots
+  Total Bitwidth Sum: 32
+
+For video_filter, Index 3, Slot Type DVR:
+  Total slots: 9
+  Bitwidth 32: 2 slots
+  Bitwidth 6: 2 slots
+  Bitwidth 7: 2 slots
+  Bitwidth 1: 3 slots
+  Total Bitwidth Sum: 93
+
+Total slot count across all types: 46
+Total bitwidth sum across all types: 505
+----------------------------------------------------------------------
+
+---------- Start of matvec Index 1 ---------------------------------------
+For matvec, Index 1, Slot Type OEHB:
+  Total slots: 12
+  Bitwidth 8: 5 slots
+  Bitwidth 1: 4 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 9: 1 slots
+  Total Bitwidth Sum: 117
+
+For matvec, Index 1, Slot Type TEHB:
+  Total slots: 2
+  Bitwidth 8: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 9
+
+For matvec, Index 1, Slot Type transpFifo:
+  Total slots: 21
+  Bitwidth 8: 2 slots
+  Bitwidth 1: 11 slots
+  Bitwidth 17: 2 slots
+  Bitwidth 32: 6 slots
+  Total Bitwidth Sum: 253
+
+Total slot count across all types: 35
+Total bitwidth sum across all types: 379
+----------------------------------------------------------------------
+
+---------- Start of matvec Index 2 ---------------------------------------
+For matvec, Index 2, Slot Type OEHB:
+  Total slots: 10
+  Bitwidth 32: 2 slots
+  Bitwidth 8: 3 slots
+  Bitwidth 9: 2 slots
+  Bitwidth 1: 3 slots
+  Total Bitwidth Sum: 109
+
+For matvec, Index 2, Slot Type Pipeline:
+  Total slots: 26
+  Bitwidth 8: 5 slots
+  Bitwidth 1: 18 slots
+  Bitwidth 32: 3 slots
+  Total Bitwidth Sum: 154
+
+For matvec, Index 2, Slot Type DVR_Chain:
+  Total slots: 4
+  Bitwidth 8: 2 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 49
+
+Total slot count across all types: 40
+Total bitwidth sum across all types: 312
+----------------------------------------------------------------------
+
+---------- Start of matvec Index 3 ---------------------------------------
+For matvec, Index 3, Slot Type OEHB:
+  Total slots: 7
+  Bitwidth 8: 2 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 17: 1 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 68
+
+For matvec, Index 3, Slot Type TEHB:
+  Total slots: 7
+  Bitwidth 8: 2 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 17: 1 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 68
+
+For matvec, Index 3, Slot Type transpFifo:
+  Total slots: 4
+  Bitwidth 1: 4 slots
+  Total Bitwidth Sum: 4
+
+For matvec, Index 3, Slot Type DVR:
+  Total slots: 9
+  Bitwidth 1: 4 slots
+  Bitwidth 8: 2 slots
+  Bitwidth 9: 2 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 70
+
+Total slot count across all types: 27
+Total bitwidth sum across all types: 210
+----------------------------------------------------------------------
+
+---------- Start of image_resize Index 1 ---------------------------------------
+For image_resize, Index 1, Slot Type OEHB:
+  Total slots: 12
+  Bitwidth 6: 5 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 1: 4 slots
+  Bitwidth 7: 1 slots
+  Total Bitwidth Sum: 105
+
+For image_resize, Index 1, Slot Type TEHB:
+  Total slots: 6
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 6: 1 slots
+  Total Bitwidth Sum: 73
+
+For image_resize, Index 1, Slot Type transpFifo:
+  Total slots: 6
+  Bitwidth 13: 4 slots
+  Bitwidth 32: 2 slots
+  Total Bitwidth Sum: 116
+
+Total slot count across all types: 24
+Total bitwidth sum across all types: 294
+----------------------------------------------------------------------
+
+---------- Start of image_resize Index 2 ---------------------------------------
+For image_resize, Index 2, Slot Type OEHB:
+  Total slots: 9
+  Bitwidth 32: 2 slots
+  Bitwidth 6: 1 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 7: 3 slots
+  Total Bitwidth Sum: 94
+
+For image_resize, Index 2, Slot Type Pipeline:
+  Total slots: 15
+  Bitwidth 6: 5 slots
+  Bitwidth 13: 5 slots
+  Bitwidth 32: 5 slots
+  Total Bitwidth Sum: 255
+
+For image_resize, Index 2, Slot Type DVR_Chain:
+  Total slots: 4
+  Bitwidth 6: 2 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 45
+
+Total slot count across all types: 28
+Total bitwidth sum across all types: 394
+----------------------------------------------------------------------
+
+---------- Start of image_resize Index 3 ---------------------------------------
+For image_resize, Index 3, Slot Type OEHB:
+  Total slots: 6
+  Bitwidth 6: 3 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 83
+
+For image_resize, Index 3, Slot Type TEHB:
+  Total slots: 6
+  Bitwidth 6: 3 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 83
+
+For image_resize, Index 3, Slot Type transpFifo:
+  Total slots: 1
+  Bitwidth 6: 1 slots
+  Total Bitwidth Sum: 6
+
+For image_resize, Index 3, Slot Type DVR:
+  Total slots: 8
+  Bitwidth 6: 3 slots
+  Bitwidth 7: 1 slots
+  Bitwidth 1: 4 slots
+  Total Bitwidth Sum: 29
+
+Total slot count across all types: 21
+Total bitwidth sum across all types: 201
+----------------------------------------------------------------------
+
+---------- Start of matrix Index 1 ---------------------------------------
+For matrix, Index 1, Slot Type OEHB:
+  Total slots: 15
+  Bitwidth 1: 6 slots
+  Bitwidth 6: 5 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 7: 3 slots
+  Total Bitwidth Sum: 89
+
+For matrix, Index 1, Slot Type TEHB:
+  Total slots: 8
+  Bitwidth 1: 4 slots
+  Bitwidth 6: 3 slots
+  Bitwidth 13: 1 slots
+  Total Bitwidth Sum: 35
+
+For matrix, Index 1, Slot Type transpFifo:
+  Total slots: 17
+  Bitwidth 6: 6 slots
+  Bitwidth 1: 8 slots
+  Bitwidth 32: 3 slots
+  Total Bitwidth Sum: 140
+
+Total slot count across all types: 40
+Total bitwidth sum across all types: 264
+----------------------------------------------------------------------
+
+---------- Start of matrix Index 2 ---------------------------------------
+For matrix, Index 2, Slot Type OEHB:
+  Total slots: 16
+  Bitwidth 1: 6 slots
+  Bitwidth 6: 7 slots
+  Bitwidth 32: 2 slots
+  Bitwidth 7: 1 slots
+  Total Bitwidth Sum: 119
+
+For matrix, Index 2, Slot Type Pipeline:
+  Total slots: 20
+  Bitwidth 1: 14 slots
+  Bitwidth 6: 3 slots
+  Bitwidth 13: 3 slots
+  Total Bitwidth Sum: 71
+
+For matrix, Index 2, Slot Type DVR_Chain:
+  Total slots: 5
+  Bitwidth 6: 3 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 1: 1 slots
+  Total Bitwidth Sum: 51
+
+Total slot count across all types: 41
+Total bitwidth sum across all types: 241
+----------------------------------------------------------------------
+
+---------- Start of matrix Index 3 ---------------------------------------
+For matrix, Index 3, Slot Type OEHB:
+  Total slots: 8
+  Bitwidth 6: 4 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 59
+
+For matrix, Index 3, Slot Type TEHB:
+  Total slots: 8
+  Bitwidth 6: 4 slots
+  Bitwidth 1: 3 slots
+  Bitwidth 32: 1 slots
+  Total Bitwidth Sum: 59
+
+For matrix, Index 3, Slot Type transpFifo:
+  Total slots: 5
+  Bitwidth 6: 1 slots
+  Bitwidth 1: 4 slots
+  Total Bitwidth Sum: 10
+
+For matrix, Index 3, Slot Type DVR:
+  Total slots: 14
+  Bitwidth 1: 5 slots
+  Bitwidth 6: 5 slots
+  Bitwidth 32: 1 slots
+  Bitwidth 7: 3 slots
+  Total Bitwidth Sum: 88
+
+Total slot count across all types: 35
+Total bitwidth sum across all types: 216
+----------------------------------------------------------------------
+

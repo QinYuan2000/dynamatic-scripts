@@ -1,0 +1,80 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Fri Aug  2 17:51:25 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : sumi3_mem
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             1.830ns  (required time - arrival time)
+  Source:                 tehb2/fifo/Head_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Destination:            tehb3/fifo/Memory_reg_0_3_24_29/RAMA/WE
+                            (rising edge-triggered cell RAMD32 clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.000ns  (clk rise@6.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.800ns  (logic 0.730ns (19.211%)  route 3.070ns (80.789%))
+  Logic Levels:           7  (LUT2=1 LUT4=2 LUT5=1 LUT6=2 RAMD32=1)
+  Clock Path Skew:        -0.032ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.105ns = ( 7.105 - 6.000 ) 
+    Source Clock Delay      (SCD):    1.222ns
+    Clock Pessimism Removal (CPR):    0.085ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=483, unset)          1.222     1.222    tehb2/fifo/clk
+    SLICE_X55Y112        FDRE                                         r  tehb2/fifo/Head_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X55Y112        FDRE (Prop_fdre_C_Q)         0.223     1.445 r  tehb2/fifo/Head_reg[2]/Q
+                         net (fo=7, routed)           0.555     2.000    tehb2/fifo/Memory_reg_0_15_0_0/DPRA2
+    SLICE_X54Y112        RAMD32 (Prop_ramd32_RADR2_O)
+                                                      0.043     2.043 f  tehb2/fifo/Memory_reg_0_15_0_0/DP/O
+                         net (fo=3, routed)           0.540     2.583    oehb2/fifo_out
+    SLICE_X48Y112        LUT4 (Prop_lut4_I1_O)        0.051     2.634 r  oehb2/reg_value_i_4/O
+                         net (fo=2, routed)           0.317     2.951    oehb2/reg_value_i_4_n_0
+    SLICE_X48Y114        LUT4 (Prop_lut4_I0_O)        0.136     3.087 f  oehb2/data_reg[31]_i_3/O
+                         net (fo=66, routed)          0.259     3.346    oehb2/reg_value_reg_0
+    SLICE_X48Y112        LUT6 (Prop_lut6_I0_O)        0.043     3.389 r  oehb2/full_reg_i_3__0/O
+                         net (fo=1, routed)           0.103     3.492    mux1/tehb1/full_reg_reg_8
+    SLICE_X48Y112        LUT2 (Prop_lut2_I1_O)        0.043     3.535 f  mux1/tehb1/full_reg_i_2__2/O
+                         net (fo=7, routed)           0.513     4.048    mux1/tehb1/full_reg_reg_1
+    SLICE_X48Y107        LUT5 (Prop_lut5_I0_O)        0.054     4.102 r  mux1/tehb1/Tail[1]_i_3/O
+                         net (fo=5, routed)           0.256     4.358    tehb3/fifo/Empty_reg_2
+    SLICE_X48Y106        LUT6 (Prop_lut6_I1_O)        0.137     4.495 r  tehb3/fifo/Memory_reg_0_3_0_5_i_1/O
+                         net (fo=48, routed)          0.527     5.022    tehb3/fifo/Memory_reg_0_3_24_29/WE
+    SLICE_X42Y105        RAMD32                                       r  tehb3/fifo/Memory_reg_0_3_24_29/RAMA/WE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.000     6.000 r  
+                                                      0.000     6.000 r  clk (IN)
+                         net (fo=483, unset)          1.105     7.105    tehb3/fifo/Memory_reg_0_3_24_29/WCLK
+    SLICE_X42Y105        RAMD32                                       r  tehb3/fifo/Memory_reg_0_3_24_29/RAMA/CLK
+                         clock pessimism              0.085     7.190    
+                         clock uncertainty           -0.035     7.155    
+    SLICE_X42Y105        RAMD32 (Setup_ramd32_CLK_WE)
+                                                     -0.303     6.852    tehb3/fifo/Memory_reg_0_3_24_29/RAMA
+  -------------------------------------------------------------------
+                         required time                          6.852    
+                         arrival time                          -5.022    
+  -------------------------------------------------------------------
+                         slack                                  1.830    
+
+
+
+

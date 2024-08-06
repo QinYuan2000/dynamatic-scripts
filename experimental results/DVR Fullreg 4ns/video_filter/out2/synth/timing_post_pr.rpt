@@ -1,0 +1,91 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Sat Aug  3 14:41:26 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : video_filter
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.750ns  (required time - arrival time)
+  Source:                 mc_load2/Buffer_2/full_reg_reg/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            muli0/multiply_unit/q2_reg/B[16]
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk rise@4.000ns - clk rise@0.000ns)
+  Data Path Delay:        2.831ns  (logic 0.959ns (33.874%)  route 1.872ns (66.126%))
+  Logic Levels:           9  (CARRY4=8 LUT5=1)
+  Clock Path Skew:        0.011ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.378ns = ( 5.378 - 4.000 ) 
+    Source Clock Delay      (SCD):    1.454ns
+    Clock Pessimism Removal (CPR):    0.087ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1521, unset)         1.454     1.454    mc_load2/Buffer_2/clk
+    SLICE_X22Y91         FDCE                                         r  mc_load2/Buffer_2/full_reg_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X22Y91         FDCE (Prop_fdce_C_Q)         0.259     1.713 r  mc_load2/Buffer_2/full_reg_reg/Q
+                         net (fo=85, routed)          0.977     2.690    mc_load2/Buffer_2/full_reg_reg_0
+    SLICE_X7Y84          LUT5 (Prop_lut5_I1_O)        0.043     2.733 r  mc_load2/Buffer_2/dataOutArray[0]_carry_i_1/O
+                         net (fo=1, routed)           0.276     3.009    subi0/mc_load2_dataOutArray_0[3]
+    SLICE_X7Y85          CARRY4 (Prop_carry4_DI[3]_CO[3])
+                                                      0.190     3.199 r  subi0/dataOutArray[0]_carry/CO[3]
+                         net (fo=1, routed)           0.000     3.199    subi0/dataOutArray[0]_carry_n_0
+    SLICE_X7Y86          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.252 r  subi0/dataOutArray[0]_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     3.252    subi0/dataOutArray[0]_carry__0_n_0
+    SLICE_X7Y87          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.305 r  subi0/dataOutArray[0]_carry__1/CO[3]
+                         net (fo=1, routed)           0.000     3.305    subi0/dataOutArray[0]_carry__1_n_0
+    SLICE_X7Y88          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.358 r  subi0/dataOutArray[0]_carry__2/CO[3]
+                         net (fo=1, routed)           0.000     3.358    subi0/dataOutArray[0]_carry__2_n_0
+    SLICE_X7Y89          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.411 r  subi0/dataOutArray[0]_carry__3/CO[3]
+                         net (fo=1, routed)           0.000     3.411    subi0/dataOutArray[0]_carry__3_n_0
+    SLICE_X7Y90          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.464 r  subi0/dataOutArray[0]_carry__4/CO[3]
+                         net (fo=1, routed)           0.000     3.464    subi0/dataOutArray[0]_carry__4_n_0
+    SLICE_X7Y91          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     3.517 r  subi0/dataOutArray[0]_carry__5/CO[3]
+                         net (fo=1, routed)           0.000     3.517    subi0/dataOutArray[0]_carry__5_n_0
+    SLICE_X7Y92          CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.149     3.666 r  subi0/dataOutArray[0]_carry__6/O[3]
+                         net (fo=4, routed)           0.619     4.285    muli0/multiply_unit/subi0_dataOutArray_0[31]
+    DSP48_X1Y36          DSP48E1                                      r  muli0/multiply_unit/q2_reg/B[16]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        4.000     4.000 r  
+                                                      0.000     4.000 r  clk (IN)
+                         net (fo=1521, unset)         1.378     5.378    muli0/multiply_unit/clk
+    DSP48_X1Y36          DSP48E1                                      r  muli0/multiply_unit/q2_reg/CLK
+                         clock pessimism              0.087     5.465    
+                         clock uncertainty           -0.035     5.429    
+    DSP48_X1Y36          DSP48E1 (Setup_dsp48e1_CLK_B[16])
+                                                     -0.394     5.035    muli0/multiply_unit/q2_reg
+  -------------------------------------------------------------------
+                         required time                          5.035    
+                         arrival time                          -4.285    
+  -------------------------------------------------------------------
+                         slack                                  0.750    
+
+
+
+

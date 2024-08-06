@@ -1,0 +1,103 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Sat Aug  3 08:25:49 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : video_filter
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.903ns  (required time - arrival time)
+  Source:                 tehb7/full_reg_reg/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Destination:            mem_controller0/counter_reg[31]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.000ns  (clk rise@6.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.931ns  (logic 1.630ns (33.054%)  route 3.301ns (66.946%))
+  Logic Levels:           15  (CARRY4=9 LUT3=2 LUT5=3 LUT6=1)
+  Clock Path Skew:        -0.053ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.146ns = ( 7.146 - 6.000 ) 
+    Source Clock Delay      (SCD):    1.284ns
+    Clock Pessimism Removal (CPR):    0.085ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1662, unset)         1.284     1.284    tehb7/clk
+    SLICE_X19Y102        FDCE                                         r  tehb7/full_reg_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X19Y102        FDCE (Prop_fdce_C_Q)         0.204     1.488 r  tehb7/full_reg_reg/Q
+                         net (fo=19, routed)          0.488     1.976    tehb7/full_reg
+    SLICE_X19Y102        LUT3 (Prop_lut3_I1_O)        0.130     2.106 r  tehb7/reg_value_i_12__0/O
+                         net (fo=2, routed)           0.361     2.467    tehb2/tehb7_dataOutArray_0[0]
+    SLICE_X20Y103        LUT6 (Prop_lut6_I0_O)        0.132     2.599 r  tehb2/reg_value_i_7__0/O
+                         net (fo=1, routed)           0.282     2.881    cmpi2/DI[0]
+    SLICE_X21Y103        CARRY4 (Prop_carry4_DI[0]_CO[3])
+                                                      0.269     3.150 r  cmpi2/reg_value_reg_i_2/CO[3]
+                         net (fo=20, routed)          0.546     3.696    tehb2/dataOutArray[0][0]
+    SLICE_X13Y103        LUT5 (Prop_lut5_I0_O)        0.043     3.739 r  tehb2/data_reg[0]_i_3/O
+                         net (fo=6, routed)           0.316     4.055    control_merge4/fork_C1/generateBlocks[0].regblock/validArray_reg[0]
+    SLICE_X10Y102        LUT5 (Prop_lut5_I1_O)        0.043     4.098 f  control_merge4/fork_C1/generateBlocks[0].regblock/full_reg_i_2__12/O
+                         net (fo=9, routed)           0.226     4.324    fork8/generateBlocks[1].regblock/end_valid_INST_0_i_14
+    SLICE_X10Y104        LUT3 (Prop_lut3_I2_O)        0.043     4.367 r  fork8/generateBlocks[1].regblock/end_valid_INST_0_i_6/O
+                         net (fo=12, routed)          0.441     4.807    oehb14/tehb/constant2_pValidArray_0
+    SLICE_X14Y110        LUT5 (Prop_lut5_I0_O)        0.043     4.850 r  oehb14/tehb/counter[3]_i_2/O
+                         net (fo=1, routed)           0.278     5.129    mem_controller0/DI[0]
+    SLICE_X13Y110        CARRY4 (Prop_carry4_DI[1]_CO[3])
+                                                      0.250     5.379 r  mem_controller0/counter_reg[3]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.379    mem_controller0/counter_reg[3]_i_1_n_0
+    SLICE_X13Y111        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.432 r  mem_controller0/counter_reg[7]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.432    mem_controller0/counter_reg[7]_i_1_n_0
+    SLICE_X13Y112        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.485 r  mem_controller0/counter_reg[11]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.485    mem_controller0/counter_reg[11]_i_1_n_0
+    SLICE_X13Y113        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.538 r  mem_controller0/counter_reg[15]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.538    mem_controller0/counter_reg[15]_i_1_n_0
+    SLICE_X13Y114        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.591 r  mem_controller0/counter_reg[19]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.591    mem_controller0/counter_reg[19]_i_1_n_0
+    SLICE_X13Y115        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.644 r  mem_controller0/counter_reg[23]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.644    mem_controller0/counter_reg[23]_i_1_n_0
+    SLICE_X13Y116        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.053     5.697 r  mem_controller0/counter_reg[27]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     5.697    mem_controller0/counter_reg[27]_i_1_n_0
+    SLICE_X13Y117        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.155     5.852 r  mem_controller0/counter_reg[31]_i_1/O[3]
+                         net (fo=2, routed)           0.363     6.215    mem_controller0/counter[31]
+    SLICE_X12Y117        FDCE                                         r  mem_controller0/counter_reg[31]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.000     6.000 r  
+                                                      0.000     6.000 r  clk (IN)
+                         net (fo=1662, unset)         1.146     7.146    mem_controller0/clk
+    SLICE_X12Y117        FDCE                                         r  mem_controller0/counter_reg[31]/C
+                         clock pessimism              0.085     7.231    
+                         clock uncertainty           -0.035     7.196    
+    SLICE_X12Y117        FDCE (Setup_fdce_C_D)       -0.077     7.119    mem_controller0/counter_reg[31]
+  -------------------------------------------------------------------
+                         required time                          7.119    
+                         arrival time                          -6.215    
+  -------------------------------------------------------------------
+                         slack                                  0.903    
+
+
+
+

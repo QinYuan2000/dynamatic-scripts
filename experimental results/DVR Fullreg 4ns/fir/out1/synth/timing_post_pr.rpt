@@ -1,0 +1,76 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Sat Aug  3 11:59:28 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : fir
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.581ns  (required time - arrival time)
+  Source:                 oehb2/validArray_reg[0]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            mc_load0/Buffer_2/data_reg_reg[14]/CE
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk rise@4.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.136ns  (logic 0.481ns (15.339%)  route 2.655ns (84.661%))
+  Logic Levels:           6  (LUT5=3 LUT6=3)
+  Clock Path Skew:        -0.047ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.148ns = ( 5.148 - 4.000 ) 
+    Source Clock Delay      (SCD):    1.280ns
+    Clock Pessimism Removal (CPR):    0.085ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=565, unset)          1.280     1.280    oehb2/clk
+    SLICE_X17Y112        FDCE                                         r  oehb2/validArray_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X17Y112        FDCE (Prop_fdce_C_Q)         0.223     1.503 f  oehb2/validArray_reg[0]/Q
+                         net (fo=9, routed)           0.502     2.005    tehb1/oehb2_validArray_0
+    SLICE_X17Y112        LUT5 (Prop_lut5_I1_O)        0.043     2.048 f  tehb1/reg_value_i_5__0/O
+                         net (fo=3, routed)           0.551     2.600    control_merge2/oehb1/Memory_reg[0][0]
+    SLICE_X15Y111        LUT6 (Prop_lut6_I1_O)        0.043     2.643 r  control_merge2/oehb1/Memory[1][0]_i_2/O
+                         net (fo=10, routed)          0.201     2.844    tehb2/fifo/control_merge2_dataOutArray_1
+    SLICE_X15Y112        LUT5 (Prop_lut5_I4_O)        0.043     2.887 r  tehb2/fifo/reg_value_i_4__0/O
+                         net (fo=9, routed)           0.385     3.272    oehb4/tehb2_dataOutArray_0
+    SLICE_X14Y112        LUT6 (Prop_lut6_I2_O)        0.043     3.315 f  oehb4/q0_reg_i_36/O
+                         net (fo=3, routed)           0.188     3.503    oehb4/branchReady
+    SLICE_X13Y112        LUT6 (Prop_lut6_I0_O)        0.043     3.546 f  oehb4/q0_reg_i_1/O
+                         net (fo=54, routed)          0.326     3.872    mc_load0/Buffer_2/oehb_ready
+    SLICE_X13Y111        LUT5 (Prop_lut5_I2_O)        0.043     3.915 r  mc_load0/Buffer_2/data_reg[31]_i_1__2/O
+                         net (fo=32, routed)          0.500     4.416    mc_load0/Buffer_2/reg_en
+    SLICE_X11Y115        FDCE                                         r  mc_load0/Buffer_2/data_reg_reg[14]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        4.000     4.000 r  
+                                                      0.000     4.000 r  clk (IN)
+                         net (fo=565, unset)          1.148     5.148    mc_load0/Buffer_2/clk
+    SLICE_X11Y115        FDCE                                         r  mc_load0/Buffer_2/data_reg_reg[14]/C
+                         clock pessimism              0.085     5.233    
+                         clock uncertainty           -0.035     5.198    
+    SLICE_X11Y115        FDCE (Setup_fdce_C_CE)      -0.201     4.997    mc_load0/Buffer_2/data_reg_reg[14]
+  -------------------------------------------------------------------
+                         required time                          4.997    
+                         arrival time                          -4.416    
+  -------------------------------------------------------------------
+                         slack                                  0.581    
+
+
+
+

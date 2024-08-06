@@ -1,0 +1,76 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Fri Aug  2 18:41:54 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : sumi3_mem
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             1.822ns  (required time - arrival time)
+  Source:                 tehb4/full_reg_reg/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Destination:            oehb2/data_reg_reg[0]/CE
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.000ns  (clk rise@6.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.918ns  (logic 0.651ns (16.614%)  route 3.267ns (83.386%))
+  Logic Levels:           6  (LUT2=1 LUT4=1 LUT5=2 LUT6=2)
+  Clock Path Skew:        -0.023ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.084ns = ( 7.084 - 6.000 ) 
+    Source Clock Delay      (SCD):    1.214ns
+    Clock Pessimism Removal (CPR):    0.107ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=552, unset)          1.214     1.214    tehb4/clk
+    SLICE_X57Y117        FDCE                                         r  tehb4/full_reg_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X57Y117        FDCE (Prop_fdce_C_Q)         0.204     1.418 r  tehb4/full_reg_reg/Q
+                         net (fo=36, routed)          0.594     2.012    tehb4/full_reg
+    SLICE_X61Y117        LUT5 (Prop_lut5_I3_O)        0.138     2.150 r  tehb4/Memory[0][0]_i_2/O
+                         net (fo=1, routed)           0.444     2.594    tehb4/Memory[0][0]_i_2_n_0
+    SLICE_X61Y117        LUT5 (Prop_lut5_I0_O)        0.137     2.731 r  tehb4/Memory[0][0]_i_1__0/O
+                         net (fo=13, routed)          0.387     3.118    control_merge2/oehb1/cmpi1_dataOutArray_0
+    SLICE_X54Y117        LUT6 (Prop_lut6_I2_O)        0.043     3.161 r  control_merge2/oehb1/a_address1[5]_INST_0_i_3/O
+                         net (fo=17, routed)          0.382     3.543    control_merge2/oehb1/reg_value_reg_0
+    SLICE_X55Y117        LUT6 (Prop_lut6_I1_O)        0.043     3.586 r  control_merge2/oehb1/a_address1[10]_INST_0_i_4/O
+                         net (fo=3, routed)           0.435     4.021    control_merge2/oehb1/tehb_pvalid
+    SLICE_X57Y116        LUT2 (Prop_lut2_I0_O)        0.043     4.064 r  control_merge2/oehb1/a_address1[10]_INST_0_i_2/O
+                         net (fo=20, routed)          0.564     4.627    fork2/generateBlocks[0].regblock/mux2_validArray_0
+    SLICE_X62Y118        LUT4 (Prop_lut4_I3_O)        0.043     4.670 r  fork2/generateBlocks[0].regblock/data_reg[11]_i_1/O
+                         net (fo=12, routed)          0.462     5.132    oehb2/E[0]
+    SLICE_X59Y118        FDCE                                         r  oehb2/data_reg_reg[0]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.000     6.000 r  
+                                                      0.000     6.000 r  clk (IN)
+                         net (fo=552, unset)          1.084     7.084    oehb2/clk
+    SLICE_X59Y118        FDCE                                         r  oehb2/data_reg_reg[0]/C
+                         clock pessimism              0.107     7.191    
+                         clock uncertainty           -0.035     7.156    
+    SLICE_X59Y118        FDCE (Setup_fdce_C_CE)      -0.201     6.955    oehb2/data_reg_reg[0]
+  -------------------------------------------------------------------
+                         required time                          6.955    
+                         arrival time                          -5.132    
+  -------------------------------------------------------------------
+                         slack                                  1.822    
+
+
+
+

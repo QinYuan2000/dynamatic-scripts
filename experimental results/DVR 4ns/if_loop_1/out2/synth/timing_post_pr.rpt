@@ -1,0 +1,88 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Wed Jul 24 11:20:37 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : if_loop_1
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.028ns  (required time - arrival time)
+  Source:                 control_merge3/oehb1/data_reg_reg[0]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            mux2/tehb1/data_reg_reg[12]/CE
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk rise@4.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.611ns  (logic 0.925ns (25.617%)  route 2.686ns (74.383%))
+  Logic Levels:           10  (CARRY4=4 LUT4=2 LUT5=1 LUT6=3)
+  Clock Path Skew:        -0.148ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.134ns = ( 5.134 - 4.000 ) 
+    Source Clock Delay      (SCD):    1.282ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=739, unset)          1.282     1.282    control_merge3/oehb1/clk
+    SLICE_X20Y141        FDCE                                         r  control_merge3/oehb1/data_reg_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X20Y141        FDCE (Prop_fdce_C_Q)         0.259     1.541 f  control_merge3/oehb1/data_reg_reg[0]/Q
+                         net (fo=3, routed)           0.380     1.921    control_merge3/oehb1/data_reg
+    SLICE_X20Y141        LUT5 (Prop_lut5_I0_O)        0.043     1.964 f  control_merge3/oehb1/Memory_reg[1][0]_srl2_i_1/O
+                         net (fo=14, routed)          0.262     2.227    control_merge3/oehb1/data_reg_reg[0]_0
+    SLICE_X21Y143        LUT4 (Prop_lut4_I0_O)        0.043     2.270 r  control_merge3/oehb1/reg_value_i_2__0/O
+                         net (fo=69, routed)          0.403     2.672    mux2/tehb1/tmp_data_out18_out
+    SLICE_X20Y144        LUT6 (Prop_lut6_I1_O)        0.043     2.715 r  mux2/tehb1/data_reg[0]_i_1__3/O
+                         net (fo=3, routed)           0.530     3.245    mux2/tehb1/D[0]
+    SLICE_X18Y144        LUT4 (Prop_lut4_I0_O)        0.043     3.288 r  mux2/tehb1/dataOutArray[0]0_carry_i_8/O
+                         net (fo=1, routed)           0.000     3.288    cmpi1/S[0]
+    SLICE_X18Y144        CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.246     3.534 r  cmpi1/dataOutArray[0]0_carry/CO[3]
+                         net (fo=1, routed)           0.000     3.534    cmpi1/dataOutArray[0]0_carry_n_0
+    SLICE_X18Y145        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     3.588 r  cmpi1/dataOutArray[0]0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     3.588    cmpi1/dataOutArray[0]0_carry__0_n_0
+    SLICE_X18Y146        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     3.642 r  cmpi1/dataOutArray[0]0_carry__1/CO[3]
+                         net (fo=1, routed)           0.000     3.642    cmpi1/dataOutArray[0]0_carry__1_n_0
+    SLICE_X18Y147        CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     3.696 r  cmpi1/dataOutArray[0]0_carry__2/CO[3]
+                         net (fo=16, routed)          0.682     4.377    fork5/generateBlocks[3].regblock/O56[0]
+    SLICE_X15Y150        LUT6 (Prop_lut6_I4_O)        0.043     4.420 r  fork5/generateBlocks[3].regblock/full_reg_i_3__0_comp/O
+                         net (fo=11, routed)          0.111     4.531    control_merge3/oehb1/forkStop
+    SLICE_X15Y150        LUT6 (Prop_lut6_I3_O)        0.043     4.574 r  control_merge3/oehb1/data_reg[31]_i_1__11/O
+                         net (fo=32, routed)          0.318     4.893    mux2/tehb1/E[0]
+    SLICE_X14Y150        FDCE                                         r  mux2/tehb1/data_reg_reg[12]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        4.000     4.000 r  
+                                                      0.000     4.000 r  clk (IN)
+                         net (fo=739, unset)          1.134     5.134    mux2/tehb1/clk
+    SLICE_X14Y150        FDCE                                         r  mux2/tehb1/data_reg_reg[12]/C
+                         clock pessimism              0.000     5.134    
+                         clock uncertainty           -0.035     5.099    
+    SLICE_X14Y150        FDCE (Setup_fdce_C_CE)      -0.178     4.921    mux2/tehb1/data_reg_reg[12]
+  -------------------------------------------------------------------
+                         required time                          4.921    
+                         arrival time                          -4.893    
+  -------------------------------------------------------------------
+                         slack                                  0.028    
+
+
+
+

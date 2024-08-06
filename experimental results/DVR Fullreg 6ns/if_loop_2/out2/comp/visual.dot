@@ -1,0 +1,153 @@
+Digraph G {
+  splines=spline;
+  compound=true; // Allow edges between clusters
+  // Units/Channels in BB 0
+  subgraph "cluster0" {
+    label="block0"
+    // Units from function arguments
+    "n" [mlir_op="handshake.func", shape=diamond, label="n", style="solid", ]
+    "start" [mlir_op="handshake.func", shape=diamond, label="start", style="dotted", ]
+    // Units in BB 0
+    "fork0" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled, dotted", ]
+    "constant1" [mlir_op="handshake.constant", label="false", fillcolor=plum, shape="box", style="filled", ]
+    "fork1" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "extsi4" [mlir_op="arith.extsi", label="[1...32]", fillcolor=moccasin, shape="oval", style="filled", ]
+    "extsi5" [mlir_op="arith.extsi", label="[1...32]", fillcolor=moccasin, shape="oval", style="filled", ]
+    // Channels from function arguments
+    "n" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "start" -> "fork0" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    // Channels in BB 0
+    "fork0" -> "constant1" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "constant1" -> "fork1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork1" -> "extsi4" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork1" -> "extsi5" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  }
+  // Units/Channels in BB 1
+  subgraph "cluster1" {
+    label="block1"
+    // Units in BB 1
+    "mux0" [mlir_op="handshake.mux", label="mux", fillcolor=lightblue, shape="box", style="filled", ]
+    "fork2" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "oehb0" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "mux1" [mlir_op="handshake.mux", label="mux", fillcolor=lightblue, shape="box", style="filled", ]
+    "mux2" [mlir_op="handshake.mux", label="mux", fillcolor=lightblue, shape="box", style="filled", ]
+    "fork3" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "control_merge3" [mlir_op="handshake.control_merge", label="cmerge", fillcolor=lightblue, shape="box", style="filled, dotted", ]
+    "fork4" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "cmpi1" [mlir_op="arith.cmpi<", label="<", fillcolor=moccasin, shape="oval", style="filled", ]
+    "fork5" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "cond_br1" [mlir_op="handshake.cond_br", label="cbranch", fillcolor=tan2, shape="box", style="filled", ]
+    "cond_br2" [mlir_op="handshake.cond_br", label="cbranch", fillcolor=tan2, shape="box", style="filled", ]
+    "oehb1" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "cond_br3" [mlir_op="handshake.cond_br", label="cbranch", fillcolor=tan2, shape="box", style="filled", ]
+    "cond_br4" [mlir_op="handshake.cond_br", label="cbranch", fillcolor=tan2, shape="box", style="filled, dotted", ]
+    // Channels in BB 1
+    "mux0" -> "fork2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork2" -> "cond_br2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork2" -> "cmpi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "oehb0" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "mux1" -> "cond_br3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "mux2" -> "fork3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork3" -> "cond_br1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork3" -> "cmpi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "control_merge3" -> "cond_br4" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "control_merge3" -> "fork4" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork4" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "fork4" -> "oehb0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork4" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "cmpi1" -> "fork5" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork5" -> "cond_br4" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "fork5" -> "oehb1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork5" -> "cond_br2" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "fork5" -> "cond_br1" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+    "oehb1" -> "cond_br3" [style="solid", dir="both", arrowtail="none", arrowhead="dot", ]
+  }
+  // Units/Channels in BB 2
+  subgraph "cluster2" {
+    label="block2"
+    // Units in BB 2
+    "oehb2" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "tehb0" [mlir_op="handshake.tehb", label="tehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "oehb3" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "fork6" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "oehb4" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "oehb5" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled, dotted", ]
+    "tehb1" [mlir_op="handshake.tehb", label="tehb [1]", fillcolor=lightgreen, shape="box", style="filled, dotted", ]
+    "source0" [mlir_op="handshake.source", label="source", fillcolor=gainsboro, shape="box", style="filled, dotted", ]
+    "constant7" [mlir_op="handshake.constant", label="1", fillcolor=plum, shape="box", style="filled", ]
+    "extsi1" [mlir_op="arith.extsi", label="[2...32]", fillcolor=moccasin, shape="oval", style="filled", ]
+    "source1" [mlir_op="handshake.source", label="source", fillcolor=gainsboro, shape="box", style="filled, dotted", ]
+    "constant8" [mlir_op="handshake.constant", label="10", fillcolor=plum, shape="box", style="filled", ]
+    "extsi2" [mlir_op="arith.extsi", label="[5...32]", fillcolor=moccasin, shape="oval", style="filled", ]
+    "source2" [mlir_op="handshake.source", label="source", fillcolor=gainsboro, shape="box", style="filled, dotted", ]
+    "constant9" [mlir_op="handshake.constant", label="false", fillcolor=plum, shape="box", style="filled", ]
+    "extsi3" [mlir_op="arith.extsi", label="[1...32]", fillcolor=moccasin, shape="oval", style="filled", ]
+    "mc_load0" [mlir_op="handshake.mc_load", label="LD (a)", fillcolor=coral, shape="box", style="filled", ]
+    "fork7" [mlir_op="handshake.fork", label="fork", fillcolor=lavender, shape="box", style="filled", ]
+    "cmpi0" [mlir_op="arith.cmpi>", label=">", fillcolor=moccasin, shape="oval", style="filled", ]
+    "select0" [mlir_op="arith.select", label="select", fillcolor=moccasin, shape="oval", style="filled", ]
+    "addi1" [mlir_op="arith.addi", label="+", fillcolor=moccasin, shape="oval", style="filled", ]
+    "addi0" [mlir_op="arith.addi", label="+", fillcolor=moccasin, shape="oval", style="filled", ]
+    "oehb7" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    "oehb6" [mlir_op="handshake.oehb", label="oehb [1]", fillcolor=lightgreen, shape="box", style="filled", ]
+    // Channels in BB 2
+    "oehb2" -> "tehb0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "oehb3" -> "fork6" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork6" -> "addi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork6" -> "mc_load0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "oehb4" -> "addi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "oehb5" -> "tehb1" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "source0" -> "constant7" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "constant7" -> "extsi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "extsi1" -> "addi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "source1" -> "constant8" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "constant8" -> "extsi2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "extsi2" -> "cmpi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "source2" -> "constant9" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+    "constant9" -> "extsi3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "extsi3" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "mc_load0" -> "fork7" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork7" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "fork7" -> "cmpi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "cmpi0" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "select0" -> "addi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "addi1" -> "oehb6" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+    "addi0" -> "oehb7" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  }
+  // Units/Channels in BB 3
+  subgraph "cluster3" {
+    label="block3"
+    // Units in BB 3
+    "return1" [mlir_op="handshake.return", label="return", fillcolor=gold, shape="box", style="filled", ]
+    "end0" [mlir_op="handshake.end", label="end", fillcolor=gold, shape="box", style="filled", ]
+    // Channels in BB 3
+    "return1" -> "end0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  }
+  // Units outside of all basic blocks
+  "mem_controller0" [mlir_op="handshake.mem_controller", label="MC (a)", fillcolor=coral, shape="box", style="filled", ]
+  "sink0" [mlir_op="handshake.sink", label="sink", fillcolor=gainsboro, shape="box", style="filled", ]
+  "sink1" [mlir_op="handshake.sink", label="sink", fillcolor=gainsboro, shape="box", style="filled", ]
+  "sink2" [mlir_op="handshake.sink", label="sink", fillcolor=gainsboro, shape="box", style="filled, dotted", ]
+  // Channels outgoing of BB 0
+  "fork0" -> "control_merge3" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+  "extsi4" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "extsi5" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  // Channels outgoing of BB 1
+  "cond_br1" -> "oehb2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br1" -> "sink0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br2" -> "oehb3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br2" -> "sink1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br3" -> "oehb4" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br3" -> "return1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br4" -> "oehb5" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+  "cond_br4" -> "sink2" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+  // Channels outgoing of BB 2
+  "tehb0" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="normal",  color="blue"]
+  "tehb1" -> "control_merge3" [style="dotted", dir="both", arrowtail="none", arrowhead="normal",  color="blue"]
+  "mc_load0" -> "mem_controller0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "oehb7" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="normal",  color="blue"]
+  "oehb6" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="normal",  color="blue"]
+  // Channels outside of all basic blocks
+  "mem_controller0" -> "mc_load0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", ]
+  "mem_controller0" -> "end0" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", ]
+}

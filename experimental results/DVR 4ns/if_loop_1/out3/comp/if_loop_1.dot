@@ -1,0 +1,172 @@
+Digraph G {
+  splines=spline;
+  compound=true; // Allow edges between clusters
+  // Units/Channels in BB 0
+  subgraph "cluster0" {
+    label="block0"
+    // Units from function arguments
+    "n" [mlir_op="handshake.func", shape=diamond, label="n", style="solid", type="Entry", in="in1:32", out="out1:32", bbID=1]
+    "start_0" [mlir_op="handshake.func", shape=diamond, label="start_0", style="dotted", type="Entry", control="true", in="in1:0", out="out1:0", bbID=1]
+    // Units in BB 0
+    "fork0" [mlir_op="handshake.fork", label="fork0", fillcolor=lavender, shape="box", style="filled, dotted", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:0", out="out1:0 out2:0", bbID=1]
+    "constant0" [mlir_op="handshake.constant", label="constant0", fillcolor=plum, shape="box", style="filled", type="Constant", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1", value="0x0", bbID=1]
+    "fork1" [mlir_op="handshake.fork", label="fork1", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1 out2:1", bbID=1]
+    "extsi5" [mlir_op="arith.extsi", label="extsi5", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", latency="0", op="sext_op", out="out1:32", II=1, bbID=1]
+    "extsi6" [mlir_op="arith.extsi", label="extsi6", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", latency="0", op="sext_op", out="out1:32", II=1, bbID=1]
+    // Channels from function arguments
+    "n" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in3"]
+    "start_0" -> "fork0" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    // Channels in BB 0
+    "fork0" -> "constant0" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "constant0" -> "fork1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork1" -> "extsi5" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork1" -> "extsi6" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+  }
+  // Units/Channels in BB 1
+  subgraph "cluster1" {
+    label="block1"
+    // Units in BB 1
+    "mux0" [mlir_op="handshake.mux", label="mux0", fillcolor=lightblue, shape="box", style="filled", type="Mux", delay="1.412 1.397 0.000 1.412 1.397 1.412 0.000 0.000", in="in1?:1 in2:32 in3:32", out="out1:32", bbID=2]
+    "fork2" [mlir_op="handshake.fork", label="fork2", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32 out2:32", bbID=2]
+    "oehb0" [mlir_op="handshake.oehb", label="oehb0", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1", transparent="false", bbID=2, slots=4002]
+    "mux1" [mlir_op="handshake.mux", label="mux1", fillcolor=lightblue, shape="box", style="filled", type="Mux", delay="1.412 1.397 0.000 1.412 1.397 1.412 0.000 0.000", in="in1?:1 in2:32 in3:32", out="out1:32", bbID=2]
+    "mux2" [mlir_op="handshake.mux", label="mux2", fillcolor=lightblue, shape="box", style="filled", type="Mux", delay="1.412 1.397 0.000 1.412 1.397 1.412 0.000 0.000", in="in1?:1 in2:32 in3:32", out="out1:32", bbID=2]
+    "fork3" [mlir_op="handshake.fork", label="fork3", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32 out2:32", bbID=2]
+    "control_merge3" [mlir_op="handshake.control_merge", label="control_merge3", fillcolor=lightblue, shape="box", style="filled, dotted", type="CntrlMerge", delay="0.000 1.397 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:0 in2:0", out="out1:0 out2?:1", bbID=2]
+    "fork4" [mlir_op="handshake.fork", label="fork4", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1 out2:1 out3:1", bbID=2]
+    "cmpi1" [mlir_op="arith.cmpi<", label="cmpi1", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="1.907 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="icmp_ult_op", out="out1:1", II=1, bbID=2]
+    "fork5" [mlir_op="handshake.fork", label="fork5", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1 out2:1 out3:1 out4:1", bbID=2]
+    "cond_br1" [mlir_op="handshake.cond_br", label="cond_br1", fillcolor=tan2, shape="box", style="filled", type="Branch", delay="0.000 1.409 1.411 1.412 1.400 1.412 0.000 0.000", in="in1:32 in2?:1", out="out1+:32 out2-:32", bbID=2]
+    "cond_br2" [mlir_op="handshake.cond_br", label="cond_br2", fillcolor=tan2, shape="box", style="filled", type="Branch", delay="0.000 1.409 1.411 1.412 1.400 1.412 0.000 0.000", in="in1:32 in2?:1", out="out1+:32 out2-:32", bbID=2]
+    "tehb0" [mlir_op="handshake.tehb", label="tehb0", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=2, slots=3001]
+    "oehb1" [mlir_op="handshake.oehb", label="oehb1", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1", transparent="false", bbID=2, slots=4002]
+    "cond_br3" [mlir_op="handshake.cond_br", label="cond_br3", fillcolor=tan2, shape="box", style="filled", type="Branch", delay="0.000 1.409 1.411 1.412 1.400 1.412 0.000 0.000", in="in1:32 in2?:1", out="out1+:32 out2-:32", bbID=2]
+    "cond_br4" [mlir_op="handshake.cond_br", label="cond_br4", fillcolor=tan2, shape="box", style="filled, dotted", type="Branch", delay="0.000 1.409 1.411 1.412 1.400 1.412 0.000 0.000", in="in1:0 in2?:1", out="out1+:0 out2-:0", bbID=2]
+    // Channels in BB 1
+    "mux0" -> "fork2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork2" -> "cond_br2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork2" -> "cmpi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "oehb0" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out1", to="in1"]
+    "mux1" -> "tehb0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "mux2" -> "fork3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork3" -> "cond_br1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork3" -> "cmpi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in2"]
+    "control_merge3" -> "cond_br4" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "control_merge3" -> "fork4" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "fork4" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out1", to="in1"]
+    "fork4" -> "oehb0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "fork4" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out3", to="in1"]
+    "cmpi1" -> "fork5" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork5" -> "cond_br4" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out1", to="in2"]
+    "fork5" -> "oehb1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "fork5" -> "cond_br2" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out3", to="in2"]
+    "fork5" -> "cond_br1" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out4", to="in2"]
+    "tehb0" -> "cond_br3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "oehb1" -> "cond_br3" [style="solid", dir="both", arrowtail="none", arrowhead="dot", from="out1", to="in2"]
+  }
+  // Units/Channels in BB 2
+  subgraph "cluster2" {
+    label="block2"
+    // Units in BB 2
+    "tehb1" [mlir_op="handshake.tehb", label="tehb1", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "tehb2" [mlir_op="handshake.tehb", label="tehb2", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "fork6" [mlir_op="handshake.fork", label="fork6", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32 out2:32", bbID=3]
+    "tehb3" [mlir_op="handshake.tehb", label="tehb3", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "tehb4" [mlir_op="handshake.tehb", label="tehb4", fillcolor=lightgreen, shape="box", style="filled, dotted", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:0", out="out1:0", transparent="true", bbID=3, slots=3001]
+    "source0" [mlir_op="handshake.source", label="source0", fillcolor=gainsboro, shape="box", style="filled, dotted", type="Source", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", out="out1:0", bbID=3]
+    "constant4" [mlir_op="handshake.constant", label="constant4", fillcolor=plum, shape="box", style="filled", type="Constant", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:2", out="out1:2", value="0x1", bbID=3]
+    "extsi1" [mlir_op="arith.extsi", label="extsi1", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:2", latency="0", op="sext_op", out="out1:32", II=1, bbID=3]
+    "source1" [mlir_op="handshake.source", label="source1", fillcolor=gainsboro, shape="box", style="filled, dotted", type="Source", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", out="out1:0", bbID=3]
+    "constant9" [mlir_op="handshake.constant", label="constant9", fillcolor=plum, shape="box", style="filled", type="Constant", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:5", out="out1:5", value="0x0a", bbID=3]
+    "extsi2" [mlir_op="arith.extsi", label="extsi2", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:5", latency="0", op="sext_op", out="out1:32", II=1, bbID=3]
+    "source2" [mlir_op="handshake.source", label="source2", fillcolor=gainsboro, shape="box", style="filled, dotted", type="Source", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", out="out1:0", bbID=3]
+    "constant10" [mlir_op="handshake.constant", label="constant10", fillcolor=plum, shape="box", style="filled", type="Constant", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", out="out1:1", value="0x0", bbID=3]
+    "extsi3" [mlir_op="arith.extsi", label="extsi3", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:1", latency="0", op="sext_op", out="out1:32", II=1, bbID=3]
+    "source3" [mlir_op="handshake.source", label="source3", fillcolor=gainsboro, shape="box", style="filled, dotted", type="Source", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", out="out1:0", bbID=3]
+    "constant11" [mlir_op="handshake.constant", label="constant11", fillcolor=plum, shape="box", style="filled", type="Constant", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:3", out="out1:3", value="0x2", bbID=3]
+    "extsi4" [mlir_op="arith.extsi", label="extsi4", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:3", latency="0", op="sext_op", out="out1:32", II=1, bbID=3]
+    "mc_load0" [mlir_op="handshake.mc_load", label="mc_load0", fillcolor=coral, shape="box", style="filled", type="Operator", delay="1.412 1.409 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="1", op="mc_load_op", out="out1:32 out2:32", II=1, bbID=3, portId=0]
+    "tehb5" [mlir_op="handshake.tehb", label="tehb5", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "fork7" [mlir_op="handshake.fork", label="fork7", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32 out2:32", bbID=3]
+    "shli0" [mlir_op="arith.shli", label="shli0", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="3.466 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="shl_op", out="out1:32", II=1, bbID=3]
+    "tehb6" [mlir_op="handshake.tehb", label="tehb6", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "tehb7" [mlir_op="handshake.tehb", label="tehb7", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "addi2" [mlir_op="arith.addi", label="addi2", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="2.287 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="add_op", out="out1:32", II=1, bbID=3]
+    "tehb8" [mlir_op="handshake.tehb", label="tehb8", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "fork8" [mlir_op="handshake.fork", label="fork8", fillcolor=lavender, shape="box", style="filled", type="Fork", delay="0.000 0.100 0.100 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32 out2:32", bbID=3]
+    "cmpi0" [mlir_op="arith.cmpi>", label="cmpi0", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="1.907 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="icmp_sgt_op", out="out1:1", II=1, bbID=3]
+    "select0" [mlir_op="arith.select", label="select0", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="1.397 1.397 1.412 2.061 0.000 0.000 0.000 0.000", in="in1?:1 in2+:32 in3-:32", latency="0", op="select_op", out="out1:32", II=1, bbID=3]
+    "tehb9" [mlir_op="handshake.tehb", label="tehb9", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    "addi1" [mlir_op="arith.addi", label="addi1", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="2.287 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="add_op", out="out1:32", II=1, bbID=3]
+    "addi0" [mlir_op="arith.addi", label="addi0", fillcolor=moccasin, shape="oval", style="filled", type="Operator", delay="2.287 1.397 1.400 1.409 0.000 0.000 0.000 0.000", in="in1:32 in2:32", latency="0", op="add_op", out="out1:32", II=1, bbID=3]
+    "tehb10" [mlir_op="handshake.tehb", label="tehb10", fillcolor=lightgreen, shape="box", style="filled", type="Buffer", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", out="out1:32", transparent="true", bbID=3, slots=3001]
+    // Channels in BB 2
+    "tehb2" -> "fork6" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork6" -> "addi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork6" -> "mc_load0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in2"]
+    "tehb3" -> "addi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "source0" -> "constant4" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "constant4" -> "extsi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "extsi1" -> "addi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "source1" -> "constant9" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "constant9" -> "extsi2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "extsi2" -> "cmpi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "source2" -> "constant10" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "constant10" -> "extsi3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "extsi3" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in3"]
+    "source3" -> "constant11" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "constant11" -> "extsi4" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "extsi4" -> "shli0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "mc_load0" -> "tehb5" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "tehb5" -> "fork7" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork7" -> "tehb6" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork7" -> "shli0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "shli0" -> "tehb7" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "tehb6" -> "addi2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "tehb7" -> "addi2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "addi2" -> "tehb8" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "tehb8" -> "fork8" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "fork8" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "fork8" -> "cmpi0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+    "cmpi0" -> "select0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "select0" -> "tehb9" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+    "tehb9" -> "addi1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+    "addi0" -> "tehb10" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+  }
+  // Units/Channels in BB 3
+  subgraph "cluster3" {
+    label="block3"
+    // Units in BB 3
+    "return1" [mlir_op="handshake.return", label="return1", fillcolor=gold, shape="box", style="filled", type="Operator", delay="1.412 1.397 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", latency="0", op="ret_op", out="out1:32", II=1, bbID=4]
+    "end0" [mlir_op="handshake.end", label="end0", fillcolor=gold, shape="box", style="filled", type="Exit", delay="1.397 0.000 1.397 1.409 0.000 0.000 0.000 0.000", in="in1:0*e in2:32", out="out1:32", bbID=4]
+    // Channels in BB 3
+    "return1" -> "end0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+  }
+  // Units outside of all basic blocks
+  "mem_controller0" [mlir_op="handshake.mem_controller", label="mem_controller0", fillcolor=coral, shape="box", style="filled", type="MC", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32*l0a", memory="a", out="out1:32*l0d out2:0*e", bbID=0, bbcount=0, ldcount=1, stcount=0]
+  "sink0" [mlir_op="handshake.sink", label="sink0", fillcolor=gainsboro, shape="box", style="filled", type="Sink", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", bbID=0]
+  "sink1" [mlir_op="handshake.sink", label="sink1", fillcolor=gainsboro, shape="box", style="filled", type="Sink", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:32", bbID=0]
+  "sink2" [mlir_op="handshake.sink", label="sink2", fillcolor=gainsboro, shape="box", style="filled, dotted", type="Sink", delay="0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000", in="in1:0", bbID=0]
+  // Channels outgoing of BB 0
+  "fork0" -> "control_merge3" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2"]
+  "extsi5" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in3"]
+  "extsi6" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in3"]
+  // Channels outgoing of BB 1
+  "cond_br1" -> "tehb1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+  "cond_br1" -> "sink0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+  "cond_br2" -> "tehb2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+  "cond_br2" -> "sink1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+  "cond_br3" -> "tehb3" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+  "cond_br3" -> "return1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+  "cond_br4" -> "tehb4" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1"]
+  "cond_br4" -> "sink2" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+  // Channels outgoing of BB 2
+  "tehb1" -> "mux2" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2",  color="blue"]
+  "tehb4" -> "control_merge3" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1",  color="blue"]
+  "mc_load0" -> "mem_controller0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1", mem_address="true"]
+  "addi1" -> "mux1" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2",  color="blue"]
+  "tehb10" -> "mux0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in2",  color="blue"]
+  // Channels outside of all basic blocks
+  "mem_controller0" -> "mc_load0" [style="solid", dir="both", arrowtail="none", arrowhead="normal", from="out1", to="in1", mem_address="false"]
+  "mem_controller0" -> "end0" [style="dotted", dir="both", arrowtail="none", arrowhead="normal", from="out2", to="in1"]
+}

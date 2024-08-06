@@ -1,0 +1,86 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Sat Aug  3 12:32:11 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : if_loop_2
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.617ns  (required time - arrival time)
+  Source:                 tehb1/data_reg_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            tehb0/data_reg_reg[0]/CE
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk rise@4.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.076ns  (logic 0.890ns (28.934%)  route 2.186ns (71.066%))
+  Logic Levels:           8  (CARRY4=4 LUT2=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.027ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.510ns = ( 4.510 - 4.000 ) 
+    Source Clock Delay      (SCD):    0.537ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=607, unset)          0.537     0.537    tehb1/clk
+                         FDCE                                         r  tehb1/data_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+                         FDCE (Prop_fdce_C_Q)         0.175     0.712 f  tehb1/data_reg_reg[1]/Q
+                         net (fo=5, unplaced)         0.444     1.156    tehb0/dataOutArray[0]0_carry__2[1]
+                         LUT4 (Prop_lut4_I1_O)        0.131     1.287 r  tehb0/dataOutArray[0]0_carry_i_4/O
+                         net (fo=1, unplaced)         0.000     1.287    cmpi1/DI[0]
+                         CARRY4 (Prop_carry4_DI[0]_CO[3])
+                                                      0.293     1.580 r  cmpi1/dataOutArray[0]0_carry/CO[3]
+                         net (fo=1, unplaced)         0.007     1.587    cmpi1/dataOutArray[0]0_carry_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     1.641 r  cmpi1/dataOutArray[0]0_carry__0/CO[3]
+                         net (fo=1, unplaced)         0.000     1.641    cmpi1/dataOutArray[0]0_carry__0_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     1.695 r  cmpi1/dataOutArray[0]0_carry__1/CO[3]
+                         net (fo=1, unplaced)         0.000     1.695    cmpi1/dataOutArray[0]0_carry__1_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.054     1.749 r  cmpi1/dataOutArray[0]0_carry__2/CO[3]
+                         net (fo=13, unplaced)        0.678     2.427    fork3/generateBlocks[1].regblock/condition[0][0]
+                         LUT5 (Prop_lut5_I4_O)        0.043     2.470 r  fork3/generateBlocks[1].regblock/full_reg_i_3__1/O
+                         net (fo=4, unplaced)         0.431     2.901    control_merge3/oehb1/data_reg_reg[0]_0
+                         LUT6 (Prop_lut6_I0_O)        0.043     2.944 f  control_merge3/oehb1/full_reg_i_2/O
+                         net (fo=2, unplaced)         0.281     3.225    tehb0/data_reg_reg[0]_0
+                         LUT2 (Prop_lut2_I1_O)        0.043     3.268 r  tehb0/data_reg[31]_i_1__1/O
+                         net (fo=34, unplaced)        0.345     3.613    tehb0/enable
+                         FDCE                                         r  tehb0/data_reg_reg[0]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        4.000     4.000 r  
+                                                      0.000     4.000 r  clk (IN)
+                         net (fo=607, unset)          0.510     4.510    tehb0/clk
+                         FDCE                                         r  tehb0/data_reg_reg[0]/C
+                         clock pessimism              0.000     4.510    
+                         clock uncertainty           -0.035     4.475    
+                         FDCE (Setup_fdce_C_CE)      -0.245     4.230    tehb0/data_reg_reg[0]
+  -------------------------------------------------------------------
+                         required time                          4.230    
+                         arrival time                          -3.613    
+  -------------------------------------------------------------------
+                         slack                                  0.617    
+
+
+
+
+report_timing: Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2526.430 ; gain = 364.090 ; free physical = 187980 ; free virtual = 249401

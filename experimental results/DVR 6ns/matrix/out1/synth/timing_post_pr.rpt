@@ -1,0 +1,84 @@
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.1.1 (lin64) Build 2580384 Sat Jun 29 08:04:45 MDT 2019
+| Date         : Fri Aug  2 18:08:33 2024
+| Host         : ee-tik-eda2 running 64-bit CentOS Linux release 7.9.2009 (Core)
+| Command      : report_timing
+| Design       : matrix
+| Device       : 7k160t-fbg484
+| Speed File   : -2  PRODUCTION 1.12 2017-02-17
+--------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.983ns  (required time - arrival time)
+  Source:                 oehb8/data_reg_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Destination:            tehb2/fifo/Memory_reg_0_7_24_29/RAMA/WE
+                            (rising edge-triggered cell RAMD32 clocked by clk  {rise@0.000ns fall@3.000ns period=6.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.000ns  (clk rise@6.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.622ns  (logic 0.888ns (19.213%)  route 3.734ns (80.787%))
+  Logic Levels:           9  (CARRY4=1 LUT2=1 LUT3=1 LUT5=4 LUT6=2)
+  Clock Path Skew:        -0.057ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.144ns = ( 7.144 - 6.000 ) 
+    Source Clock Delay      (SCD):    1.286ns
+    Clock Pessimism Removal (CPR):    0.085ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=716, unset)          1.286     1.286    oehb8/clk
+    SLICE_X15Y103        FDCE                                         r  oehb8/data_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X15Y103        FDCE (Prop_fdce_C_Q)         0.204     1.490 r  oehb8/data_reg_reg[1]/Q
+                         net (fo=5, routed)           0.470     1.960    oehb8/Q[1]
+    SLICE_X15Y102        LUT2 (Prop_lut2_I0_O)        0.124     2.084 r  oehb8/dataOutArray[0]0_carry_i_6__1/O
+                         net (fo=1, routed)           0.000     2.084    cmpi4/S[0]
+    SLICE_X15Y102        CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.259     2.343 r  cmpi4/dataOutArray[0]0_carry/CO[3]
+                         net (fo=14, routed)          0.720     3.063    oehb8/CO[0]
+    SLICE_X6Y108         LUT6 (Prop_lut6_I0_O)        0.043     3.106 r  oehb8/data_reg[0]_i_2__2/O
+                         net (fo=6, routed)           0.286     3.392    control_merge7/oehb1/data_reg_reg[0]_2
+    SLICE_X4Y109         LUT5 (Prop_lut5_I3_O)        0.043     3.435 f  control_merge7/oehb1/Memory_reg_0_15_0_0_i_4/O
+                         net (fo=15, routed)          0.335     3.769    control_merge8/oehb1/validArray_reg[0]_1
+    SLICE_X4Y110         LUT5 (Prop_lut5_I4_O)        0.043     3.812 r  control_merge8/oehb1/Memory_reg_0_15_0_0_i_1/O
+                         net (fo=19, routed)          0.421     4.234    tehb7/fifo/control_merge8_dataOutArray_1
+    SLICE_X6Y112         LUT3 (Prop_lut3_I0_O)        0.043     4.277 r  tehb7/fifo/Tail[3]_i_6/O
+                         net (fo=5, routed)           0.357     4.633    tehb9/fifo/q2_reg_0
+    SLICE_X8Y114         LUT6 (Prop_lut6_I2_O)        0.043     4.676 r  tehb9/fifo/q0_reg_i_36/O
+                         net (fo=4, routed)           0.274     4.951    tehb9/fifo/full_reg_reg
+    SLICE_X9Y114         LUT5 (Prop_lut5_I0_O)        0.043     4.994 r  tehb9/fifo/full_reg_i_2__3/O
+                         net (fo=10, routed)          0.380     5.374    tehb2/fifo/Empty_reg_8
+    SLICE_X10Y114        LUT5 (Prop_lut5_I2_O)        0.043     5.417 r  tehb2/fifo/Memory_reg_0_7_0_5_i_1__0/O
+                         net (fo=48, routed)          0.491     5.908    tehb2/fifo/Memory_reg_0_7_24_29/WE
+    SLICE_X10Y120        RAMD32                                       r  tehb2/fifo/Memory_reg_0_7_24_29/RAMA/WE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.000     6.000 r  
+                                                      0.000     6.000 r  clk (IN)
+                         net (fo=716, unset)          1.144     7.144    tehb2/fifo/Memory_reg_0_7_24_29/WCLK
+    SLICE_X10Y120        RAMD32                                       r  tehb2/fifo/Memory_reg_0_7_24_29/RAMA/CLK
+                         clock pessimism              0.085     7.229    
+                         clock uncertainty           -0.035     7.194    
+    SLICE_X10Y120        RAMD32 (Setup_ramd32_CLK_WE)
+                                                     -0.303     6.891    tehb2/fifo/Memory_reg_0_7_24_29/RAMA
+  -------------------------------------------------------------------
+                         required time                          6.891    
+                         arrival time                          -5.908    
+  -------------------------------------------------------------------
+                         slack                                  0.983    
+
+
+
+
