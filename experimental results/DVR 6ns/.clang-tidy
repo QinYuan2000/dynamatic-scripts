@@ -1,4 +1,0 @@
-# Custom rules for integration tests
-Checks: >
-        -readability-identifier-naming
-        -modernize-use-using

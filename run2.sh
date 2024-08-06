@@ -1,6 +1,6 @@
 set-dynamatic-path ./dynamatic
 
-set-src ./dynamatic/integration-test/video_filter/video_filter.c
+set-src ./dynamatic/integration-test/matrix/matrix.c
 
 write-hdl
 

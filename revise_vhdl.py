@@ -48,5 +48,5 @@ def process_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
 
-benchmark = "video_filter"
+benchmark = "matrix"
 process_file("dynamatic/integration-test/" + benchmark + "/out/hdl/" + benchmark + ".vhd")

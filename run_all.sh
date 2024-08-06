@@ -6,8 +6,9 @@
 
 # exit
 
-benchmarks=("video_filter")
-# benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "image_resize" "matrix" "video_filter")
+# benchmarks=("if_loop_1")
+# benchmarks=("matvec" "image_resize" "matrix" "video_filter")
+benchmarks=("fir" "iir" "if_loop_1" "if_loop_2" "sumi3_mem" "matvec" "video_filter" "image_resize" "matrix")
 clock_period=4
 if_synthesize=1
 
@@ -161,11 +162,12 @@ function update_python_script2() {
 # Iterate over each benchmark
 for benchmark in "${benchmarks[@]}"; do
     process_dynamatic1 $benchmark "" "1"
+    # process_dynamatic4 $benchmark
     update_python_script $benchmark "test1.py"
     process_dynamatic2 $benchmark "2"
     update_python_script2 $benchmark "revise_vhdl.py"
     process_dynamatic3 $benchmark "3" "2"
-    process_dynamatic4 $benchmark
+    # process_dynamatic4 $benchmark
     update_python_script $benchmark "test2.py"
     process_dynamatic2 $benchmark "2"
     update_python_script2 $benchmark "revise_vhdl.py"
