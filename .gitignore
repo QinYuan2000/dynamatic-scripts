@@ -11,3 +11,7 @@ hdl/
 tags
 test-*.sh
 *.log
+z_compare/*
+filelist1.lst
+*.ini
+*.txt

@@ -8,12 +8,12 @@
 # this script should be called from dynamatic's source directory
 SCRIPT_CWD="$PWD"
 
-CMAKE=cmake
+CMAKE="/usr/bin/cmake"
 POLYGEIST_DIR_PREFIX="/opt/polygeist"
 
 # export CCACHE_DISABLE=1
 
-LSQ_GEN_PATH="tools/backend/lsq-generator"
+LSQ_GEN_PATH="tools/backend/lsq-generator-chisel"
 LSQ_GEN_JAR="target/scala-2.13/lsq-generator.jar"
 
 [ -d /opt/gurobi1000 ] && {
@@ -22,6 +22,11 @@ LSQ_GEN_JAR="target/scala-2.13/lsq-generator.jar"
   export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
 }
 
+# cd build
+
+# /usr/bin/cmake -DGUROBI_LIBRARY=/home/yuaqin/gurobi1201/linux64/lib/libgurobi120.so \
+#                -DGUROBI_INCLUDE_DIRS=/home/yuaqin/gurobi1201/linux64/include \
+#                ..
 # ----------------------------------------------------------------------------------
 # - here are some settings for our centos/rocky servers (identified by the hostname)
 # ----------------------------------------------------------------------------------
@@ -43,8 +48,8 @@ LSQ_GEN_JAR="target/scala-2.13/lsq-generator.jar"
 
 LLVM_PREFIX="$POLYGEIST_DIR_PREFIX/llvm-project"
 
-C_COMPILER="clang"
-CXX_COMPILER="clang++"
+C_COMPILER="/usr/bin/clang"
+CXX_COMPILER="/usr/bin/clang++"
 
 CMAKE_FLAGS_SUPER="\
   -DCMAKE_C_COMPILER=$C_COMPILER \
