@@ -12,6 +12,6 @@ tags
 test-*.sh
 *.log
 z_compare/*
-filelist1.lst
+filelist*.lst
 *.ini
 *.txt
