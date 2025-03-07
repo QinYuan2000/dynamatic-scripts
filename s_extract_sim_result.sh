@@ -1,6 +1,6 @@
 #!/bin/sh
 BASE_PATH="/home/yuaqin/dynamatic-scripts/z_compare"
-TARGET_DIR="fpga20-vhdl-6ns"
+TARGET_DIR="fpga20-verilog-6ns"
 TARGET_PATH="${BASE_PATH}/${TARGET_DIR}"
 if [ ! -d "${TARGET_PATH}" ]; then
     echo "Error: directory ${TARGET_PATH} does not exist!"

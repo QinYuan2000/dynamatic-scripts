@@ -22,11 +22,11 @@ LSQ_GEN_JAR="target/scala-2.13/lsq-generator.jar"
   export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
 }
 
-# cd build
+cd build
 
-# /usr/bin/cmake -DGUROBI_LIBRARY=/home/yuaqin/gurobi1201/linux64/lib/libgurobi120.so \
-#                -DGUROBI_INCLUDE_DIRS=/home/yuaqin/gurobi1201/linux64/include \
-#                ..
+/usr/bin/cmake -DGUROBI_LIBRARY=/home/yuaqin/gurobi1201/linux64/lib/libgurobi120.so \
+               -DGUROBI_INCLUDE_DIRS=/home/yuaqin/gurobi1201/linux64/include \
+               ..
 # ----------------------------------------------------------------------------------
 # - here are some settings for our centos/rocky servers (identified by the hostname)
 # ----------------------------------------------------------------------------------

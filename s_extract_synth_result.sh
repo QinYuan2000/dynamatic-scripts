@@ -55,3 +55,5 @@ for project in "$ROOT_DIR"/*; do
         done < "$SUBDIR_LIST"
     done
 done
+
+rm -rf z_compare/synth_result/result

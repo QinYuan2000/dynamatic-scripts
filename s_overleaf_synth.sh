@@ -32,8 +32,8 @@ for table_dir in "$ROOT_DIR"/*; do
             continue
         fi
         # "Now" values come from the first file, "Previous" from the second.
-        now_file="${files[0]}"
-        prev_file="${files[1]}"
+        now_file="${files[1]}"
+        prev_file="${files[0]}"
 
         # Process the "Now" file
         while IFS= read -r line; do

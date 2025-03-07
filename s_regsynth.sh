@@ -1,9 +1,6 @@
 #!/bin/bash
 
-case_list=("fpl22-verilog-6ns/integration-test"
-            "fpga20-vhdl-6ns/integration-test"
-            "fpga20-verilog-6ns/integration-test"
-            "on-merges-vhdl-6ns/integration-test"
+case_list=("on-merges-vhdl-6ns/integration-test"
             )
 
 lst_file="filelist1.lst"

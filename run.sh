@@ -2,7 +2,7 @@
 
 dynamatic_path="./dynamatic"
 
-# BUFFER_ALGORITHM="--buffer-algorithm fpga20"
+BUFFER_ALGORITHM="--buffer-algorithm fpga20"
 # BUFFER_ALGORITHM="--buffer-algorithm fpl22"
 # BUFFER_ALGORITHM="--buffer-algorithm on-merges"
 # SHARING="--sharing"
@@ -12,6 +12,7 @@ HDL="vhdl"
 
 # f_benchmark_src="mvt_float/mvt_float.c"
 # f_benchmark_src="sharing/share_test_2/share_test_2.c"
+# f_benchmark_src="binary_search/binary_search.c"
 # f_benchmark_src="fir/fir.c"
 # f_benchmark_src="atax/atax.c"
 # f_benchmark_src="dct/dct.c"
@@ -32,7 +33,7 @@ HDL="vhdl"
 # f_benchmark_src="atax/atax.c"
 # f_benchmark_src="atax_float/atax_float.c"
 # f_benchmark_src="syr2k_float/syr2k_float.c"
-# f_benchmark_src="bicg_float/bicg_float.c"
+f_benchmark_src="bicg/bicg.c"
 # f_benchmark_src="gesummv_float/gesummv_float.c"
 # f_benchmark_src="gemm_float/gemm_float.c"
 # f_benchmark_src="gemm/gemm.c"
@@ -65,7 +66,7 @@ HDL="vhdl"
 # f_benchmark_src="polyn_mult/polyn_mult.c"
 # f_benchmark_src="gsum/gsum.c"
 # f_benchmark_src="admm/admm.c"
-f_benchmark_src="fir/fir.c"
+# f_benchmark_src="iir/iir.c"
 
 s_source_file="$dynamatic_path/integration-test/$f_benchmark_src"
 [ -f "$s_source_file" ] || \
@@ -77,7 +78,7 @@ echo "set-dynamatic-path ./dynamatic; \
   compile $SHARING $BUFFER_ALGORITHM; \
   write-hdl --hdl $HDL; \
   simulate; \
-  # synthesize; \
+  synthesize; \
   exit" \
   | dynamatic/bin/dynamatic --exit-on-failure --debug
 
