@@ -40,22 +40,14 @@ for table_dir in "$ROOT_DIR"/*; do
             [ -z "$line" ] && continue
             key=$(echo "$line" | awk '{print $1}')
             value=$(echo "$line" | awk '{print $2}')
-            # If key contains '/', take only the part after the last '/'
             key=$(echo "$key" | awk -F'/' '{print $NF}')
-            # For slack, remove trailing "ns"
             if [ "$category" = "slack" ]; then
                 value=$(echo "$value" | sed 's/ns$//')
             fi
             case $category in
-                LUT)
-                    lut_now["$key"]="$value"
-                    ;;
-                Reg)
-                    reg_now["$key"]="$value"
-                    ;;
-                slack)
-                    slack_now["$key"]="$value"
-                    ;;
+                LUT) lut_now["$key"]="$value" ;;
+                Reg) reg_now["$key"]="$value" ;;
+                slack) slack_now["$key"]="$value" ;;
             esac
         done < "$now_file"
 
@@ -69,23 +61,15 @@ for table_dir in "$ROOT_DIR"/*; do
                 value=$(echo "$value" | sed 's/ns$//')
             fi
             case $category in
-                LUT)
-                    lut_prev["$key"]="$value"
-                    ;;
-                Reg)
-                    reg_prev["$key"]="$value"
-                    ;;
-                slack)
-                    slack_prev["$key"]="$value"
-                    ;;
+                LUT) lut_prev["$key"]="$value" ;;
+                Reg) reg_prev["$key"]="$value" ;;
+                slack) slack_prev["$key"]="$value" ;;
             esac
         done < "$prev_file"
     done
 
-    # Assume keys are the same in LUT; sort keys alphabetically.
     sorted_keys=($(for k in "${!lut_now[@]}"; do echo "$k"; done | sort))
 
-    # Generate the Overleaf table code for the current table
     {
       echo "\begin{table}[h]"
       echo "\centering"
@@ -96,10 +80,8 @@ for table_dir in "$ROOT_DIR"/*; do
       echo " & Previous & Now & Previous & Now & Previous & Now \\\\"
       echo "\hline"
       for key in "${sorted_keys[@]}"; do
-          # Escape underscores in key for LaTeX
           escaped_key=$(echo "$key" | sed 's/_/\\_/g')
 
-          # Retrieve values for each category
           lut_prev_val="${lut_prev[$key]}"
           lut_now_val="${lut_now[$key]}"
           reg_prev_val="${reg_prev[$key]}"
@@ -107,51 +89,89 @@ for table_dir in "$ROOT_DIR"/*; do
           slack_prev_val="${slack_prev[$key]}"
           slack_now_val="${slack_now[$key]}"
 
-          # Compare LUT values (integers)
+          # LUT (int)
           if [ "$lut_prev_val" -eq "$lut_now_val" ] 2>/dev/null; then
               colored_lut_prev="$lut_prev_val"
               colored_lut_now="$lut_now_val"
           else
-              if [ "$lut_prev_val" -gt "$lut_now_val" ] 2>/dev/null; then
-                  colored_lut_prev="\\textcolor{red}{$lut_prev_val}"
-                  colored_lut_now="\\textcolor{green}{$lut_now_val}"
+              diff=$(( lut_prev_val > lut_now_val ? lut_prev_val - lut_now_val : lut_now_val - lut_prev_val ))
+              if [ "$lut_prev_val" -gt "$lut_now_val" ]; then
+                  if [ "$diff" -le 30 ]; then
+                      colored_lut_prev="\\textcolor{paleRed}{$lut_prev_val}"
+                      colored_lut_now="\\textcolor{paleGreen}{$lut_now_val}"
+                  else
+                      colored_lut_prev="\\textcolor{red}{$lut_prev_val}"
+                      colored_lut_now="\\textcolor{green}{$lut_now_val}"
+                  fi
               else
-                  colored_lut_prev="\\textcolor{green}{$lut_prev_val}"
-                  colored_lut_now="\\textcolor{red}{$lut_now_val}"
+                  if [ "$diff" -le 30 ]; then
+                      colored_lut_prev="\\textcolor{paleGreen}{$lut_prev_val}"
+                      colored_lut_now="\\textcolor{paleRed}{$lut_now_val}"
+                  else
+                      colored_lut_prev="\\textcolor{green}{$lut_prev_val}"
+                      colored_lut_now="\\textcolor{red}{$lut_now_val}"
+                  fi
               fi
           fi
 
-          # Compare Reg values (integers)
+          # Reg (int)
           if [ "$reg_prev_val" -eq "$reg_now_val" ] 2>/dev/null; then
               colored_reg_prev="$reg_prev_val"
               colored_reg_now="$reg_now_val"
           else
-              if [ "$reg_prev_val" -gt "$reg_now_val" ] 2>/dev/null; then
-                  colored_reg_prev="\\textcolor{red}{$reg_prev_val}"
-                  colored_reg_now="\\textcolor{green}{$reg_now_val}"
+              diff=$(( reg_prev_val > reg_now_val ? reg_prev_val - reg_now_val : reg_now_val - reg_prev_val ))
+              if [ "$reg_prev_val" -gt "$reg_now_val" ]; then
+                  if [ "$diff" -le 50 ]; then
+                      colored_reg_prev="\\textcolor{paleRed}{$reg_prev_val}"
+                      colored_reg_now="\\textcolor{paleGreen}{$reg_now_val}"
+                  else
+                      colored_reg_prev="\\textcolor{red}{$reg_prev_val}"
+                      colored_reg_now="\\textcolor{green}{$reg_now_val}"
+                  fi
               else
-                  colored_reg_prev="\\textcolor{green}{$reg_prev_val}"
-                  colored_reg_now="\\textcolor{red}{$reg_now_val}"
+                  if [ "$diff" -le 50 ]; then
+                      colored_reg_prev="\\textcolor{paleGreen}{$reg_prev_val}"
+                      colored_reg_now="\\textcolor{paleRed}{$reg_now_val}"
+                  else
+                      colored_reg_prev="\\textcolor{green}{$reg_prev_val}"
+                      colored_reg_now="\\textcolor{red}{$reg_now_val}"
+                  fi
               fi
           fi
 
-          # Compare slack values (floats); using awk for floating-point comparison
+          # Slack (float)
           sp_prev=$(echo "$slack_prev_val" | tr -d ' ')
           sp_now=$(echo "$slack_now_val" | tr -d ' ')
-          cmp=$(awk -v a="$sp_prev" -v b="$sp_now" 'BEGIN {if(a==b) print "equal"; else if(a>b) print "prev"; else print "now"}')
-          if [ "$cmp" = "equal" ]; then
-              colored_slack_prev="$slack_prev_val"
-              colored_slack_now="$slack_now_val"
-          elif [ "$cmp" = "prev" ]; then
-              # For slack, larger is good so mark larger as green and smaller as red.
-              colored_slack_prev="\\textcolor{green}{$slack_prev_val}"
-              colored_slack_now="\\textcolor{red}{$slack_now_val}"
-          else
-              colored_slack_prev="\\textcolor{red}{$slack_prev_val}"
-              colored_slack_now="\\textcolor{green}{$slack_now_val}"
-          fi
+          cmp=$(awk -v a="$sp_prev" -v b="$sp_now" 'BEGIN {
+              diff=(a>b?a-b:b-a);
+              if (a==b) print "equal";
+              else if (a>b) print (diff<=0.2 ? "prev-light" : "prev");
+              else print (diff<=0.2 ? "now-light" : "now");
+          }')
 
-          # Output the table row
+          case "$cmp" in
+              equal)
+                  colored_slack_prev="$slack_prev_val"
+                  colored_slack_now="$slack_now_val"
+                  ;;
+              prev-light)
+                  colored_slack_prev="\\textcolor{paleGreen}{$slack_prev_val}"
+                  colored_slack_now="\\textcolor{paleRed}{$slack_now_val}"
+                  ;;
+              now-light)
+                  colored_slack_prev="\\textcolor{paleRed}{$slack_prev_val}"
+                  colored_slack_now="\\textcolor{paleGreen}{$slack_now_val}"
+                  ;;
+              prev)
+                  colored_slack_prev="\\textcolor{green}{$slack_prev_val}"
+                  colored_slack_now="\\textcolor{red}{$slack_now_val}"
+                  ;;
+              now)
+                  colored_slack_prev="\\textcolor{red}{$slack_prev_val}"
+                  colored_slack_now="\\textcolor{green}{$slack_now_val}"
+                  ;;
+          esac
+
           echo "${escaped_key} & ${colored_lut_prev} & ${colored_lut_now} & ${colored_reg_prev} & ${colored_reg_now} & ${colored_slack_prev} & ${colored_slack_now} \\\\"
       done
       echo "\hline"
@@ -160,6 +180,5 @@ for table_dir in "$ROOT_DIR"/*; do
       echo ""
     } >> "$OUTPUT_FILE"
 
-    # Clear associative arrays for the next table
     unset lut_now lut_prev reg_now reg_prev slack_now slack_prev
 done

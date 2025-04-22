@@ -36,10 +36,8 @@ for (( i=0; i<num_files-1; i+=2 )); do
     # Process the previous file (only lines starting with "#")
     while IFS= read -r line; do
         if [[ $line == \#* ]]; then
-            # Extract key by matching "Instance: /<key>_wrapper_tb"
             key=$(echo "$line" | sed -n 's/.*Instance: \/\(.*\)_wrapper_tb.*/\1/p')
             if [ -n "$key" ]; then
-                # Extract the first number after "Time:" (in ns) as the value
                 value=$(echo "$line" | sed -n 's/.*Time: \([0-9]\+\) ns.*/\1/p')
                 prev_values["$key"]="$value"
             fi
@@ -78,12 +76,23 @@ for (( i=0; i<num_files-1; i+=2 )); do
               colored_prev="${prev_val}"
               colored_now="${now_val}"
           else
+              diff=$(( prev_val > now_val ? prev_val - now_val : now_val - prev_val ))
               if [ "$prev_val" -gt "$now_val" ]; then
-                  colored_prev="\\textcolor{red}{$prev_val}"
-                  colored_now="\\textcolor{green}{$now_val}"
+                  if [ "$diff" -le 10 ]; then
+                      colored_prev="\\textcolor{paleRed}{$prev_val}"
+                      colored_now="\\textcolor{paleGreen}{$now_val}"
+                  else
+                      colored_prev="\\textcolor{red}{$prev_val}"
+                      colored_now="\\textcolor{green}{$now_val}"
+                  fi
               else
-                  colored_prev="\\textcolor{green}{$prev_val}"
-                  colored_now="\\textcolor{red}{$now_val}"
+                  if [ "$diff" -le 10 ]; then
+                      colored_prev="\\textcolor{paleGreen}{$prev_val}"
+                      colored_now="\\textcolor{paleRed}{$now_val}"
+                  else
+                      colored_prev="\\textcolor{green}{$prev_val}"
+                      colored_now="\\textcolor{red}{$now_val}"
+                  fi
               fi
           fi
 
