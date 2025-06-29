@@ -2,7 +2,7 @@
 
 ROOT_DIR="z_compare"
 
-SUBDIR_LIST="filelist2.lst"
+SUBDIR_LIST="filelist_small2.lst"
 
 RESULT_DIR="$ROOT_DIR/synth_result"
 mkdir -p "$RESULT_DIR"

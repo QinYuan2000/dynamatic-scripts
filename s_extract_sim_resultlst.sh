@@ -1,8 +1,7 @@
 #!/bin/sh
 BASE_PATH="/home/yuaqin/dynamatic-scripts/z_compare"
-TARGET_DIRS="fpga20-vhdl-6ns fpga20-verilog-6ns fpl22-verilog-6ns on-merges-vhdl-6ns"
-
-FILELIST="filelist2.lst"
+TARGET_DIRS="costaware-vhdl-6ns costaware-verilog-6ns"
+FILELIST="filelist_small2.lst"
 
 RESULT_DIR="${BASE_PATH}/result"
 mkdir -p "${RESULT_DIR}"
@@ -25,7 +24,9 @@ process_benchmark() {
     else
         next_line_num=$((note_line + 1))
         sim_line=$(sed -n "${next_line_num}p" "${report_file}")
-        echo "${sim_line}" >> "${output_file}"
+        # Replace /tb with /<bench_name>_wrapper_tb
+        sim_line_with_name=$(echo "$sim_line" | sed "s|Instance: /tb|Instance: /${bench_name}_wrapper_tb|")
+        echo "$sim_line_with_name" >> "${output_file}"
     fi
 }
 
