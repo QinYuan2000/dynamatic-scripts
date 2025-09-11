@@ -49,7 +49,8 @@ s_source_file="$dynamatic_path/integration-test/$f_benchmark_src"
 echo "set-dynamatic-path ./dynamatic; \
   set-src ./dynamatic/integration-test/$f_benchmark_src; \
   set-clock-period 6; \
-  compile $SHARING $BUFFER_ALGORITHM; \
+  compile $SHARING $BUFFER_ALGORITHM --fast-token-delivery;\
+  write-mlir --stage handshake --output ./handshake_in.mlir;
   write-hdl --hdl $HDL; \
   simulate; \
   synthesize; \
