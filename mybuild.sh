@@ -16,8 +16,8 @@ POLYGEIST_DIR_PREFIX="/opt/polygeist"
 LSQ_GEN_PATH="tools/backend/lsq-generator-chisel"
 LSQ_GEN_JAR="target/scala-2.13/lsq-generator.jar"
 
-[ -d /opt/gurobi1000 ] && {
-  export GUROBI_HOME="/opt/gurobi1000/linux64"
+[ -d "/opt/gurobi1103" ] && {
+  export GUROBI_HOME="/opt/gurobi1103/linux64"
   export PATH="${PATH}:${GUROBI_HOME}/bin"
   export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
 }
@@ -30,13 +30,6 @@ cd build
 # ----------------------------------------------------------------------------------
 # - here are some settings for our centos/rocky servers (identified by the hostname)
 # ----------------------------------------------------------------------------------
-
-[ "$(hostname)" = 'ee-tik-eda2' ] && {
-  POLYGEIST_DIR_PREFIX='/opt/polygeist-lap'
-  CMAKE="/opt/"cmake-3.*.*-linux-x86_64"/bin/cmake"
-  source /opt/rh/devtoolset-11/enable
-  source /opt/rh/llvm-toolset-7.0/enable
-}
 
 [ "$(hostname)" = 'ee-tik-dynamo-eda1' ] && {
   source /opt/rh/gcc-toolset-13/enable
@@ -65,6 +58,7 @@ build_dynamatic () {
     -DMLIR_DIR=$LLVM_PREFIX/build/lib/cmake/mlir \
     -DLLVM_DIR=$LLVM_PREFIX/build/lib/cmake/llvm \
     -DCLANG_DIR=$LLVM_PREFIX/build/lib/cmake/clang \
+    -DPolly_DIR=$LLVM_PREFIX/build/tools/polly/lib/cmake/polly \
     -DLLVM_TARGETS_TO_BUILD="host" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -87,6 +81,7 @@ make_simlink () {
   ln -f --symbolic $SCRIPT_CWD/build/bin/exp-frequency-profiler ./bin/exp-frequency-profiler
   ln -f --symbolic $SCRIPT_CWD/build/bin/export-dot ./bin/export-dot
   ln -f --symbolic $SCRIPT_CWD/build/bin/export-rtl ./bin/export-rtl
+  ln -f --symbolic $SCRIPT_CWD/build/bin/export-cfg ./bin/export-cfg
   ln -f --symbolic $SCRIPT_CWD/build/bin/handshake-simulator ./bin/handshake-simulator
   ln -f --symbolic $SCRIPT_CWD/build/bin/hls-verifier ./bin/hls-verifier
   ln -f --symbolic $SCRIPT_CWD/build/bin/wlf2csv ./bin/wlf2csv
@@ -99,15 +94,13 @@ make_simlink () {
 
   ln -f --symbolic "$SCRIPT_CWD/$LSQ_GEN_PATH/$LSQ_GEN_JAR" ./bin/generators/lsq-generator.jar
 
+  # Create symbolic links to polygeist headers
+  ln -fT --symbolic $POLYGEIST_DIR_PREFIX/llvm-project/clang/lib/Headers $SCRIPT_CWD/build/include/clang_headers
+
   cd "$SCRIPT_CWD" && mkdir -p bin/generators
 
   # Make the scripts used by the frontend executable
   chmod +x tools/dynamatic/scripts/*.sh
-
-  # Symlink llvm-project if does not exist
-  [ ! -L $SCRIPT_CWD/polygeist/llvm-project ] && {
-    ln -s $POLYGEIST_DIR_PREFIX/llvm-project $SCRIPT_CWD/polygeist/llvm-project
-  }
 }
 
 
@@ -118,5 +111,5 @@ build_lsq() {
 }
 
 build_dynamatic
-build_lsq
+# build_lsq
 make_simlink

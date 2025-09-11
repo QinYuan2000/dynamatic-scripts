@@ -1,30 +1,52 @@
 # Scripts for Working with Dynamatic on the ee-tik-dynamo-eda1 Machine
 
-## Prerequisite: get your Gurobi license
+Once you have been given access to the server, you can login by ssh to ee-tik-dynamo-eda1.ethz.ch, using your ETH username and email password.
+
+## Prerequisite: Get Your Gurobi License
 
 Gurobi offers free [academic
 license](https://www.gurobi.com/academia/academic-program-and-licenses/).
 
-After getting the license, go to the EDA2 machine:
+After getting the license, go to the `ee-tik-dynamo-eda1` machine:
 
 ```sh
-/opt/gurobi1000/linux64/bin/grbgetkey xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # format of your key
+/opt/gurobi1103/linux64/bin/grbgetkey xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # format of your key
 ```
 
 Which stores the license file at `~/gurobi.lic` (this is one of the default
 location for Gurobi to check if you have a valid license).
 
-Remember to put the following lines in your `~/.bashrc` or `~/.zshrc`.
-Dynamatic's cmake settings will use these environment variables to determine
-how to include the headers of Gurobi.
+Remember to put the following lines in your `~/.bashrc`.  Dynamatic's cmake
+settings will use these environment variables to determine how to include the
+headers of Gurobi.
 
 ```sh
-export GUROBI_HOME="/opt/gurobi1003/linux64"
+export GUROBI_HOME="/opt/gurobi1103/linux64"
 export PATH="${PATH}:${GUROBI_HOME}/bin"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$GUROBI_HOME/lib"
 ```
 
-## Clone and build dynamatic on the EDA2 machine
+Then, you need to reload the environment. Type the following in your terminal:
+
+```
+source ~/.bashrc
+```
+
+To check if the step above is done correctly, type the following in your terminal:
+
+```sh
+gurobi_cl
+```
+
+If it returns 
+
+```
+gurobi_cl: command not found
+```
+
+then there is something wrong in your settings.
+
+## Clone and Build Dynamatic on the `ee-tik-dynamo-eda1` Machine
 
 ```sh
 git clone git@github.com:EPFL-LAP/dynamatic.git
@@ -32,7 +54,19 @@ cd dynamatic/
 bash ../mybuild.sh
 ``` 
 
-## (Optional) Building the handshake visualizer
+> [!NOTE]
+> Error `public key: permission denied`
+> You need to add a ssh key into the server and upload the public key to GitHub
+> 1. Type `ssh-keygen` in your terminal. You will be prompted for several times,
+>    you can just press enter several times to keep everything in its default
+>    value.
+> 2. Go to `GitHub -> Settings -> SSH and GPG keys` and click `Add new SSH key`.
+> 3. Give it any title. And paste the content of `~/.ssh/id_rsa.pub` into the Key.
+> Voila! The error should be resolved now. Please try to clone the GitHub repo
+> again.
+
+
+## (Optional) Building the Handshake Visualizer
 
 ```sh
 cd dynamatic/
@@ -40,15 +74,34 @@ git submodule init "visual-dataflow/godot-cpp"
 bash "../build_visualizer.sh"
 ``` 
 
-## Run your first example 
+## Run Your First Example 
 
 ```sh
 bash run.sh
 ```
 
-## Trouble-shooting
+Inspecting the generated files:
+```
+integration-test/fir/out/comp/
+├── affine_mem.mlir # Affine dialect with memory analysis
+├── affine.mlir
+├── cf_dyn_transformed.mlir
+├── cf.mlir         # CF dialect
+├── cf_transformed.mlir
+├── fir.dot
+├── fir.png
+├── handshake_buffered.mlir
+├── handshake_export.mlir
+├── handshake.mlir
+├── handshake_transformed.mlir
+├── hw.mlir
+├── profiler-inputs.txt
+└── scf.mlir
+```
 
-### Error when running simulation: 
+## Trouble-Shooting
+
+### Error When Running Simulation: 
 
 ```
 dynamatic/include/dynamatic/Integration.h:214:34: error: no member named 'setfill' in namespace 'std'
@@ -69,7 +122,7 @@ PR):
  RESOURCE_DIR="$DYNAMATIC_DIR/tools/hls-verifier/resources" 
 ```
 
-### Error during visualization:
+### Error During Visualization:
 
 A pop-up window saying "Your video card drivers seems not to support the
 required Vulkan version...".

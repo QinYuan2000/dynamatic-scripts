@@ -46,8 +46,8 @@ s_source_file="$dynamatic_path/integration-test/$f_benchmark_src"
 [ -f "$s_source_file" ] || \
   { echo "Source file $s_source_file does not exist!"; exit 1; }
 
-echo "set-dynamatic-path ./dynamatic; \
-  set-src ./dynamatic/integration-test/$f_benchmark_src; \
+echo "set-dynamatic-path $dynamatic_path; \
+  set-src $dynamatic_path/integration-test/$f_benchmark_src; \
   set-clock-period 6; \
   compile $SHARING $BUFFER_ALGORITHM --fast-token-delivery;\
   write-mlir --stage handshake --output ./handshake_in.mlir;
@@ -55,6 +55,6 @@ echo "set-dynamatic-path ./dynamatic; \
   simulate; \
   synthesize; \
   exit" \
-  | dynamatic/bin/dynamatic --exit-on-failure --debug
+  | "$dynamatic_path/bin/dynamatic" --exit-on-failure --debug
 
 exit
