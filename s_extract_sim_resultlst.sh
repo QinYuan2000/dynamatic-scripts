@@ -1,6 +1,6 @@
 #!/bin/sh
-BASE_PATH="/home/yuaqin/dynamatic-scripts/z_compare"
-TARGET_DIRS="muxtree-6ns"
+BASE_PATH="z_compare"
+TARGET_DIRS="local-cfg"
 FILELIST="filelist2_all.lst"
 
 RESULT_DIR="${BASE_PATH}/result"

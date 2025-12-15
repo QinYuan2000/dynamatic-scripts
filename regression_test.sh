@@ -26,7 +26,7 @@ do
     exit" | $dynamatic_dir/bin/dynamatic --exit-on-failure --debug
 done 2>&1 | tee regression_test_${clock_period}_${hdl}_${buffer_alg}.log
 
-# cp -r dynamatic/integration-test z_compare/costaware-vhdl-6ns/integration-test
+cp -r dynamatic/integration-test z_compare/local-cfg/integration-test
 
 
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-BASE_PATH="/home/yuaqin/dynamatic-scripts/z_compare"
+BASE_PATH="z_compare"
 TARGET_DIR="fpga20-verilog-6ns"
 TARGET_PATH="${BASE_PATH}/${TARGET_DIR}"
 if [ ! -d "${TARGET_PATH}" ]; then
