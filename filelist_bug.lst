@@ -1,0 +1,11 @@
+./dynamatic/integration-test/complexdiv/complexdiv.c
+./dynamatic/integration-test/cordic/cordic.c
+./dynamatic/integration-test/correlation_float/correlation_float.c
+./dynamatic/integration-test/covariance/covariance.c
+./dynamatic/integration-test/covariance_float/covariance_float.c
+./dynamatic/integration-test/dct/dct.c
+./dynamatic/integration-test/insertion_sort/insertion_sort.c
+./dynamatic/integration-test/kmp/kmp.c
+./dynamatic/integration-test/path_profiling/path_profiling.c
+./dynamatic/integration-test/trisolv/trisolv.c
+./dynamatic/integration-test/while_loop_2/while_loop_2.c

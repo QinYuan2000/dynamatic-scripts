@@ -1,6 +1,6 @@
 #!/bin/sh
 BASE_PATH="z_compare"
-TARGET_DIRS="local-cfg"
+TARGET_DIRS="supGSA"
 FILELIST="filelist2_all.lst"
 
 RESULT_DIR="${BASE_PATH}/result"

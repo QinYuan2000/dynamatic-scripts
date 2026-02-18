@@ -12,7 +12,7 @@ tags
 test-*.sh
 *.log
 z_compare*
-filelist*.lst
 *.ini
 *.txt
 temp*
+debug*
