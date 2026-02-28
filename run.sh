@@ -17,7 +17,7 @@ HDL="vhdl"
 # f_benchmark_src="bicg/bicg.c"
 # f_benchmark_src="bicg_float/bicg_float.c"
 # f_benchmark_src="binary_search/binary_search.c"
-# f_benchmark_src="cnn/cnn.c"
+f_benchmark_src="cnn/cnn.c"
 # f_benchmark_src="complexdiv/complexdiv.c"
 # f_benchmark_src="cordic/cordic.c"
 # f_benchmark_src="correlation_float/correlation_float.c"
@@ -91,7 +91,7 @@ HDL="vhdl"
 # f_benchmark_src="mul_example/mul_example.c"
 # f_benchmark_src="mvt_float/mvt_float.c"
 # f_benchmark_src="nested_loop/nested_loop.c"
-f_benchmark_src="path_profiling/path_profiling.c"
+# f_benchmark_src="path_profiling/path_profiling.c"
 # f_benchmark_src="pivot/pivot.c"
 # f_benchmark_src="polyn_mult/polyn_mult.c"
 # f_benchmark_src="sharing/share_test_1/share_test_1.c"
@@ -132,7 +132,7 @@ echo "set-dynamatic-path $dynamatic_path; \
   simulate; \
   # synthesize; \
   exit" \
-  | "$dynamatic_path/bin/dynamatic" --exit-on-failure --debug
+  | "$dynamatic_path/bin/dynamatic" --exit-on-failure
 
 exit
 
