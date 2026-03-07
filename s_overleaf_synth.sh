@@ -25,13 +25,15 @@ for table_dir in "$ROOT_DIR"/*; do
             echo "Warning: Directory $category_dir does not exist; skipping."
             continue
         fi
+
         # Get txt files sorted alphabetically; expect exactly 2 files.
         files=($(find "$category_dir" -maxdepth 1 -type f -name "*.txt" | sort))
         if [ ${#files[@]} -ne 2 ]; then
             echo "Warning: In $category_dir, expected 2 txt files but found ${#files[@]}; skipping."
             continue
         fi
-        # "Now" values come from the first file, "Previous" from the second.
+
+        # "Now" values come from the second file, "Previous" from the first.
         now_file="${files[1]}"
         prev_file="${files[0]}"
 
@@ -71,14 +73,26 @@ for table_dir in "$ROOT_DIR"/*; do
     sorted_keys=($(for k in "${!lut_now[@]}"; do echo "$k"; done | sort))
 
     {
-      echo "\begin{table}[h]"
-      echo "\centering"
-      echo "\caption{${escaped_table_name}}"
-      echo "\begin{tabular}{l c c c c c c}"
-      echo "\hline"
-      echo "benchmark & \multicolumn{2}{c}{LUT} & \multicolumn{2}{c}{Reg} & \multicolumn{2}{c}{Slack} \\\\"
+      echo "\\begin{longtable}{l c c c c c c}"
+      echo "\\caption{${escaped_table_name}} \\\\"
+      echo "\\hline"
+      echo "benchmark & \\multicolumn{2}{c}{LUT} & \\multicolumn{2}{c}{Reg} & \\multicolumn{2}{c}{Slack} \\\\"
       echo " & Previous & Now & Previous & Now & Previous & Now \\\\"
-      echo "\hline"
+      echo "\\hline"
+      echo "\\endfirsthead"
+
+      echo "\\hline"
+      echo "benchmark & \\multicolumn{2}{c}{LUT} & \\multicolumn{2}{c}{Reg} & \\multicolumn{2}{c}{Slack} \\\\"
+      echo " & Previous & Now & Previous & Now & Previous & Now \\\\"
+      echo "\\hline"
+      echo "\\endhead"
+
+      echo "\\hline"
+      echo "\\endfoot"
+
+      echo "\\hline"
+      echo "\\endlastfoot"
+
       for key in "${sorted_keys[@]}"; do
           escaped_key=$(echo "$key" | sed 's/_/\\_/g')
 
@@ -174,9 +188,8 @@ for table_dir in "$ROOT_DIR"/*; do
 
           echo "${escaped_key} & ${colored_lut_prev} & ${colored_lut_now} & ${colored_reg_prev} & ${colored_reg_now} & ${colored_slack_prev} & ${colored_slack_now} \\\\"
       done
-      echo "\hline"
-      echo "\end{tabular}"
-      echo "\end{table}"
+
+      echo "\\end{longtable}"
       echo ""
     } >> "$OUTPUT_FILE"
 
