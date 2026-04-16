@@ -1,0 +1,15 @@
+bicg
+bicg_float
+binary_search
+sobel
+stencil_2d
+spmv
+mvt_float
+fir
+factorial
+sparse
+iterative_sqrt
+iterative_division
+atax
+gemm
+matvec

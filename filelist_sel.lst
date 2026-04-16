@@ -1,0 +1,15 @@
+./dynamatic/integration-test/bicg/bicg.c
+./dynamatic/integration-test/bicg_float/bicg_float.c
+./dynamatic/integration-test/binary_search/binary_search.c
+./dynamatic/integration-test/sobel/sobel.c
+./dynamatic/integration-test/stencil_2d/stencil_2d.c
+./dynamatic/integration-test/spmv/spmv.c
+./dynamatic/integration-test/mvt_float/mvt_float.c
+./dynamatic/integration-test/fir/fir.c
+./dynamatic/integration-test/factorial/factorial.c
+./dynamatic/integration-test/sparse/sparse.c
+./dynamatic/integration-test/iterative_sqrt/iterative_sqrt.c
+./dynamatic/integration-test/iterative_division/iterative_division.c
+./dynamatic/integration-test/atax/atax.c
+./dynamatic/integration-test/gemm/gemm.c
+./dynamatic/integration-test/matvec/matvec.c

@@ -1,4 +1,3 @@
-./dynamatic/integration-test/admm/admm.c
 ./dynamatic/integration-test/complexdiv/complexdiv.c
 ./dynamatic/integration-test/cordic/cordic.c
 ./dynamatic/integration-test/correlation_float/correlation_float.c
@@ -6,12 +5,4 @@
 ./dynamatic/integration-test/covariance_float/covariance_float.c
 ./dynamatic/integration-test/dct/dct.c
 ./dynamatic/integration-test/external_integration/external_integration.c
-./dynamatic/integration-test/memory/test_constant_array/test_constant_array.c
-./dynamatic/integration-test/memory/test_internal_array/test_internal_array.c
-./dynamatic/integration-test/path_profiling/path_profiling.c
-./dynamatic/integration-test/test_bitint/test_bitint.c
-./dynamatic/integration-test/test_stdint/test_stdint.c
 ./dynamatic/integration-test/trisolv/trisolv.c
-./dynamatic/integration-test/while_loop_2/while_loop_2.c
-
-./dynamatic/integration-test/iterative_sqrt/iterative_sqrt.c

@@ -1,9 +1,9 @@
+admm
 atax
 atax_float
 bicg
 bicg_float
 binary_search
-cnn
 factorial
 fir
 fixed
@@ -29,6 +29,7 @@ iir
 image_resize
 insertion_sort
 iterative_division
+iterative_sqrt
 jacobi_1d_imper
 kernel_2mm
 kernel_2mm_float
@@ -43,7 +44,9 @@ matching_2
 matrix
 matrix_power
 matvec
+memory/test_constant_array
 memory/test_flatten_array
+memory/test_internal_array
 memory/test_memory_1
 memory/test_memory_10
 memory/test_memory_11
@@ -67,6 +70,7 @@ memory/test_unroll
 mul_example
 mvt_float
 nested_loop
+path_profiling
 pivot
 polyn_mult
 sharing/share_test_1
@@ -82,10 +86,14 @@ subdiag_fast
 sumi3_mem
 symm_float
 syr2k_float
+test_bitint
 test_loop_free
+test_stdint
 threshold
 triangular
 vector_rescale
 video_filter
 while_loop_1
+while_loop_2
 while_loop_3
+cnn

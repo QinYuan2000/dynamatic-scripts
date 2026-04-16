@@ -2,7 +2,8 @@ import glob
 import os
 
 START_PREFIX = "[FTD] Producer block:"
-END_PREFIX = "fSupmin"
+END_PREFIX_1 = "fSupDP"
+END_PREFIX_2 = "fSupmin"
 
 orig_cwd = os.getcwd()
 os.chdir("TempOutputs")
@@ -23,21 +24,54 @@ for path in glob.glob("*.txt"):
         if line.startswith(START_PREFIX):
             block_lines = [line]
             i += 1
+            
+            last_fsupmin_idx = -1
+            found_fSupDP = False
 
             while i < n:
-                block_lines.append(lines[i])
-                if lines[i].lstrip().startswith(END_PREFIX):
+                curr_line = lines[i]
+
+                if curr_line.startswith(START_PREFIX):
                     break
+
+                block_lines.append(curr_line)
+
+                if curr_line.lstrip().startswith(END_PREFIX_2):
+                    last_fsupmin_idx = len(block_lines) - 1
+                
+                elif curr_line.lstrip().startswith(END_PREFIX_1):
+                    found_fSupDP = True
+                    i += 1
+                    break
+
                 i += 1
 
-            block = "".join(block_lines)
+            if found_fSupDP:
+                block = "".join(block_lines)
+                if block not in seen_blocks:
+                    seen_blocks.add(block)
+                    output.append(block)
+            else:
+                if last_fsupmin_idx != -1:
+                    actual_block = "".join(block_lines[:last_fsupmin_idx + 1])
+                    if actual_block not in seen_blocks:
+                        seen_blocks.add(actual_block)
+                        output.append(actual_block)
 
-            if block not in seen_blocks:
-                seen_blocks.add(block)
-                output.append(block)
+                    over_read_count = len(block_lines) - 1 - last_fsupmin_idx
+                    i -= over_read_count
+                else:
+                    block = "".join(block_lines)
+                    if block not in seen_blocks:
+                        seen_blocks.add(block)
+                        output.append(block)
 
-            i += 1
         else:
+            if line.strip() == "":
+                if len(output) > 0 and output[-1].strip() == "":
+                    i += 1
+                    continue
+            
             output.append(line)
             i += 1
 
